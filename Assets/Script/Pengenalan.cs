@@ -196,6 +196,38 @@ public class Pengenalan : MonoBehaviour
         // 8. Muncul kembali dialog dengan pembawa acara (Blink mata akan terjadi di tengah dialog ini)
         yield return StartCoroutine(JalankanDialog(dialogBerita));
 
+        // 9. Jeda 3 detik setelah dialog berita selesai
+        yield return new WaitForSeconds(3f);
+
+        // 10. Transisi Blink penutup untuk kembali ke layar awal
+        if (blackScreenPanel != null)
+        {
+            blackScreenPanel.SetActive(true);
+            blackScreenPanel.transform.SetAsLastSibling();
+            
+            // Tutup mata (fade ke hitam penuh)
+            yield return StartCoroutine(FadeBlackScreen(0f, 1f, 0.25f));
+            
+            // Gelap total selama 0.5 detik (Anda bisa sesuaikan waktunya)
+            yield return new WaitForSeconds(0.5f);
+            
+            // Saat mata tertutup rapat, kembalikan ke panel lama & matikan efek TV
+            if (beritaKonteksFullscreen != null) beritaKonteksFullscreen.SetActive(false);
+            if (beritaKonteks != null) beritaKonteks.SetActive(true);
+            SetTVEffectIntensity(0f);
+            
+            // Buka mata perlahan
+            yield return StartCoroutine(FadeBlackScreen(1f, 0f, 0.4f));
+            blackScreenPanel.SetActive(false);
+        }
+        else
+        {
+            // Fallback jika tidak ada objek black screen
+            if (beritaKonteksFullscreen != null) beritaKonteksFullscreen.SetActive(false);
+            if (beritaKonteks != null) beritaKonteks.SetActive(true);
+            SetTVEffectIntensity(0f);
+        }
+
         // Selesai pengenalan, di sini Anda bisa menambahkan script untuk lanjut ke scene berikutnya
         Debug.Log("Alur Pengenalan Selesai! Lanjut ke main menu/gameplay.");
     }
