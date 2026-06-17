@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using TMPro; // Ditambahkan untuk mendukung TextMeshPro
-using UnityEngine.UI; // Ditambahkan untuk mendukung komponen Slider
+using TMPro;
+using UnityEngine.UI;
 
 [System.Serializable]
 public struct DataDialog
@@ -23,7 +23,13 @@ public class Pengenalan : MonoBehaviour
     public GameObject bootingTV;
     public GameObject beritaKonteks;
     public GameObject beritaKonteksFullscreen; // Panel berita versi fullscreen
-    public GameObject bubbleNamePanel;
+    public Material tvEffectMaterial; // Material TVEffectMaterial pada FullScreenPassRendererFeature
+    public GameObject bubbleNamePanel; // Panel penampung utama (Parent)
+    
+    [Header("Referensi Popup Terpisah (Opsional)")]
+    public GameObject panelBackgroundDialog; // Background dialog yang akan ikut popup tiap ganti teks
+    public GameObject panelNamaKarakter;     // Panel nama yang hanya popup di awal
+    
     public Slider loadingSlider;
 
     [Header("Referensi Teks UI")]
@@ -80,6 +86,9 @@ public class Pengenalan : MonoBehaviour
         if (beritaKonteks != null) beritaKonteks.SetActive(false);
         if (beritaKonteksFullscreen != null) beritaKonteksFullscreen.SetActive(false);
         if (bubbleNamePanel != null) bubbleNamePanel.SetActive(false);
+        
+        // Matikan efek TV di awal (intensity = 0 agar tidak terlihat)
+        SetTVEffectIntensity(0f);
         
         if (loadingSlider != null) loadingSlider.gameObject.SetActive(false); // Sembunyikan slider di awal
 
@@ -210,14 +219,18 @@ public class Pengenalan : MonoBehaviour
             yield return new WaitForSeconds(0.5f);
             
             // Ganti latar menjadi berita fullscreen
-            if (beritaKonteksFullscreen != null) 
-            {
-                beritaKonteksFullscreen.SetActive(true);
-                // Pastikan dialog ada di depan panel berita
-                if (bubbleNamePanel != null) bubbleNamePanel.transform.SetAsLastSibling();
-                // Dan blackscreen (kelopak mata) tetap paling depan saat mau dibuka
-                blackScreenPanel.transform.SetAsLastSibling();
-            }
+        if (beritaKonteksFullscreen != null) 
+        {
+            beritaKonteksFullscreen.SetActive(true);
+            
+            // Nyalakan efek Old TV bersamaan dengan tayangan berita fullscreen (via Volume Intensity)
+            SetTVEffectIntensity(1f);
+
+            // Pastikan panel dialog tetap berada paling depan menutupi semuanya
+            if (bubbleNamePanel != null) bubbleNamePanel.transform.SetAsLastSibling();
+        }
+            // Dan blackscreen (kelopak mata) tetap paling depan saat mau dibuka
+            blackScreenPanel.transform.SetAsLastSibling();
             
             // Siapkan teks dialog ke-3 di belakang layar
             UpdateTeksUI();
@@ -288,6 +301,12 @@ public class Pengenalan : MonoBehaviour
             {
                 bubbleNamePanel.SetActive(true);
                 bubbleNamePanel.transform.SetAsLastSibling(); // Pastikan UI Dialog selalu paling depan
+            }
+            
+            // Animasi popup khusus untuk nama karakter (hanya di awal dialog)
+            if (panelNamaKarakter != null)
+            {
+                StartCoroutine(PopupAwalObjek(panelNamaKarakter.transform, durasiTransisiTeks));
             }
             
             // Set transisi teks
@@ -371,28 +390,99 @@ public class Pengenalan : MonoBehaviour
 
     void SetTeksAlpha(float alphaAkhir)
     {
-        // Hanya isi dialog yang ikut transisi, nama karakter tetap utuh (tidak fade)
+        // Hanya background dialog dan teks isi yang ikut memudar/transisi
         if (textIsiDialog != null) 
         {
-            Color c = textIsiDialog.color;
-            c.a = alphaAkhir;
-            textIsiDialog.color = c;
+            Color c = textIsiDialog.color; c.a = alphaAkhir; textIsiDialog.color = c;
+        }
+        if (panelBackgroundDialog != null)
+        {
+            CanvasGroup cg = panelBackgroundDialog.GetComponent<CanvasGroup>();
+            if (cg == null) cg = panelBackgroundDialog.AddComponent<CanvasGroup>();
+            cg.alpha = alphaAkhir;
+        }
+        
+        // Memastikan nama karakter & panel namanya selalu utuh 100% (tidak ikut transisi fade out)
+        if (textNamaKarakter != null)
+        {
+            Color c = textNamaKarakter.color; c.a = 1f; textNamaKarakter.color = c;
+        }
+        if (panelNamaKarakter != null)
+        {
+            CanvasGroup cg = panelNamaKarakter.GetComponent<CanvasGroup>();
+            if (cg != null) cg.alpha = 1f;
         }
     }
 
     IEnumerator FadeTeks(float alphaAwal, float alphaAkhir, float durasi)
     {
         float waktuMulai = Time.time;
+        bool isMuncul = (alphaAwal < alphaAkhir);
+
+        // Sedikit percepat durasi asli dari inspektor agar popup terasa lebih cepat & responsif
+        durasi = durasi * 0.85f; 
+
+        // Tentukan target yang akan di-scale (Background jika ada, jika tidak fallback ke Teks saja)
+        Transform targetScale = (panelBackgroundDialog != null) ? panelBackgroundDialog.transform : (textIsiDialog != null ? textIsiDialog.transform : null);
+        if (targetScale != null) targetScale.localScale = Vector3.one;
 
         while (Time.time < waktuMulai + durasi)
         {
             float progress = (Time.time - waktuMulai) / durasi;
-            float currentAlpha = Mathf.Lerp(alphaAwal, alphaAkhir, progress);
+            
+            // Alpha fade (memudar)
+            float currentAlpha = Mathf.Lerp(alphaAwal, alphaAkhir, Mathf.Sin(progress * Mathf.PI * 0.5f));
             SetTeksAlpha(currentAlpha);
+            
+            // Animasi Popup Scale
+            if (targetScale != null)
+            {
+                float scale = 1f;
+                if (isMuncul)
+                {
+                    // Membesar dari 0.2 ke 1.0 dengan efek membal (Overshoot / Ease Out Back)
+                    float t = progress - 1f;
+                    float s = 2.0f; // Tingkat pantulan/bounce
+                    float easeOutBack = (t * t * ((s + 1f) * t + s) + 1f);
+                    
+                    scale = Mathf.Lerp(0.2f, 1f, easeOutBack);
+                }
+                else
+                {
+                    // Mengecil dengan cepat dari 1.0 ke 0.2
+                    float easeIn = progress * progress * progress; 
+                    scale = Mathf.Lerp(1f, 0.2f, easeIn);
+                }
+                targetScale.localScale = new Vector3(scale, scale, 1f);
+            }
+            
             yield return null;
         }
 
+        // Setel akhir untuk memastikan nilai pas dan akurat
         SetTeksAlpha(alphaAkhir);
+        if (targetScale != null)
+        {
+            float finalScale = isMuncul ? 1f : 0.2f;
+            targetScale.localScale = new Vector3(finalScale, finalScale, 1f);
+        }
+    }
+
+    IEnumerator PopupAwalObjek(Transform obj, float durasi)
+    {
+        obj.localScale = new Vector3(0.2f, 0.2f, 1f);
+        float waktuMulai = Time.time;
+        while (Time.time < waktuMulai + durasi)
+        {
+            float progress = (Time.time - waktuMulai) / durasi;
+            float t = progress - 1f;
+            float s = 2.0f;
+            float easeOutBack = (t * t * ((s + 1f) * t + s) + 1f);
+            float scale = Mathf.Lerp(0.2f, 1f, easeOutBack);
+            obj.localScale = new Vector3(scale, scale, 1f);
+            yield return null;
+        }
+        obj.localScale = Vector3.one;
     }
 
     IEnumerator FadeOutObjek(GameObject objekToFade, float durasi)
@@ -418,5 +508,11 @@ public class Pengenalan : MonoBehaviour
 
         // Pastikan alpha benar-benar 0 di akhir
         canvasGroup.alpha = 0f;
+    }
+    // Mengontrol intensitas efek Old TV langsung melalui property _Intensity pada material
+    void SetTVEffectIntensity(float intensity)
+    {
+        if (tvEffectMaterial == null) return;
+        tvEffectMaterial.SetFloat("_Intensity", intensity);
     }
 }
