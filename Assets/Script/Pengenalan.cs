@@ -25,6 +25,8 @@ public class Pengenalan : MonoBehaviour
     public GameObject beritaKonteksFullscreen; // Panel berita versi fullscreen
     public Material tvEffectMaterial; // Material TVEffectMaterial pada FullScreenPassRendererFeature
     public GameObject bubbleNamePanel; // Panel penampung utama (Parent)
+    public GameObject panelKoran; // Panel koran yang akan muncul terakhir
+    public GameObject[] daftarGambarKoran; // Daftar gambar koran yang muncul 1/1
     
     [Header("Referensi Popup Terpisah (Opsional)")]
     public GameObject panelBackgroundDialog; // Background dialog yang akan ikut popup tiap ganti teks
@@ -39,6 +41,7 @@ public class Pengenalan : MonoBehaviour
     [Header("Pengaturan Dialog (Bisa diisi banyak orang)")]
     public DataDialog[] dialogAwal;
     public DataDialog[] dialogBerita;
+    public DataDialog[] dialogKedua;
 
     [Header("Pengaturan Waktu")]
     public float durasiFadeBlack = 1.5f;
@@ -86,6 +89,7 @@ public class Pengenalan : MonoBehaviour
         if (beritaKonteks != null) beritaKonteks.SetActive(false);
         if (beritaKonteksFullscreen != null) beritaKonteksFullscreen.SetActive(false);
         if (bubbleNamePanel != null) bubbleNamePanel.SetActive(false);
+        if (panelKoran != null) panelKoran.SetActive(false);
         
         // Matikan efek TV di awal (intensity = 0 agar tidak terlihat)
         SetTVEffectIntensity(0f);
@@ -228,8 +232,75 @@ public class Pengenalan : MonoBehaviour
             SetTVEffectIntensity(0f);
         }
 
+        // 11. Jeda 1 detik sebelum mulai dialog kedua (opsional, agar tidak terlalu mendadak)
+        yield return new WaitForSeconds(1f);
+
+        // 12. Mulai Dialog Kedua
+        yield return StartCoroutine(JalankanDialog(dialogKedua));
+
+        // 13. Tampilkan Panel Koran setelah dialog kedua selesai dengan transisi
+        yield return StartCoroutine(MunculkanKoran());
+
         // Selesai pengenalan, di sini Anda bisa menambahkan script untuk lanjut ke scene berikutnya
         Debug.Log("Alur Pengenalan Selesai! Lanjut ke main menu/gameplay.");
+    }
+
+    IEnumerator MunculkanKoran()
+    {
+        if (panelKoran == null) yield break;
+
+        // Pastikan semua koran dalam keadaan mati (hide) sebelum panel dinyalakan
+        if (daftarGambarKoran != null)
+        {
+            foreach (var koran in daftarGambarKoran)
+            {
+                if (koran != null) koran.SetActive(false);
+            }
+        }
+
+        // Siapkan panel koran untuk di-fade
+        CanvasGroup cg = panelKoran.GetComponent<CanvasGroup>();
+        if (cg == null) cg = panelKoran.AddComponent<CanvasGroup>();
+        cg.alpha = 0f;
+        
+        panelKoran.SetActive(true);
+
+        // Fade in keseluruhan panel (termasuk background blackFade)
+        float durasiFade = 1f;
+        float waktuMulai = Time.time;
+        while (Time.time < waktuMulai + durasiFade)
+        {
+            cg.alpha = Mathf.Lerp(0f, 1f, (Time.time - waktuMulai) / durasiFade);
+            yield return null;
+        }
+        cg.alpha = 1f;
+
+        // Beri jeda sedikit setelah panel gelap muncul
+        yield return new WaitForSeconds(0.5f);
+
+        if (daftarGambarKoran != null)
+        {
+            // Munculkan koran satu per satu
+            for (int i = 0; i < daftarGambarKoran.Length; i++)
+            {
+                if (daftarGambarKoran[i] == null) continue;
+
+                // Jika bukan koran pertama, wajib tunggu player klik untuk memunculkannya
+                if (i > 0)
+                {
+                    yield return new WaitUntil(() => Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return));
+                    // Jeda 1 frame agar input tidak terbaca dobel
+                    yield return null; 
+                }
+
+                // Munculkan gambar koran ke-i dengan efek slide dari bawah
+                daftarGambarKoran[i].SetActive(true);
+                yield return StartCoroutine(SlideDariBawahObjek(daftarGambarKoran[i].transform, 0.4f));
+            }
+        }
+
+        // (Opsional) Tunggu klik terakhir sebelum benar-benar keluar dari alur pengenalan
+        yield return new WaitUntil(() => Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return));
     }
 
     IEnumerator TransisiBlinkDiTengahDialog()
@@ -515,6 +586,37 @@ public class Pengenalan : MonoBehaviour
             yield return null;
         }
         obj.localScale = Vector3.one;
+    }
+
+    IEnumerator SlideDariBawahObjek(Transform obj, float durasi)
+    {
+        RectTransform rectTransform = obj.GetComponent<RectTransform>();
+        if (rectTransform == null) 
+        {
+            Debug.LogWarning("Objek " + obj.name + " tidak memiliki RectTransform! Transisi dibatalkan.");
+            yield break;
+        }
+
+        Vector3 posisiAkhir = rectTransform.localPosition;
+        // Geser Y awal ke jauh di bawah layar (dikurangi 1500 pixel dari posisi aslinya)
+        Vector3 posisiAwal = posisiAkhir + new Vector3(0, -1500f, 0);
+        
+        rectTransform.localPosition = posisiAwal;
+        
+        float waktuMulai = Time.time;
+        while (Time.time < waktuMulai + durasi)
+        {
+            float progress = (Time.time - waktuMulai) / durasi;
+            
+            // Menggunakan fungsi Cubic Ease-Out agar gerakannya melambat saat hampir sampai di atas
+            float t = progress - 1f;
+            float easeOut = t * t * t + 1f;
+            
+            rectTransform.localPosition = Vector3.Lerp(posisiAwal, posisiAkhir, easeOut);
+            yield return null;
+        }
+        
+        rectTransform.localPosition = posisiAkhir;
     }
 
     IEnumerator FadeOutObjek(GameObject objekToFade, float durasi)

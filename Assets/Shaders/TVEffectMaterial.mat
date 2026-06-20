@@ -30,7 +30,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _Curvature: 4
-    - _Intensity: 1
+    - _Intensity: 0
     - _NoiseSpeed: 50
     - _ScanlineCount: 250
     - _ScanlineSpeed: 5
