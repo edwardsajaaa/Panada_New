@@ -26,6 +26,7 @@ public class Pengenalan : MonoBehaviour
     public Material tvEffectMaterial; // Material TVEffectMaterial pada FullScreenPassRendererFeature
     public GameObject bubbleNamePanel; // Panel penampung utama (Parent)
     public GameObject panelKoran; // Panel koran yang akan muncul terakhir
+    public GameObject panelKasur; // Panel kasur yang muncul di tengah dialog awal
     public GameObject[] daftarGambarKoran; // Daftar gambar koran yang muncul 1/1
     
     [Header("Referensi Popup Terpisah (Opsional)")]
@@ -57,6 +58,9 @@ public class Pengenalan : MonoBehaviour
     private bool sedangDialog = false;
     private bool sedangTransisiTeks = false;
     private Material blinkMaterial; // Material shader untuk efek Eye Blink
+
+    [HideInInspector] 
+    public bool sedangMencariBarang = false; // Flag untuk menghentikan dialog sampai barang dicari
 
     void Start()
     {
@@ -90,6 +94,7 @@ public class Pengenalan : MonoBehaviour
         if (beritaKonteksFullscreen != null) beritaKonteksFullscreen.SetActive(false);
         if (bubbleNamePanel != null) bubbleNamePanel.SetActive(false);
         if (panelKoran != null) panelKoran.SetActive(false);
+        if (panelKasur != null) panelKasur.SetActive(false);
         
         // Matikan efek TV di awal (intensity = 0 agar tidak terlihat)
         SetTVEffectIntensity(0f);
@@ -104,7 +109,10 @@ public class Pengenalan : MonoBehaviour
     {
         // Lanjut ke dialog berikutnya saat pemain klik kiri mouse atau tekan Spasi
         // Dicegah jika sedang transisi teks agar teks tidak bertumpuk/error
-        if (sedangDialog && !sedangTransisiTeks && (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return)))
+        // Dicegah juga jika sedang menyeret objek UI (DraggableUI)
+        // Dicegah jika sedang di fase wajib mencari barang
+        if (sedangDialog && !sedangTransisiTeks && !sedangMencariBarang && !DraggableUI.isInteractingWithUI && 
+            (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return)))
         {
             LanjutDialog();
         }
@@ -127,6 +135,9 @@ public class Pengenalan : MonoBehaviour
 
         // 3.5 Jeda setelah dialog awal selesai
         yield return new WaitForSeconds(jedaSetelahDialogAwal);
+
+        // Mematikan panel kasur jika masih menyala agar tidak menutupi booting TV
+        if (panelKasur != null) panelKasur.SetActive(false);
 
         // 4. Munculkan panel Booting TV
         if (bootingTV != null) bootingTV.SetActive(true);
@@ -420,6 +431,13 @@ public class Pengenalan : MonoBehaviour
             UpdateTeksUI();
             SetTeksAlpha(0f);
             
+            // Kembalikan alpha parent ke 1, agar tidak double-fade dengan komponen di dalamnya
+            if (bubbleNamePanel != null)
+            {
+                CanvasGroup cg = bubbleNamePanel.GetComponent<CanvasGroup>();
+                if (cg != null) cg.alpha = 1f;
+            }
+            
             // Fade in teks pertama
             yield return StartCoroutine(FadeTeks(0f, 1f, durasiTransisiTeks));
             
@@ -440,8 +458,23 @@ public class Pengenalan : MonoBehaviour
         // Jika masih ada dialog selanjutnya
         if (indeksDialogSaatIni < arrayDialogAktif.Length)
         {
+            // Cek jika ini adalah dialog awal dan masuk ke baris ke-6 (indeks 5) (Transisi ke Kasur)
+            if (arrayDialogAktif == dialogAwal && indeksDialogSaatIni == 5)
+            {
+                StartCoroutine(TransisiBlinkKeKasur());
+            }
+            // Setelah dialog ke-8 selesai dibaca (masuk ke indeks 8 / dialog 9), mulai pencarian!
+            else if (arrayDialogAktif == dialogAwal && indeksDialogSaatIni == 8)
+            {
+                StartCoroutine(MulaiPencarianBarang());
+            }
+            // Setelah dialog ke-9 selesai (masuk ke indeks 9 / dialog 10), kembali ke monitor
+            else if (arrayDialogAktif == dialogAwal && indeksDialogSaatIni == 9)
+            {
+                StartCoroutine(KembaliKeMonitorDanLanjut());
+            }
             // Cek jika ini adalah dialog berita dan masuk ke baris ke-3 (indeks 2)
-            if (arrayDialogAktif == dialogBerita && indeksDialogSaatIni == 2)
+            else if (arrayDialogAktif == dialogBerita && indeksDialogSaatIni == 2)
             {
                 StartCoroutine(TransisiBlinkDiTengahDialog());
             }
@@ -452,6 +485,161 @@ public class Pengenalan : MonoBehaviour
         }
         else // Jika dialog sudah habis
         {
+            StartCoroutine(SelesaikanDialog());
+        }
+    }
+
+    IEnumerator TransisiBlinkKeKasur()
+    {
+        sedangTransisiTeks = true;
+        // Dialog masih berlanjut normal, jadi jangan kunci pencarian dulu
+        // sedangMencariBarang tidak diaktifkan di sini
+
+        // Fade out keseluruhan panel dialog agar benar-benar hilang sebelum layar berkedip
+        if (bubbleNamePanel != null)
+        {
+            yield return StartCoroutine(FadeKeseluruhanPanel(bubbleNamePanel, 1f, 0f, durasiTransisiTeks));
+        }
+        else
+        {
+            yield return StartCoroutine(FadeTeks(1f, 0f, durasiTransisiTeks));
+        }
+
+        // Transisi Mata Tertutup (Blink)
+        if (blackScreenPanel != null)
+        {
+            blackScreenPanel.SetActive(true);
+            blackScreenPanel.transform.SetAsLastSibling();
+            
+            // Tutup mata perlahan
+            yield return StartCoroutine(FadeBlackScreen(0f, 1f, 0.25f));
+            
+            // Saat mata tertutup rapat, nyalakan panel kasur
+            yield return new WaitForSeconds(0.5f);
+            if (panelKasur != null) panelKasur.SetActive(true);
+            
+            // Buka mata perlahan
+            yield return StartCoroutine(FadeBlackScreen(1f, 0f, 0.4f));
+            blackScreenPanel.SetActive(false);
+        }
+        else
+        {
+            // Fallback
+            if (panelKasur != null) panelKasur.SetActive(true);
+        }
+
+        // Ubah ke teks dialog indeks ke-5 (baris ke-6)
+        UpdateTeksUI();
+        SetTeksAlpha(0f); // Reset alpha komponen sebelum di-fade in
+        
+        // Memunculkan kembali bubble name dengan animasi popup seperti saat dialog awal
+        if (panelNamaKarakter != null)
+        {
+            StartCoroutine(PopupAwalObjek(panelNamaKarakter.transform, durasiTransisiTeks));
+        }
+        if (bubbleNamePanel != null)
+        {
+            CanvasGroup cg = bubbleNamePanel.GetComponent<CanvasGroup>();
+            if (cg != null) cg.alpha = 1f;
+        }
+
+        // Fade in teks dialog baru
+        yield return StartCoroutine(FadeTeks(0f, 1f, durasiTransisiTeks));
+
+        sedangTransisiTeks = false;
+    }
+
+    // Coroutine untuk menyembunyikan teks dan mengizinkan pemain mencari barang
+    IEnumerator MulaiPencarianBarang()
+    {
+        sedangTransisiTeks = true;
+        
+        // Fade out keseluruhan panel dialog agar nama karakternya juga ikut hilang
+        if (bubbleNamePanel != null)
+        {
+            yield return StartCoroutine(FadeKeseluruhanPanel(bubbleNamePanel, 1f, 0f, durasiTransisiTeks));
+        }
+        else
+        {
+            yield return StartCoroutine(FadeTeks(1f, 0f, durasiTransisiTeks));
+        }
+        
+        // Kunci dialog dan izinkan player menggeser baju
+        sedangMencariBarang = true;
+        DraggableUI.canDrag = true;
+        
+        sedangTransisiTeks = false;
+    }
+
+    // Dipanggil saat item (Remote TV) berhasil diklik
+    public void BarangDitemukan()
+    {
+        if (sedangMencariBarang)
+        {
+            sedangMencariBarang = false;
+            DraggableUI.canDrag = false; // Kunci lagi bajunya agar tidak bisa digeser
+            
+            // Lanjut tampilkan dialog ke-9 (indeks 8)
+            UpdateTeksUI();
+            SetTeksAlpha(0f); // Reset komponen
+            
+            // Munculkan kembali nama dan background dialog
+            if (panelNamaKarakter != null)
+            {
+                StartCoroutine(PopupAwalObjek(panelNamaKarakter.transform, durasiTransisiTeks));
+            }
+            if (bubbleNamePanel != null)
+            {
+                CanvasGroup cg = bubbleNamePanel.GetComponent<CanvasGroup>();
+                if (cg != null) cg.alpha = 1f;
+            }
+            
+            StartCoroutine(FadeTeks(0f, 1f, durasiTransisiTeks));
+        }
+    }
+
+    IEnumerator KembaliKeMonitorDanLanjut()
+    {
+        sedangTransisiTeks = true;
+
+        // Fade out teks (dialog ke-9)
+        yield return StartCoroutine(FadeTeks(1f, 0f, durasiTransisiTeks));
+
+        // Transisi Mata Tertutup (Blink)
+        if (blackScreenPanel != null)
+        {
+            blackScreenPanel.SetActive(true);
+            blackScreenPanel.transform.SetAsLastSibling();
+            
+            // Tutup mata perlahan
+            yield return StartCoroutine(FadeBlackScreen(0f, 1f, 0.25f));
+            
+            yield return new WaitForSeconds(0.5f);
+            
+            // Matikan panel kasur, sehingga layar belakangnya (Blank Monitor) terlihat kembali
+            if (panelKasur != null) panelKasur.SetActive(false);
+            
+            // Buka mata perlahan
+            yield return StartCoroutine(FadeBlackScreen(1f, 0f, 0.4f));
+            blackScreenPanel.SetActive(false);
+        }
+        else
+        {
+            if (panelKasur != null) panelKasur.SetActive(false);
+        }
+
+        // Lanjut ke indeks dialog berikutnya
+        indeksDialogSaatIni++;
+        
+        if (indeksDialogSaatIni < arrayDialogAktif.Length)
+        {
+            UpdateTeksUI();
+            yield return StartCoroutine(FadeTeks(0f, 1f, durasiTransisiTeks));
+            sedangTransisiTeks = false;
+        }
+        else
+        {
+            // Jika ternyata dialog awal sudah habis, langsung selesaikan
             StartCoroutine(SelesaikanDialog());
         }
     }
@@ -476,12 +664,35 @@ public class Pengenalan : MonoBehaviour
     {
         sedangTransisiTeks = true;
         
-        // Fade out teks terakhir sebelum panel menghilang
-        yield return StartCoroutine(FadeTeks(1f, 0f, durasiTransisiTeks));
-        
+        // Fade out keseluruhan panel dialog agar hilangnya lebih mulus
+        if (bubbleNamePanel != null)
+        {
+            yield return StartCoroutine(FadeKeseluruhanPanel(bubbleNamePanel, 1f, 0f, durasiTransisiTeks));
+        }
+        else
+        {
+            // Fallback
+            yield return StartCoroutine(FadeTeks(1f, 0f, durasiTransisiTeks));
+        }
+
+        if (bubbleNamePanel != null) bubbleNamePanel.SetActive(false);
         sedangDialog = false;
         sedangTransisiTeks = false;
-        if (bubbleNamePanel != null) bubbleNamePanel.SetActive(false); // Sembunyikan panel dialog
+    }
+
+    IEnumerator FadeKeseluruhanPanel(GameObject panel, float alphaAwal, float alphaAkhir, float durasi)
+    {
+        CanvasGroup cg = panel.GetComponent<CanvasGroup>();
+        if (cg == null) cg = panel.AddComponent<CanvasGroup>();
+        
+        float waktuMulai = Time.time;
+        while (Time.time < waktuMulai + durasi)
+        {
+            float progress = (Time.time - waktuMulai) / durasi;
+            cg.alpha = Mathf.Lerp(alphaAwal, alphaAkhir, progress);
+            yield return null;
+        }
+        cg.alpha = alphaAkhir;
     }
 
     void UpdateTeksUI()
@@ -573,6 +784,19 @@ public class Pengenalan : MonoBehaviour
 
     IEnumerator PopupAwalObjek(Transform obj, float durasi)
     {
+        CanvasGroup cg = obj.GetComponent<CanvasGroup>();
+        if (cg == null) cg = obj.gameObject.AddComponent<CanvasGroup>();
+        
+        cg.alpha = 0f;
+        
+        // Memastikan teks namanya juga ikut transparan di awal jika ada
+        if (textNamaKarakter != null)
+        {
+            Color c = textNamaKarakter.color;
+            c.a = 0f;
+            textNamaKarakter.color = c;
+        }
+
         obj.localScale = new Vector3(0.2f, 0.2f, 1f);
         float waktuMulai = Time.time;
         while (Time.time < waktuMulai + durasi)
@@ -583,9 +807,28 @@ public class Pengenalan : MonoBehaviour
             float easeOutBack = (t * t * ((s + 1f) * t + s) + 1f);
             float scale = Mathf.Lerp(0.2f, 1f, easeOutBack);
             obj.localScale = new Vector3(scale, scale, 1f);
+            
+            // Fade-in untuk kotak nama dan teksnya
+            float currentAlpha = Mathf.Lerp(0f, 1f, progress);
+            cg.alpha = currentAlpha;
+            if (textNamaKarakter != null)
+            {
+                Color c = textNamaKarakter.color;
+                c.a = currentAlpha;
+                textNamaKarakter.color = c;
+            }
+            
             yield return null;
         }
         obj.localScale = Vector3.one;
+        cg.alpha = 1f;
+        
+        if (textNamaKarakter != null)
+        {
+            Color c = textNamaKarakter.color;
+            c.a = 1f;
+            textNamaKarakter.color = c;
+        }
     }
 
     IEnumerator SlideDariBawahObjek(Transform obj, float durasi)
