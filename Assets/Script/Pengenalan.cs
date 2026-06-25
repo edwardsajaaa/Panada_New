@@ -29,6 +29,16 @@ public class Pengenalan : MonoBehaviour
     public GameObject panelKasur; // Panel kasur yang muncul di tengah dialog awal
     public GameObject[] daftarGambarKoran; // Daftar gambar koran yang muncul 1/1
     
+    [Header("Referensi Tombol Next Koran")]
+    public GameObject tombolNext; // Objek 'Next' di bawah Koran Panel
+    public Transform gambarPanahNext; // Child 'Image' (panah ke bawah) di bawah objek Next (opsional, otomatis dicari jika kosong)
+    [Tooltip("Jarak ayunan naik turun panah dalam pixel. Geser slider ke kiri/kanan untuk mengatur jaraknya.")]
+    [Range(0.5f, 15f)]
+    public float jarakNaikTurunPanah = 3f; // Jarak naik turun animasi (diubah ke 3 agar tidak mentok border)
+    [Tooltip("Kecepatan gerakan animasi naik turun.")]
+    [Range(0.5f, 10f)]
+    public float kecepatanNgambang = 3.5f;  // Kecepatan animasi mengambang
+    
     [Header("Referensi Popup Terpisah (Opsional)")]
     public GameObject panelBackgroundDialog; // Background dialog yang akan ikut popup tiap ganti teks
     public GameObject panelNamaKarakter;     // Panel nama yang hanya popup di awal
@@ -95,6 +105,7 @@ public class Pengenalan : MonoBehaviour
         if (bubbleNamePanel != null) bubbleNamePanel.SetActive(false);
         if (panelKoran != null) panelKoran.SetActive(false);
         if (panelKasur != null) panelKasur.SetActive(false);
+        if (tombolNext != null) tombolNext.SetActive(false);
         
         // Matikan efek TV di awal (intensity = 0 agar tidak terlihat)
         SetTVEffectIntensity(0f);
@@ -260,6 +271,9 @@ public class Pengenalan : MonoBehaviour
     {
         if (panelKoran == null) yield break;
 
+        // Pastikan tombol next sembunyi di awal kemunculan panel koran
+        if (tombolNext != null) tombolNext.SetActive(false);
+
         // Pastikan semua koran dalam keadaan mati (hide) sebelum panel dinyalakan
         if (daftarGambarKoran != null)
         {
@@ -310,8 +324,44 @@ public class Pengenalan : MonoBehaviour
             }
         }
 
-        // (Opsional) Tunggu klik terakhir sebelum benar-benar keluar dari alur pengenalan
-        yield return new WaitUntil(() => Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return));
+        // Beri jeda sejenak setelah semua koran selesai dimunculkan
+        yield return new WaitForSeconds(0.3f);
+
+        // Munculkan tombol Next secara Popup
+        if (tombolNext != null)
+        {
+            tombolNext.SetActive(true);
+            yield return StartCoroutine(PopupObjekUI(tombolNext.transform, 0.35f));
+
+            // Cari target gambar panah (child dari tombolNext)
+            Transform targetPanah = gambarPanahNext;
+            if (targetPanah == null && tombolNext.transform.childCount > 0)
+            {
+                targetPanah = tombolNext.transform.GetChild(0);
+            }
+
+            // Mulai animasi mengambang naik turun pada panah
+            if (targetPanah != null)
+            {
+                StartCoroutine(AnimasikanNgambang(targetPanah));
+            }
+
+            // Siapkan deteksi klik tombol Next
+            bool isNextClicked = false;
+            Button btn = tombolNext.GetComponent<Button>();
+            if (btn == null) btn = tombolNext.AddComponent<Button>();
+            
+            btn.onClick.RemoveAllListeners();
+            btn.onClick.AddListener(() => isNextClicked = true);
+
+            // Tunggu sampai pemain klik tombol Next atau tekan Spasi/Enter
+            yield return new WaitUntil(() => isNextClicked || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return));
+        }
+        else
+        {
+            // Fallback jika tombol Next belum di-assign di Inspector
+            yield return new WaitUntil(() => Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return));
+        }
     }
 
     IEnumerator TransisiBlinkDiTengahDialog()
@@ -891,5 +941,50 @@ public class Pengenalan : MonoBehaviour
     {
         if (tvEffectMaterial == null) return;
         tvEffectMaterial.SetFloat("_Intensity", intensity);
+    }
+
+    IEnumerator PopupObjekUI(Transform obj, float durasi)
+    {
+        if (obj == null) yield break;
+        CanvasGroup cg = obj.GetComponent<CanvasGroup>();
+        if (cg == null) cg = obj.gameObject.AddComponent<CanvasGroup>();
+
+        cg.alpha = 0f;
+        obj.localScale = new Vector3(0.2f, 0.2f, 1f);
+
+        float waktuMulai = Time.time;
+        while (Time.time < waktuMulai + durasi)
+        {
+            float progress = (Time.time - waktuMulai) / durasi;
+            float t = progress - 1f;
+            float s = 2.0f; // Efek pantulan (overshoot bounce)
+            float easeOutBack = (t * t * ((s + 1f) * t + s) + 1f);
+            
+            float scale = Mathf.Lerp(0.2f, 1f, easeOutBack);
+            obj.localScale = new Vector3(scale, scale, 1f);
+            cg.alpha = progress;
+            
+            yield return null;
+        }
+
+        obj.localScale = Vector3.one;
+        cg.alpha = 1f;
+    }
+
+    IEnumerator AnimasikanNgambang(Transform target)
+    {
+        if (target == null) yield break;
+        Vector3 posAwal = target.localPosition;
+        float t = 0f;
+
+        while (tombolNext != null && tombolNext.activeInHierarchy)
+        {
+            t += Time.deltaTime * kecepatanNgambang;
+            float offset = Mathf.Sin(t) * jarakNaikTurunPanah;
+            target.localPosition = posAwal + new Vector3(0f, offset, 0f);
+            yield return null;
+        }
+        
+        if (target != null) target.localPosition = posAwal;
     }
 }
