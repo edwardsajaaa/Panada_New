@@ -12,6 +12,19 @@ public struct DataDialog
     public string teksDialog;
 }
 
+[System.Serializable]
+public struct DataDetailKoran
+{
+    [Tooltip("Objek gambar koran di Koran Panel (meja) yang bisa diklik")]
+    public GameObject koranDiMeja;
+    [Tooltip("Objek penampung detail koran ini (misal: 'Image 1' di dalam Panel Detail Koran)")]
+    public GameObject panelDetailObjek;
+    [Tooltip("Objek gambar poster di dalam panel detail (yang akan bergerak dari tengah ke kiri)")]
+    public RectTransform posterDetail;
+    [Tooltip("Objek penampung teks berita di sebelah kanan (Scroll View / Content)")]
+    public CanvasGroup grupTeksBerita;
+}
+
 public class Pengenalan : MonoBehaviour
 {
     [Header("Referensi Layar Hitam (Fade)")]
@@ -38,6 +51,15 @@ public class Pengenalan : MonoBehaviour
     [Tooltip("Kecepatan gerakan animasi naik turun.")]
     [Range(0.5f, 10f)]
     public float kecepatanNgambang = 3.5f;  // Kecepatan animasi mengambang
+    
+    [Header("Referensi Fitur Detail Koran Interaktif")]
+    [Tooltip("Panel overlay latar gelap penampung seluruh detail koran (Panel Detail Koran)")]
+    public GameObject panelDetailKoranLatar;
+    [Tooltip("Daftar konfigurasi 5 koran beserta panel detail beritanya")]
+    public DataDetailKoran[] daftarDetailKoran;
+    
+    private bool sedangMelihatDetail = false;
+    private Vector2[] posisiAsliKiriPoster;
     
     [Header("Referensi Popup Terpisah (Opsional)")]
     public GameObject panelBackgroundDialog; // Background dialog yang akan ikut popup tiap ganti teks
@@ -106,6 +128,7 @@ public class Pengenalan : MonoBehaviour
         if (panelKoran != null) panelKoran.SetActive(false);
         if (panelKasur != null) panelKasur.SetActive(false);
         if (tombolNext != null) tombolNext.SetActive(false);
+        if (panelDetailKoranLatar != null) panelDetailKoranLatar.SetActive(false);
         
         // Matikan efek TV di awal (intensity = 0 agar tidak terlihat)
         SetTVEffectIntensity(0f);
@@ -126,6 +149,12 @@ public class Pengenalan : MonoBehaviour
             (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return)))
         {
             LanjutDialog();
+        }
+
+        // Mekanisme tombol ESC atau Klik Kanan untuk menutup detail koran
+        if (sedangMelihatDetail && (Input.GetKeyDown(KeyCode.Escape) || Input.GetMouseButtonDown(1)))
+        {
+            TutupDetailKoran();
         }
     }
 
@@ -327,6 +356,22 @@ public class Pengenalan : MonoBehaviour
         // Beri jeda sejenak setelah semua koran selesai dimunculkan
         yield return new WaitForSeconds(0.3f);
 
+        // Daftarkan event klik interaktif untuk setiap koran di meja
+        if (daftarDetailKoran != null)
+        {
+            for (int i = 0; i < daftarDetailKoran.Length; i++)
+            {
+                int idx = i;
+                if (daftarDetailKoran[i].koranDiMeja != null)
+                {
+                    Button btnKoran = daftarDetailKoran[i].koranDiMeja.GetComponent<Button>();
+                    if (btnKoran == null) btnKoran = daftarDetailKoran[i].koranDiMeja.AddComponent<Button>();
+                    btnKoran.onClick.RemoveAllListeners();
+                    btnKoran.onClick.AddListener(() => StartCoroutine(BukaDetailKoran(idx)));
+                }
+            }
+        }
+
         // Munculkan tombol Next secara Popup
         if (tombolNext != null)
         {
@@ -354,13 +399,13 @@ public class Pengenalan : MonoBehaviour
             btn.onClick.RemoveAllListeners();
             btn.onClick.AddListener(() => isNextClicked = true);
 
-            // Tunggu sampai pemain klik tombol Next atau tekan Spasi/Enter
-            yield return new WaitUntil(() => isNextClicked || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return));
+            // Tunggu sampai pemain klik tombol Next atau tekan Spasi/Enter (dicegah jika sedang melihat detail berita)
+            yield return new WaitUntil(() => isNextClicked || (!sedangMelihatDetail && (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return))));
         }
         else
         {
             // Fallback jika tombol Next belum di-assign di Inspector
-            yield return new WaitUntil(() => Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return));
+            yield return new WaitUntil(() => !sedangMelihatDetail && (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return)));
         }
     }
 
@@ -986,5 +1031,195 @@ public class Pengenalan : MonoBehaviour
         }
         
         if (target != null) target.localPosition = posAwal;
+    }
+
+    IEnumerator BukaDetailKoran(int index)
+    {
+        if (sedangMelihatDetail || daftarDetailKoran == null || index < 0 || index >= daftarDetailKoran.Length) yield break;
+        
+        DataDetailKoran data = daftarDetailKoran[index];
+        if (data.panelDetailObjek == null || data.posterDetail == null) yield break;
+
+        sedangMelihatDetail = true;
+
+        // Sembunyikan tombol Next sementara saat melihat berita
+        if (tombolNext != null) tombolNext.SetActive(false);
+
+        // Simpan posisi desain asli kiri di Inspector jika belum tersimpan
+        if (posisiAsliKiriPoster == null || posisiAsliKiriPoster.Length != daftarDetailKoran.Length)
+        {
+            posisiAsliKiriPoster = new Vector2[daftarDetailKoran.Length];
+            for (int i = 0; i < daftarDetailKoran.Length; i++)
+            {
+                if (daftarDetailKoran[i].posterDetail != null)
+                {
+                    posisiAsliKiriPoster[i] = daftarDetailKoran[i].posterDetail.anchoredPosition;
+                }
+            }
+        }
+
+        // Aktifkan panel latar gelap
+        if (panelDetailKoranLatar != null)
+        {
+            panelDetailKoranLatar.SetActive(true);
+            panelDetailKoranLatar.transform.SetAsLastSibling();
+            CanvasGroup cgLatar = panelDetailKoranLatar.GetComponent<CanvasGroup>();
+            if (cgLatar == null) cgLatar = panelDetailKoranLatar.AddComponent<CanvasGroup>();
+            cgLatar.alpha = 1f;
+
+            // Tambahkan event klik latar untuk menutup berita
+            Button btnLatar = panelDetailKoranLatar.GetComponent<Button>();
+            if (btnLatar == null) btnLatar = panelDetailKoranLatar.AddComponent<Button>();
+            btnLatar.onClick.RemoveAllListeners();
+            btnLatar.onClick.AddListener(TutupDetailKoran);
+        }
+
+        // Matikan panel detail koran lain, nyalakan hanya yang dipilih
+        for (int i = 0; i < daftarDetailKoran.Length; i++)
+        {
+            if (daftarDetailKoran[i].panelDetailObjek != null)
+            {
+                daftarDetailKoran[i].panelDetailObjek.SetActive(i == index);
+            }
+        }
+
+        // Sembunyikan teks berita terlebih dahulu
+        if (data.grupTeksBerita != null)
+        {
+            data.grupTeksBerita.alpha = 0f;
+            data.grupTeksBerita.gameObject.SetActive(false);
+        }
+
+        // Letakkan poster di tengah layar terlebih dahulu
+        data.posterDetail.anchoredPosition = Vector2.zero;
+        data.posterDetail.localScale = new Vector3(0.2f, 0.2f, 1f);
+
+        CanvasGroup cgPoster = data.posterDetail.GetComponent<CanvasGroup>();
+        if (cgPoster == null) cgPoster = data.posterDetail.gameObject.AddComponent<CanvasGroup>();
+        cgPoster.alpha = 0f;
+
+        // 1. Animasi Popup Muncul di Tengah
+        float durasiPopup = 0.35f;
+        float waktuMulai = Time.time;
+        while (Time.time < waktuMulai + durasiPopup)
+        {
+            float prog = (Time.time - waktuMulai) / durasiPopup;
+            float t = prog - 1f;
+            float s = 2.0f;
+            float easeOutBack = (t * t * ((s + 1f) * t + s) + 1f);
+
+            float scale = Mathf.Lerp(0.2f, 1f, easeOutBack);
+            data.posterDetail.localScale = new Vector3(scale, scale, 1f);
+            cgPoster.alpha = prog;
+            yield return null;
+        }
+        data.posterDetail.localScale = Vector3.one;
+        cgPoster.alpha = 1f;
+
+        // 2. Diam sejenak di tengah layar agar pemain bisa mengamati poster
+        yield return new WaitForSeconds(0.45f);
+
+        // 3. Animasi Geser ke Kiri (menuju posisi desain Inspector)
+        Vector2 targetKiri = posisiAsliKiriPoster[index];
+        float durasiGeser = 0.4f;
+        waktuMulai = Time.time;
+        while (Time.time < waktuMulai + durasiGeser)
+        {
+            float prog = (Time.time - waktuMulai) / durasiGeser;
+            float t = prog - 1f;
+            float easeOut = t * t * t + 1f;
+
+            data.posterDetail.anchoredPosition = Vector2.Lerp(Vector2.zero, targetKiri, easeOut);
+            yield return null;
+        }
+        data.posterDetail.anchoredPosition = targetKiri;
+
+        // 4. Animasi Munculkan Teks di Sebelah Kanan
+        if (data.grupTeksBerita != null)
+        {
+            data.grupTeksBerita.gameObject.SetActive(true);
+            data.grupTeksBerita.blocksRaycasts = true;
+            data.grupTeksBerita.interactable = true;
+
+            SiapkanDanPerbaikiScroll(data);
+
+            float durasiTeks = 0.3f;
+            waktuMulai = Time.time;
+            while (Time.time < waktuMulai + durasiTeks)
+            {
+                data.grupTeksBerita.alpha = (Time.time - waktuMulai) / durasiTeks;
+                yield return null;
+            }
+            data.grupTeksBerita.alpha = 1f;
+        }
+    }
+
+    public void TutupDetailKoran()
+    {
+        if (!sedangMelihatDetail) return;
+        StartCoroutine(ProsesTutupDetail());
+    }
+
+    IEnumerator ProsesTutupDetail()
+    {
+        if (panelDetailKoranLatar != null)
+        {
+            CanvasGroup cg = panelDetailKoranLatar.GetComponent<CanvasGroup>();
+            if (cg != null)
+            {
+                float dur = 0.2f;
+                float wm = Time.time;
+                while (Time.time < wm + dur)
+                {
+                    cg.alpha = Mathf.Lerp(1f, 0f, (Time.time - wm) / dur);
+                    yield return null;
+                }
+            }
+            panelDetailKoranLatar.SetActive(false);
+        }
+
+        if (daftarDetailKoran != null)
+        {
+            for (int i = 0; i < daftarDetailKoran.Length; i++)
+            {
+                if (daftarDetailKoran[i].panelDetailObjek != null)
+                    daftarDetailKoran[i].panelDetailObjek.SetActive(false);
+            }
+        }
+
+        sedangMelihatDetail = false;
+
+        if (tombolNext != null) tombolNext.SetActive(true);
+    }
+
+    void SiapkanDanPerbaikiScroll(DataDetailKoran data)
+    {
+        if (data.panelDetailObjek == null) return;
+
+        ScrollRect scroll = data.panelDetailObjek.GetComponentInChildren<ScrollRect>(true);
+        if (scroll != null)
+        {
+            scroll.vertical = true;
+            scroll.horizontal = false;
+            scroll.movementType = ScrollRect.MovementType.Elastic;
+            scroll.scrollSensitivity = 30f;
+
+            Graphic gScroll = scroll.GetComponent<Graphic>();
+            if (gScroll == null) gScroll = scroll.gameObject.AddComponent<Image>();
+            gScroll.raycastTarget = true;
+            if (gScroll is Image img && scroll.GetComponent<Image>() == img && img.color.a > 0.01f)
+            {
+                Color c = img.color; c.a = 0.001f; img.color = c;
+            }
+
+            if (scroll.content != null)
+            {
+                ContentSizeFitter csf = scroll.content.GetComponent<ContentSizeFitter>();
+                if (csf == null) csf = scroll.content.gameObject.AddComponent<ContentSizeFitter>();
+                csf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+                
+                LayoutRebuilder.ForceRebuildLayoutImmediate(scroll.content);
+            }
+        }
     }
 }
