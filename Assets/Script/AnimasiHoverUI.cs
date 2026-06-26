@@ -59,6 +59,12 @@ public class AnimasiHoverUI : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         {
             indeksSiblingAwal = transform.GetSiblingIndex();
             transform.SetAsLastSibling();
+
+            // Garansi 100% tombol Next tetap berada di lapisan paling atas agar tidak tertutup koran yang di-hover!
+            if (Pengenalan.instansiTombolNext != null && Pengenalan.instansiTombolNext.transform.parent == transform.parent)
+            {
+                Pengenalan.instansiTombolNext.transform.SetAsLastSibling();
+            }
         }
         StopAllCoroutines();
         StartCoroutine(TransisiHover(true));

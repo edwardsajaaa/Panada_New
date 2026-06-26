@@ -58,6 +58,7 @@ public class Pengenalan : MonoBehaviour
     [Tooltip("Daftar konfigurasi 5 koran beserta panel detail beritanya")]
     public DataDetailKoran[] daftarDetailKoran;
     
+    public static GameObject instansiTombolNext;
     private bool sedangMelihatDetail = false;
     private Vector2[] posisiAsliKiriPoster;
     
@@ -96,6 +97,7 @@ public class Pengenalan : MonoBehaviour
 
     void Start()
     {
+        instansiTombolNext = tombolNext;
         // 1. Kondisi awal: Semua panel di-reset, yang muncul pertama adalah blank monitor dan layar hitam
         if (blackScreenPanel != null) 
         {
@@ -380,6 +382,7 @@ public class Pengenalan : MonoBehaviour
         // Munculkan tombol Next secara Popup
         if (tombolNext != null)
         {
+            tombolNext.transform.SetAsLastSibling();
             tombolNext.SetActive(true);
             yield return StartCoroutine(PopupObjekUI(tombolNext.transform, 0.35f));
 
@@ -1200,7 +1203,11 @@ public class Pengenalan : MonoBehaviour
 
         sedangMelihatDetail = false;
 
-        if (tombolNext != null) tombolNext.SetActive(true);
+        if (tombolNext != null)
+        {
+            tombolNext.transform.SetAsLastSibling();
+            tombolNext.SetActive(true);
+        }
     }
 
     void SiapkanDanPerbaikiScroll(DataDetailKoran data)
