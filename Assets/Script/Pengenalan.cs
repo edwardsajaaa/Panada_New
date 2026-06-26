@@ -1143,6 +1143,9 @@ public class Pengenalan : MonoBehaviour
 
             SiapkanDanPerbaikiScroll(data);
 
+            ScrollRect scrollTarget = data.panelDetailObjek.GetComponentInChildren<ScrollRect>(true);
+            if (scrollTarget != null) scrollTarget.verticalNormalizedPosition = 1f;
+
             float durasiTeks = 0.3f;
             waktuMulai = Time.time;
             while (Time.time < waktuMulai + durasiTeks)
@@ -1151,6 +1154,9 @@ public class Pengenalan : MonoBehaviour
                 yield return null;
             }
             data.grupTeksBerita.alpha = 1f;
+
+            // Kunci posisi scroll di baris awal (paling atas) setelah animasi fade selesai
+            if (scrollTarget != null) scrollTarget.verticalNormalizedPosition = 1f;
         }
     }
 
@@ -1220,6 +1226,9 @@ public class Pengenalan : MonoBehaviour
                 
                 LayoutRebuilder.ForceRebuildLayoutImmediate(scroll.content);
             }
+
+            // Wajib set ke 1.0 (Top) agar scrollbar selalu mulai dari baris pertama teks
+            scroll.verticalNormalizedPosition = 1f;
         }
     }
 }
