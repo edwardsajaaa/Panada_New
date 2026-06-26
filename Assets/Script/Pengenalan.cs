@@ -356,7 +356,7 @@ public class Pengenalan : MonoBehaviour
         // Beri jeda sejenak setelah semua koran selesai dimunculkan
         yield return new WaitForSeconds(0.3f);
 
-        // Daftarkan event klik interaktif untuk setiap koran di meja
+        // Daftarkan event klik & animasi hover interaktif untuk setiap koran di meja
         if (daftarDetailKoran != null)
         {
             for (int i = 0; i < daftarDetailKoran.Length; i++)
@@ -366,8 +366,13 @@ public class Pengenalan : MonoBehaviour
                 {
                     Button btnKoran = daftarDetailKoran[i].koranDiMeja.GetComponent<Button>();
                     if (btnKoran == null) btnKoran = daftarDetailKoran[i].koranDiMeja.AddComponent<Button>();
+                    btnKoran.transition = Selectable.Transition.None; // Matikan warna abu-abu kusam bawaan tombol
                     btnKoran.onClick.RemoveAllListeners();
                     btnKoran.onClick.AddListener(() => StartCoroutine(BukaDetailKoran(idx)));
+
+                    // Pasang efek animasi hover dinamis
+                    AnimasiHoverUI hov = daftarDetailKoran[i].koranDiMeja.GetComponent<AnimasiHoverUI>();
+                    if (hov == null) hov = daftarDetailKoran[i].koranDiMeja.AddComponent<AnimasiHoverUI>();
                 }
             }
         }
