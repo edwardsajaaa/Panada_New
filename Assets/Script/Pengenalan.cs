@@ -40,6 +40,8 @@ public class Pengenalan : MonoBehaviour
     public GameObject bubbleNamePanel; // Panel penampung utama (Parent)
     public GameObject panelKoran; // Panel koran yang akan muncul terakhir
     public GameObject panelKasur; // Panel kasur yang muncul di tengah dialog awal
+    public GameObject mainMenuPanel; // Panel MainMenu tujuan akhir
+    public GameObject mainMenuScreenDialog; // Panel MainMenuScreenDialog di dalam layar TV
     public GameObject[] daftarGambarKoran; // Daftar gambar koran yang muncul 1/1
     
     [Header("Referensi Tombol Next Koran")]
@@ -87,7 +89,9 @@ public class Pengenalan : MonoBehaviour
     public float durasiTransisiTeks = 0.3f; // Waktu fade in/out teks
 
     private int indeksDialogSaatIni = 0;
+    private int batasAkhirDialogSaatIni = 0;
     private DataDialog[] arrayDialogAktif;
+    public static bool sedangDialogAktif = false;
     private bool sedangDialog = false;
     private bool sedangTransisiTeks = false;
     private Material blinkMaterial; // Material shader untuk efek Eye Blink
@@ -129,6 +133,26 @@ public class Pengenalan : MonoBehaviour
         if (bubbleNamePanel != null) bubbleNamePanel.SetActive(false);
         if (panelKoran != null) panelKoran.SetActive(false);
         if (panelKasur != null) panelKasur.SetActive(false);
+        if (mainMenuPanel == null)
+        {
+            Transform tr = transform.Find("MainMenu");
+            if (tr != null) mainMenuPanel = tr.gameObject;
+        }
+        if (mainMenuPanel != null) mainMenuPanel.SetActive(false);
+
+        if (mainMenuScreenDialog == null)
+        {
+            Transform tr = null;
+            if (blankMonitor != null)
+            {
+                tr = blankMonitor.transform.Find("MainMenuScreenDialog");
+                if (tr == null) tr = blankMonitor.transform.Find("MainMenuScreen");
+            }
+            if (tr == null) tr = transform.Find("MainMenuScreenDialog");
+            if (tr == null) tr = transform.Find("MainMenuScreen");
+            if (tr != null) mainMenuScreenDialog = tr.gameObject;
+        }
+        if (mainMenuScreenDialog != null) mainMenuScreenDialog.SetActive(false);
         if (tombolNext != null) tombolNext.SetActive(false);
         if (panelDetailKoranLatar != null) panelDetailKoranLatar.SetActive(false);
         
@@ -288,14 +312,89 @@ public class Pengenalan : MonoBehaviour
         // 11. Jeda 1 detik sebelum mulai dialog kedua (opsional, agar tidak terlalu mendadak)
         yield return new WaitForSeconds(1f);
 
-        // 12. Mulai Dialog Kedua
-        yield return StartCoroutine(JalankanDialog(dialogKedua));
+        // 12. Mulai Dialog Kedua Bagian 1 (indeks 0 sampai 1)
+        yield return StartCoroutine(JalankanDialog(dialogKedua, 0, 1));
 
         // 13. Tampilkan Panel Koran setelah dialog kedua selesai dengan transisi
         yield return StartCoroutine(MunculkanKoran());
 
-        // Selesai pengenalan, di sini Anda bisa menambahkan script untuk lanjut ke scene berikutnya
-        Debug.Log("Alur Pengenalan Selesai! Lanjut ke main menu/gameplay.");
+        // 14. Sembunyikan tombol Next koran setelah diklik agar tidak menghalangi dialog
+        if (tombolNext != null) tombolNext.SetActive(false);
+
+        // 15. Mulai Dialog Kedua Bagian 2 (array ke 3 sampai 5, yaitu indeks 2 sampai 4)
+        yield return StartCoroutine(JalankanDialog(dialogKedua, 2, 4));
+
+        // 16. Transisi Blink untuk berpindah dari Koran Panel ke MainMenuScreenDialog (di dalam TV)
+        if (blackScreenPanel != null)
+        {
+            blackScreenPanel.SetActive(true);
+            blackScreenPanel.transform.SetAsLastSibling();
+            
+            // Tutup mata (fade ke hitam penuh)
+            yield return StartCoroutine(FadeBlackScreen(0f, 1f, 0.25f));
+            yield return new WaitForSeconds(0.5f);
+            
+            // Saat mata tertutup rapat, matikan Koran Panel & nyalakan MainMenuScreenDialog
+            if (panelKoran != null) panelKoran.SetActive(false);
+            if (mainMenuScreenDialog != null) mainMenuScreenDialog.SetActive(true);
+            
+            // Buka mata perlahan
+            yield return StartCoroutine(FadeBlackScreen(1f, 0f, 0.4f));
+            blackScreenPanel.SetActive(false);
+        }
+        else
+        {
+            if (panelKoran != null) panelKoran.SetActive(false);
+            if (mainMenuScreenDialog != null) mainMenuScreenDialog.SetActive(true);
+        }
+
+        // 17. Jeda 1 detik setelah panel kedip selesai dan benar-benar tersisa MainMenuScreenDialog
+        yield return new WaitForSeconds(1f);
+
+        // 18. Mulai kelanjutan Dialog Kedua (indeks 5 sampai selesai)
+        if (dialogKedua != null && dialogKedua.Length > 5)
+        {
+            yield return StartCoroutine(JalankanDialog(dialogKedua, 5, -1));
+        }
+
+        // 19. Transisi Blink akhir untuk berpindah dari MainMenuScreenDialog ke MainMenu utama
+        if (blackScreenPanel != null)
+        {
+            blackScreenPanel.SetActive(true);
+            blackScreenPanel.transform.SetAsLastSibling();
+            
+            // Tutup mata (fade ke hitam penuh)
+            yield return StartCoroutine(FadeBlackScreen(0f, 1f, 0.25f));
+            yield return new WaitForSeconds(0.5f);
+            
+            // Saat mata tertutup rapat, matikan MainMenuScreenDialog & TV, lalu nyalakan MainMenu utama
+            if (mainMenuScreenDialog != null) mainMenuScreenDialog.SetActive(false);
+            if (blankMonitor != null) blankMonitor.SetActive(false);
+            if (mainMenuPanel == null)
+            {
+                Transform tr = transform.Find("MainMenu");
+                if (tr != null) mainMenuPanel = tr.gameObject;
+            }
+            if (mainMenuPanel != null) mainMenuPanel.SetActive(true);
+            
+            // Buka mata perlahan
+            yield return StartCoroutine(FadeBlackScreen(1f, 0f, 0.4f));
+            blackScreenPanel.SetActive(false);
+        }
+        else
+        {
+            if (mainMenuScreenDialog != null) mainMenuScreenDialog.SetActive(false);
+            if (blankMonitor != null) blankMonitor.SetActive(false);
+            if (mainMenuPanel == null)
+            {
+                Transform tr = transform.Find("MainMenu");
+                if (tr != null) mainMenuPanel = tr.gameObject;
+            }
+            if (mainMenuPanel != null) mainMenuPanel.SetActive(true);
+        }
+
+        // Selesai pengenalan
+        Debug.Log("Alur Pengenalan Selesai! Berhasil berpindah ke Main Menu.");
     }
 
     IEnumerator MunculkanKoran()
@@ -368,6 +467,7 @@ public class Pengenalan : MonoBehaviour
                 {
                     Button btnKoran = daftarDetailKoran[i].koranDiMeja.GetComponent<Button>();
                     if (btnKoran == null) btnKoran = daftarDetailKoran[i].koranDiMeja.AddComponent<Button>();
+                    btnKoran.interactable = true;
                     btnKoran.transition = Selectable.Transition.None; // Matikan warna abu-abu kusam bawaan tombol
                     btnKoran.onClick.RemoveAllListeners();
                     btnKoran.onClick.AddListener(() => StartCoroutine(BukaDetailKoran(idx)));
@@ -392,6 +492,7 @@ public class Pengenalan : MonoBehaviour
             {
                 targetPanah = tombolNext.transform.GetChild(0);
             }
+            if (targetPanah == null) targetPanah = tombolNext.transform; // Fallback jika tidak ada child
 
             // Mulai animasi mengambang naik turun pada panah
             if (targetPanah != null)
@@ -414,6 +515,27 @@ public class Pengenalan : MonoBehaviour
         {
             // Fallback jika tombol Next belum di-assign di Inspector
             yield return new WaitUntil(() => !sedangMelihatDetail && (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return)));
+        }
+
+        // Hentikan animasi bergerak dan matikan interaksi koran saat tombol ditekan
+        NonaktifkanDanResetSemuaKoran();
+    }
+
+    void NonaktifkanDanResetSemuaKoran()
+    {
+        if (daftarDetailKoran != null)
+        {
+            foreach (var detail in daftarDetailKoran)
+            {
+                if (detail.koranDiMeja != null)
+                {
+                    Button btn = detail.koranDiMeja.GetComponent<Button>();
+                    if (btn != null) btn.interactable = false;
+
+                    AnimasiHoverUI hov = detail.koranDiMeja.GetComponent<AnimasiHoverUI>();
+                    if (hov != null) hov.ResetKePosisiAwal();
+                }
+            }
         }
     }
 
@@ -506,14 +628,17 @@ public class Pengenalan : MonoBehaviour
         }
     }
 
-    IEnumerator JalankanDialog(DataDialog[] arrayDialog)
+    IEnumerator JalankanDialog(DataDialog[] arrayDialog, int mulaiIndex = 0, int akhirIndex = -1)
     {
         arrayDialogAktif = arrayDialog;
-        indeksDialogSaatIni = 0;
-        
         if (arrayDialogAktif != null && arrayDialogAktif.Length > 0)
         {
+            if (akhirIndex == -1 || akhirIndex >= arrayDialogAktif.Length) akhirIndex = arrayDialogAktif.Length - 1;
+            batasAkhirDialogSaatIni = akhirIndex;
+            indeksDialogSaatIni = mulaiIndex;
             sedangDialog = true;
+            sedangDialogAktif = true;
+            NonaktifkanDanResetSemuaKoran();
             if (bubbleNamePanel != null) 
             {
                 bubbleNamePanel.SetActive(true);
@@ -558,8 +683,8 @@ public class Pengenalan : MonoBehaviour
     {
         indeksDialogSaatIni++;
         
-        // Jika masih ada dialog selanjutnya
-        if (indeksDialogSaatIni < arrayDialogAktif.Length)
+        // Jika masih ada dialog selanjutnya dan belum melewati batas akhir yang ditentukan
+        if (indeksDialogSaatIni <= batasAkhirDialogSaatIni && indeksDialogSaatIni < arrayDialogAktif.Length)
         {
             // Cek jika ini adalah dialog awal dan masuk ke baris ke-6 (indeks 5) (Transisi ke Kasur)
             if (arrayDialogAktif == dialogAwal && indeksDialogSaatIni == 5)
@@ -780,6 +905,7 @@ public class Pengenalan : MonoBehaviour
 
         if (bubbleNamePanel != null) bubbleNamePanel.SetActive(false);
         sedangDialog = false;
+        sedangDialogAktif = false;
         sedangTransisiTeks = false;
     }
 
@@ -1027,23 +1153,33 @@ public class Pengenalan : MonoBehaviour
     IEnumerator AnimasikanNgambang(Transform target)
     {
         if (target == null) yield break;
+        RectTransform rt = target.GetComponent<RectTransform>();
+        Vector2 posAwalRT = rt != null ? rt.anchoredPosition : Vector2.zero;
         Vector3 posAwal = target.localPosition;
         float t = 0f;
 
-        while (tombolNext != null && tombolNext.activeInHierarchy)
+        while (tombolNext != null)
         {
-            t += Time.deltaTime * kecepatanNgambang;
-            float offset = Mathf.Sin(t) * jarakNaikTurunPanah;
-            target.localPosition = posAwal + new Vector3(0f, offset, 0f);
-            yield return null;
+            yield return new WaitForEndOfFrame();
+            if (tombolNext.activeInHierarchy && !sedangMelihatDetail)
+            {
+                t += Time.deltaTime * kecepatanNgambang;
+                float offset = Mathf.Sin(t) * jarakNaikTurunPanah;
+                if (rt != null)
+                {
+                    rt.anchoredPosition = posAwalRT + new Vector2(0f, offset);
+                }
+                else
+                {
+                    target.localPosition = posAwal + new Vector3(0f, offset, 0f);
+                }
+            }
         }
-        
-        if (target != null) target.localPosition = posAwal;
     }
 
     IEnumerator BukaDetailKoran(int index)
     {
-        if (sedangMelihatDetail || daftarDetailKoran == null || index < 0 || index >= daftarDetailKoran.Length) yield break;
+        if (sedangDialogAktif || sedangMelihatDetail || daftarDetailKoran == null || index < 0 || index >= daftarDetailKoran.Length) yield break;
         
         DataDetailKoran data = daftarDetailKoran[index];
         if (data.panelDetailObjek == null || data.posterDetail == null) yield break;

@@ -39,10 +39,24 @@ public class AnimasiHoverUI : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         // Sengaja dibiarkan kosong agar posisi aktual direkam saat kursor pertama kali masuk (setelah transisi intro selesai)
     }
 
+    public void ResetKePosisiAwal()
+    {
+        if (!sudahInisialisasi) return;
+        sedangHover = false;
+        StopAllCoroutines();
+        transform.localScale = skalaAwal != Vector3.zero ? skalaAwal : Vector3.one;
+        if (rectTransform != null) rectTransform.anchoredPosition = posisiAwal;
+        transform.localRotation = rotasiAwal;
+        if (bawaKeDepanSaatHover)
+        {
+            transform.SetSiblingIndex(indeksSiblingAwal);
+        }
+    }
+
     public void OnPointerEnter(PointerEventData eventData)
     {
-        // Jangan jalankan efek jika UI sedang menyeret barang (DraggableUI)
-        if (DraggableUI.isInteractingWithUI) return;
+        // Jangan jalankan efek jika UI sedang menyeret barang (DraggableUI) atau dialog sedang berlangsung
+        if (DraggableUI.isInteractingWithUI || Pengenalan.sedangDialogAktif) return;
 
         // Rekam posisi aktual objek tepat sebelum di-hover agar posisi desain Editor 100% akurat
         if (!sedangHover)
