@@ -37,10 +37,16 @@ public class LoadingScreenController : MonoBehaviour
             return;
         }
 
-        // Pastikan panel loading dalam kondisi tertutup saat pertama mulai
+        // Sembunyikan panel loading secara visual menggunakan CanvasGroup (alpha = 0)
+        // JANGAN gunakan SetActive(false) karena script ini terpasang di panel loading itu sendiri —
+        // jika dimatikan, Coroutine tidak bisa dijalankan saat tombol Play diklik!
         if (panelLoading != null)
         {
-            panelLoading.SetActive(false);
+            CanvasGroup cg = panelLoading.GetComponent<CanvasGroup>();
+            if (cg == null) cg = panelLoading.AddComponent<CanvasGroup>();
+            cg.alpha = 0f;
+            cg.blocksRaycasts = false;
+            cg.interactable = false;
         }
     }
 
@@ -50,12 +56,6 @@ public class LoadingScreenController : MonoBehaviour
     /// </summary>
     public void MuatScene(string namaSceneTujuan)
     {
-        // Pastikan GameObject tempat script ini terpasang aktif agar Coroutine bisa berjalan tanpa error!
-        if (!gameObject.activeInHierarchy)
-        {
-            gameObject.SetActive(true);
-        }
-
         StopAllCoroutines();
         StartCoroutine(ProsesLoading(namaSceneTujuan));
     }
@@ -65,11 +65,6 @@ public class LoadingScreenController : MonoBehaviour
     /// </summary>
     public void MuatSceneIndex(int indeksScene)
     {
-        if (!gameObject.activeInHierarchy)
-        {
-            gameObject.SetActive(true);
-        }
-
         StopAllCoroutines();
         StartCoroutine(ProsesLoadingIndex(indeksScene));
     }
@@ -84,17 +79,9 @@ public class LoadingScreenController : MonoBehaviour
 
     IEnumerator ProsesLoading(string namaScene)
     {
-        // 1. Jika aktif, jalankan animasi keluar pada semua tombol di Main Menu terlebih dahulu
+        // 1. Jalankan animasi keluar pada semua tombol di Main Menu terlebih dahulu
         if (transisiKeluarMenuDulu)
         {
-            if (panelLoading != null)
-            {
-                CanvasGroup cgSementara = panelLoading.GetComponent<CanvasGroup>();
-                if (cgSementara == null) cgSementara = panelLoading.AddComponent<CanvasGroup>();
-                cgSementara.alpha = 0f;
-                cgSementara.blocksRaycasts = false;
-            }
-
             yield return StartCoroutine(JalankanAnimasiOutSemuaMenu());
         }
 
@@ -110,14 +97,6 @@ public class LoadingScreenController : MonoBehaviour
     {
         if (transisiKeluarMenuDulu)
         {
-            if (panelLoading != null)
-            {
-                CanvasGroup cgSementara = panelLoading.GetComponent<CanvasGroup>();
-                if (cgSementara == null) cgSementara = panelLoading.AddComponent<CanvasGroup>();
-                cgSementara.alpha = 0f;
-                cgSementara.blocksRaycasts = false;
-            }
-
             yield return StartCoroutine(JalankanAnimasiOutSemuaMenu());
         }
 
