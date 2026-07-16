@@ -29,9 +29,12 @@ public class AnimasiHoverUI : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     {
         rectTransform = GetComponent<RectTransform>();
         
-        // Matikan transisi warna abu-abu bawaan tombol Unity agar tidak kusam
-        Button btn = GetComponent<Button>();
-        if (btn != null) btn.transition = Selectable.Transition.None;
+        // Matikan transisi warna/alpha abu-abu bawaan Unity pada seluruh komponen Selectable (Button, Toggle, dll) di objek ini & anak-anaknya
+        UnityEngine.UI.Selectable[] selectables = GetComponentsInChildren<UnityEngine.UI.Selectable>(true);
+        foreach (var s in selectables)
+        {
+            if (s != null) s.transition = UnityEngine.UI.Selectable.Transition.None;
+        }
     }
 
     void Start()
@@ -69,6 +72,8 @@ public class AnimasiHoverUI : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         }
 
         sedangHover = true;
+        CanvasGroup cg = GetComponent<CanvasGroup>();
+        if (cg != null && cg.alpha < 1f) cg.alpha = 1f;
         if (bawaKeDepanSaatHover)
         {
             indeksSiblingAwal = transform.GetSiblingIndex();

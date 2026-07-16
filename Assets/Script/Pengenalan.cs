@@ -27,6 +27,10 @@ public struct DataDetailKoran
 
 public class Pengenalan : MonoBehaviour
 {
+    [Header("=== MODE DEBUG / TESTING ===")]
+    [Tooltip("Centang ini di Inspector jika ingin langsung loncat ke Main Menu tanpa melewati dialog/alur pengenalan!")]
+    public bool langsungKeMainMenu = false;
+
     [Header("Referensi Layar Hitam (Fade)")]
     [Tooltip("Buat Panel/Image hitam penuh di Canvas dan masukkan ke sini")]
     public GameObject blackScreenPanel;
@@ -138,7 +142,11 @@ public class Pengenalan : MonoBehaviour
             Transform tr = transform.Find("MainMenu");
             if (tr != null) mainMenuPanel = tr.gameObject;
         }
-        if (mainMenuPanel != null) mainMenuPanel.SetActive(false);
+        if (mainMenuPanel != null)
+        {
+            PasangAnimasiPadaTombolMenu(mainMenuPanel.transform);
+            mainMenuPanel.SetActive(false);
+        }
 
         if (mainMenuScreenDialog == null)
         {
@@ -161,12 +169,26 @@ public class Pengenalan : MonoBehaviour
         
         if (loadingSlider != null) loadingSlider.gameObject.SetActive(false); // Sembunyikan slider di awal
 
+        // Cek jika mode langsung ke Main Menu diaktifkan (untuk cepat tes/debug)
+        if (langsungKeMainMenu)
+        {
+            LoncatLangsungKeMainMenu();
+            return;
+        }
+
         // Memulai coroutine urutan alur
         StartCoroutine(UrutanPengenalan());
     }
 
     void Update()
     {
+        // Shortcut cepat tes (Ctrl + M) saat permainan berlangsung untuk loncat langsung ke Main Menu
+        if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.M))
+        {
+            LoncatLangsungKeMainMenu();
+            return;
+        }
+
         // Lanjut ke dialog berikutnya saat pemain klik kiri mouse atau tekan Spasi
         // Dicegah jika sedang transisi teks agar teks tidak bertumpuk/error
         // Dicegah juga jika sedang menyeret objek UI (DraggableUI)
@@ -182,6 +204,31 @@ public class Pengenalan : MonoBehaviour
         {
             TutupDetailKoran();
         }
+    }
+
+    public void LoncatLangsungKeMainMenu()
+    {
+        StopAllCoroutines();
+        sedangDialog = false;
+        sedangDialogAktif = false;
+        sedangTransisiTeks = false;
+
+        // Matikan semua panel/elemen pengenalan
+        if (blankMonitor != null) blankMonitor.SetActive(false);
+        if (bootingTV != null) bootingTV.SetActive(false);
+        if (beritaKonteks != null) beritaKonteks.SetActive(false);
+        if (beritaKonteksFullscreen != null) beritaKonteksFullscreen.SetActive(false);
+        if (bubbleNamePanel != null) bubbleNamePanel.SetActive(false);
+        if (panelKoran != null) panelKoran.SetActive(false);
+        if (panelKasur != null) panelKasur.SetActive(false);
+        if (mainMenuScreenDialog != null) mainMenuScreenDialog.SetActive(false);
+        if (tombolNext != null) tombolNext.SetActive(false);
+        if (panelDetailKoranLatar != null) panelDetailKoranLatar.SetActive(false);
+        if (blackScreenPanel != null) blackScreenPanel.SetActive(false);
+
+        // Aktifkan langsung Main Menu utama beserta animasinya
+        AktifkanDanAnimasikanMainMenu();
+        Debug.Log("⚡ [DEBUG] Berhasil loncat langsung ke Main Menu tanpa melewati alur pengenalan!");
     }
 
     IEnumerator UrutanPengenalan()
@@ -370,12 +417,7 @@ public class Pengenalan : MonoBehaviour
             // Saat mata tertutup rapat, matikan MainMenuScreenDialog & TV, lalu nyalakan MainMenu utama
             if (mainMenuScreenDialog != null) mainMenuScreenDialog.SetActive(false);
             if (blankMonitor != null) blankMonitor.SetActive(false);
-            if (mainMenuPanel == null)
-            {
-                Transform tr = transform.Find("MainMenu");
-                if (tr != null) mainMenuPanel = tr.gameObject;
-            }
-            if (mainMenuPanel != null) mainMenuPanel.SetActive(true);
+            AktifkanDanAnimasikanMainMenu();
             
             // Buka mata perlahan
             yield return StartCoroutine(FadeBlackScreen(1f, 0f, 0.4f));
@@ -385,16 +427,72 @@ public class Pengenalan : MonoBehaviour
         {
             if (mainMenuScreenDialog != null) mainMenuScreenDialog.SetActive(false);
             if (blankMonitor != null) blankMonitor.SetActive(false);
-            if (mainMenuPanel == null)
-            {
-                Transform tr = transform.Find("MainMenu");
-                if (tr != null) mainMenuPanel = tr.gameObject;
-            }
-            if (mainMenuPanel != null) mainMenuPanel.SetActive(true);
+            AktifkanDanAnimasikanMainMenu();
         }
 
         // Selesai pengenalan
         Debug.Log("Alur Pengenalan Selesai! Berhasil berpindah ke Main Menu.");
+    }
+
+    void AktifkanDanAnimasikanMainMenu()
+    {
+        if (mainMenuPanel == null)
+        {
+            Transform tr = transform.Find("MainMenu");
+            if (tr != null) mainMenuPanel = tr.gameObject;
+        }
+
+        if (mainMenuPanel != null)
+        {
+            PasangAnimasiPadaTombolMenu(mainMenuPanel.transform);
+            mainMenuPanel.SetActive(true);
+        }
+    }
+
+    void PasangAnimasiPadaTombolMenu(Transform menuTransform)
+    {
+        if (menuTransform == null) return;
+
+        Button[] tombolTombol = menuTransform.GetComponentsInChildren<Button>(true);
+        float delayMuncul = 0.05f;
+
+        foreach (Button btn in tombolTombol)
+        {
+            AnimasiTombolMenu anim = btn.GetComponent<AnimasiTombolMenu>();
+            bool dipasangOtomatisOlehScript = false;
+
+            if (anim == null) 
+            {
+                anim = btn.gameObject.AddComponent<AnimasiTombolMenu>();
+                dipasangOtomatisOlehScript = true;
+            }
+
+            // Jika script baru dipasang otomatis saat runtime (karena belum dipasang di Inspector),
+            // maka berikan konfigurasi default otomatis.
+            // ATAU jika sudah dipasang tapi delayMuncul persis 0 dan modeStay masih default Breathing,
+            // dan user TIDAK mencentang khusus atau merubahnya, kita hanya timpa jika memang otomatis dipasang.
+            if (dipasangOtomatisOlehScript)
+            {
+                anim.delayMuncul = delayMuncul;
+
+                // Atur variasi mode stay berdasarkan nama tombol agar terlihat dinamis & tidak seragam
+                string namaObjek = btn.gameObject.name.ToLower();
+                if (namaObjek.Contains("play"))
+                {
+                    anim.modeStay = AnimasiTombolMenu.ModeStay.Kombinasi; // Play di atas koran ada efek kombinasi nafas + goyang sedikit
+                    anim.intensitasSkalaStay = 0.045f;
+                }
+                else if (namaObjek.Contains("setting") || namaObjek.Contains("quit"))
+                {
+                    anim.modeStay = AnimasiTombolMenu.ModeStay.Breathing;
+                    anim.intensitasSkalaStay = 0.035f;
+                }
+
+                delayMuncul += 0.15f; // Setiap tombol berikutnya muncul selisih 0.15 detik (staggered)
+            }
+            // Jika tombol sudah dipasang AnimasiTombolMenu secara manual di Inspector oleh Anda sebelum Play,
+            // maka script tidak akan menimpa pengaturan apapun! Anda bebas atur Mode Stay, Delay, dll.
+        }
     }
 
     IEnumerator MunculkanKoran()
