@@ -169,11 +169,55 @@ public class LoadingScreenController : MonoBehaviour
         {
             panelLoading.SetActive(true);
 
+            // Garansi 100% panel Loading dipindah ke urutan paling bawah di Hierarchy Canvas agar berada DI LAPISAN PALING DEPAN dan tidak terhalang oleh panel lain (seperti STARTING MENU / SETTING)!
+            panelLoading.transform.SetAsLastSibling();
+
+            CanvasGroup cgPanel = panelLoading.GetComponent<CanvasGroup>();
+            if (cgPanel != null) { cgPanel.alpha = 1f; cgPanel.blocksRaycasts = true; }
+
             // Beri animasi pop-in halus pada panel loading jika memiliki script AnimasiTombolMenu
             AnimasiTombolMenu animPanel = panelLoading.GetComponent<AnimasiTombolMenu>();
             if (animPanel != null)
             {
                 animPanel.JalankanUlangAnimasiIn();
+            }
+
+            // --- OTOMATISASI & PERBAIKAN VIDEO PLAYER ---
+            // Cari semua VideoPlayer di panelLoading (termasuk pada anak seperti RawImage)
+            UnityEngine.Video.VideoPlayer[] videoPlayers = panelLoading.GetComponentsInChildren<UnityEngine.Video.VideoPlayer>(true);
+            foreach (var vp in videoPlayers)
+            {
+                if (vp == null) continue;
+
+                // Pastikan GameObject VideoPlayer aktif
+                if (!vp.gameObject.activeInHierarchy) vp.gameObject.SetActive(true);
+
+                // Periksa apakah VideoPlayer menggunakan Render Mode : Render Texture tetapi Target Texture-nya masih kosong (None)
+                if (vp.renderMode == UnityEngine.Video.VideoRenderMode.RenderTexture && vp.targetTexture == null)
+                {
+                    // Cari RawImage pada objek yang sama
+                    RawImage rawImg = vp.GetComponent<RawImage>();
+                    if (rawImg != null)
+                    {
+                        if (rawImg.texture is RenderTexture rt)
+                        {
+                            // Hubungkan secara otomatis RenderTexture yang ada di RawImage ke TargetTexture VideoPlayer!
+                            vp.targetTexture = rt;
+                        }
+                        else
+                        {
+                            // Jika di RawImage belum ada RenderTexture, buat RenderTexture baru 1920x1080 secara dinamis dan pasang ke keduanya!
+                            RenderTexture baruRT = new RenderTexture(1920, 1080, 16);
+                            baruRT.Create();
+                            vp.targetTexture = baruRT;
+                            rawImg.texture = baruRT;
+                        }
+                    }
+                }
+
+                // Mulai putar video dari awal
+                vp.Stop();
+                vp.Play();
             }
         }
 
