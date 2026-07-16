@@ -13,33 +13,16 @@ public class LoadingScreenController : MonoBehaviour
     public static LoadingScreenController Instance { get; private set; }
 
     [Header("=== 1. Referensi Panel Loading ===")]
-    [Tooltip("Panel UI Loading Screen (misalnya GameObject Panel Loading yang berisi RawImage / Image GIF)")]
+    [Tooltip("Panel UI Loading Screen (misalnya GameObject Panel Loading yang berisi RawImage VideoPlayer)")]
     public GameObject panelLoading;
 
-    [Header("=== 2. Referensi Indikator Progress (Opsional) ===")]
-    [Tooltip("Slider untuk bar progress loading (0 sampai 1)")]
-    public Slider progressBarSlider;
-    [Tooltip("Image dengan tipe Filled untuk bar progress loading (jika tidak pakai Slider)")]
-    public Image progressBarImage;
-    [Tooltip("Teks untuk menampilkan persentase angka loading (misal: 'Memuat... 75%')")]
-    public Text teksPersentase;
-
-    [Header("=== 3. Pengaturan Animasi GIF (Opsi Sprite Sequence) ===")]
-    [Tooltip("Jika menggunakan potongan gambar frame GIF (Sprite), masukkan semua frame ke array ini. (Kosongkan jika menggunakan VideoPlayer / MP4 pada RawImage)")]
-    public Image tempatGambarGif;
-    public Sprite[] frameGifSprites;
-    [Tooltip("Kecepatan animasi frame GIF (Frame Per Second, misal 15 atau 24 FPS)")]
-    public float kecepatanFpsGif = 18f;
-
-    [Header("=== 4. Pengaturan Transisi & Jeda ===")]
+    [Header("=== 2. Pengaturan Transisi & Jeda ===")]
     [Tooltip("Apakah jalankan dulu animasi keluar (Out) pada Main Menu sebelum Loading Screen muncul?")]
     public bool transisiKeluarMenuDulu = true;
     [Tooltip("Durasi animasi keluar Main Menu (detik)")]
     public float durasiKeluarMenu = 0.35f;
     [Tooltip("Waktu jeda minimal (detik) agar loading screen tidak terkesan berkedip terlalu cepat jika komputer pemain sangat cepat")]
     public float minimalWaktuLoading = 1.2f;
-
-    private Coroutine coroutineAnimasiGif;
 
     void Awake()
     {
@@ -228,34 +211,6 @@ public class LoadingScreenController : MonoBehaviour
                 vp.Play();
             }
         }
-
-        // Reset progress bar & teks di awal
-        if (progressBarSlider != null) progressBarSlider.value = 0f;
-        if (progressBarImage != null) progressBarImage.fillAmount = 0f;
-        if (teksPersentase != null) teksPersentase.text = "Memuat... 0%";
-
-        // Mulai putar animasi GIF jika menggunakan Opsi Sprite Sequence
-        if (coroutineAnimasiGif != null) StopCoroutine(coroutineAnimasiGif);
-        if (frameGifSprites != null && frameGifSprites.Length > 0 && tempatGambarGif != null)
-        {
-            coroutineAnimasiGif = StartCoroutine(PutarFrameGif());
-        }
-    }
-
-    IEnumerator PutarFrameGif()
-    {
-        int indeksFrame = 0;
-        WaitForSeconds jedaFrame = new WaitForSeconds(1f / Mathf.Max(1f, kecepatanFpsGif));
-
-        while (true)
-        {
-            if (tempatGambarGif != null && frameGifSprites.Length > 0)
-            {
-                tempatGambarGif.sprite = frameGifSprites[indeksFrame];
-                indeksFrame = (indeksFrame + 1) % frameGifSprites.Length;
-            }
-            yield return jedaFrame;
-        }
     }
 
     IEnumerator PantauProgressDanSelesaikan(AsyncOperation operasi)
@@ -264,29 +219,14 @@ public class LoadingScreenController : MonoBehaviour
         operasi.allowSceneActivation = false;
 
         float waktuMulaiLoading = Time.time;
-        float progressTampilan = 0f;
 
         while (!operasi.isDone)
         {
-            // Nilai asli operasi.progress maksimal berhenti di 0.9 (90%) sebelum allowSceneActivation aktif
-            float targetProgress = Mathf.Clamp01(operasi.progress / 0.9f);
-
-            // Buat pergerakan progress bar halus (lerp) agar tidak melonjak tiba-tiba
-            progressTampilan = Mathf.MoveTowards(progressTampilan, targetProgress, Time.deltaTime * 1.8f);
-
-            if (progressBarSlider != null) progressBarSlider.value = progressTampilan;
-            if (progressBarImage != null) progressBarImage.fillAmount = progressTampilan;
-            if (teksPersentase != null) teksPersentase.text = $"Memuat... {Mathf.RoundToInt(progressTampilan * 100)}%";
-
             // Jika progress sudah mencapai 100% (0.9 pada Unity) dan waktu minimal loading sudah terpenuhi
-            if (operasi.progress >= 0.9f && progressTampilan >= 0.99f && (Time.time - waktuMulaiLoading) >= minimalWaktuLoading)
+            if (operasi.progress >= 0.9f && (Time.time - waktuMulaiLoading) >= minimalWaktuLoading)
             {
-                if (teksPersentase != null) teksPersentase.text = "Memuat... 100%";
-                if (progressBarSlider != null) progressBarSlider.value = 1f;
-                if (progressBarImage != null) progressBarImage.fillAmount = 1f;
-
                 // Jeda pendek sebelum scene baru terbuka agar animasi selesai dengan sempurna
-                yield return new WaitForSeconds(0.4f);
+                yield return new WaitForSeconds(0.3f);
                 operasi.allowSceneActivation = true;
             }
 
