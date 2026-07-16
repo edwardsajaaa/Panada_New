@@ -330,6 +330,119 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 21227414}
   m_CullTransparentMesh: 1
+--- !u!1 &40583517
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 40583518}
+  - component: {fileID: 40583520}
+  - component: {fileID: 40583519}
+  - component: {fileID: 40583521}
+  m_Layer: 5
+  m_Name: Edward (3)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &40583518
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 40583517}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 2134965324}
+  m_Father: {fileID: 1628873770}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -228.37, y: -369}
+  m_SizeDelta: {x: 256.42, y: 250.82}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &40583519
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 40583517}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 88a1080c769f67a4d978d0d67dce6370, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &40583520
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 40583517}
+  m_CullTransparentMesh: 1
+--- !u!114 &40583521
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 40583517}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7609eb0368836a340b9f1a7d0b065524, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gunakanAnimasiIn: 1
+  modeAnimasiIn: 5
+  delayMuncul: 0
+  durasiAnimasiIn: 0.45
+  kekuatanBounceIn: 1.5
+  geserBawahAwal: 35
+  jarakSlideIn: 800
+  gunakanAnimasiOut: 1
+  modeAnimasiOut: 5
+  durasiAnimasiOut: 0.35
+  jarakSlideOut: 800
+  gunakanAnimasiStay: 1
+  modeStay: 6
+  kecepatanStay: 3.2
+  intensitasSkalaStay: 0.04
+  intensitasPosisiStay: 4.5
+  intensitasRotasiStay: 2
+  kecepatanPutarStay: -25
+  gunakanHoverDanClick: 1
+  targetSkalaHover: 1.1
+  targetSkalaClick: 0.93
+  kecepatanHover: 16
+  bawaKeDepanSaatHover: 1
+  jedaSebelumHover: 0.5
 --- !u!1 &47663506
 GameObject:
   m_ObjectHideFlags: 0
@@ -512,7 +625,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &78106353
 RectTransform:
   m_ObjectHideFlags: 0
@@ -605,6 +718,7 @@ MonoBehaviour:
   targetSkalaClick: 0.93
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
+  jedaSebelumHover: 0.5
 --- !u!1 &89806120
 GameObject:
   m_ObjectHideFlags: 0
@@ -1689,7 +1803,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &230057301
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1804,14 +1918,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gunakanAnimasiIn: 1
-  modeAnimasiIn: 0
-  delayMuncul: 0
+  modeAnimasiIn: 7
+  delayMuncul: 1
   durasiAnimasiIn: 0.48
   kekuatanBounceIn: 1.8
   geserBawahAwal: 35
   jarakSlideIn: 800
   gunakanAnimasiOut: 1
-  modeAnimasiOut: 4
+  modeAnimasiOut: 7
   durasiAnimasiOut: 0.35
   jarakSlideOut: 800
   gunakanAnimasiStay: 1
@@ -1826,6 +1940,7 @@ MonoBehaviour:
   targetSkalaClick: 0.93
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
+  jedaSebelumHover: 0.5
 --- !u!1 &233975717
 GameObject:
   m_ObjectHideFlags: 0
@@ -1900,6 +2015,7 @@ MonoBehaviour:
   targetSkalaClick: 0.93
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
+  jedaSebelumHover: 0.5
 --- !u!114 &233975720
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2005,6 +2121,7 @@ GameObject:
   - component: {fileID: 246185545}
   - component: {fileID: 246185547}
   - component: {fileID: 246185546}
+  - component: {fileID: 246185548}
   m_Layer: 5
   m_Name: Claisty (2)
   m_TagString: Untagged
@@ -2070,6 +2187,42 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 246185544}
   m_CullTransparentMesh: 1
+--- !u!114 &246185548
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 246185544}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7609eb0368836a340b9f1a7d0b065524, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gunakanAnimasiIn: 1
+  modeAnimasiIn: 5
+  delayMuncul: 0
+  durasiAnimasiIn: 0.45
+  kekuatanBounceIn: 1.5
+  geserBawahAwal: 35
+  jarakSlideIn: 800
+  gunakanAnimasiOut: 1
+  modeAnimasiOut: 5
+  durasiAnimasiOut: 0.35
+  jarakSlideOut: 800
+  gunakanAnimasiStay: 1
+  modeStay: 6
+  kecepatanStay: 3.2
+  intensitasSkalaStay: 0.04
+  intensitasPosisiStay: 4.5
+  intensitasRotasiStay: 2
+  kecepatanPutarStay: -25
+  gunakanHoverDanClick: 1
+  targetSkalaHover: 1.1
+  targetSkalaClick: 0.93
+  kecepatanHover: 16
+  bawaKeDepanSaatHover: 1
+  jedaSebelumHover: 0.5
 --- !u!1 &248236736
 GameObject:
   m_ObjectHideFlags: 0
@@ -2233,6 +2386,119 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a346153f6632cbf4fa409111b252efae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1 &279455702
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 279455703}
+  - component: {fileID: 279455705}
+  - component: {fileID: 279455704}
+  - component: {fileID: 279455706}
+  m_Layer: 5
+  m_Name: Edward (2)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &279455703
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 279455702}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1388534068}
+  m_Father: {fileID: 1628873770}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 213.38, y: 381.25}
+  m_SizeDelta: {x: 248.77, y: 235.09}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &279455704
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 279455702}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: d73aa25f6ff6c89458e95e736485b83c, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &279455705
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 279455702}
+  m_CullTransparentMesh: 1
+--- !u!114 &279455706
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 279455702}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7609eb0368836a340b9f1a7d0b065524, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gunakanAnimasiIn: 1
+  modeAnimasiIn: 5
+  delayMuncul: 0
+  durasiAnimasiIn: 0.45
+  kekuatanBounceIn: 1.5
+  geserBawahAwal: 35
+  jarakSlideIn: 800
+  gunakanAnimasiOut: 1
+  modeAnimasiOut: 5
+  durasiAnimasiOut: 0.35
+  jarakSlideOut: 800
+  gunakanAnimasiStay: 1
+  modeStay: 2
+  kecepatanStay: 3.2
+  intensitasSkalaStay: 0.04
+  intensitasPosisiStay: 4.5
+  intensitasRotasiStay: 2
+  kecepatanPutarStay: -25
+  gunakanHoverDanClick: 1
+  targetSkalaHover: 1.1
+  targetSkalaClick: 0.93
+  kecepatanHover: 16
+  bawaKeDepanSaatHover: 1
+  jedaSebelumHover: 0.5
 --- !u!1 &310455239
 GameObject:
   m_ObjectHideFlags: 0
@@ -3072,6 +3338,7 @@ MonoBehaviour:
   targetSkalaClick: 0.93
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
+  jedaSebelumHover: 0.5
 --- !u!1 &469754643
 GameObject:
   m_ObjectHideFlags: 0
@@ -3592,6 +3859,7 @@ MonoBehaviour:
   targetSkalaClick: 0.93
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
+  jedaSebelumHover: 0.5
 --- !u!114 &554206636
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3705,7 +3973,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &557453165
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3832,14 +4100,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gunakanAnimasiIn: 1
-  modeAnimasiIn: 0
-  delayMuncul: 0
+  modeAnimasiIn: 7
+  delayMuncul: 1
   durasiAnimasiIn: 0.48
   kekuatanBounceIn: 1.8
   geserBawahAwal: 35
   jarakSlideIn: 800
   gunakanAnimasiOut: 1
-  modeAnimasiOut: 4
+  modeAnimasiOut: 7
   durasiAnimasiOut: 0.35
   jarakSlideOut: 800
   gunakanAnimasiStay: 1
@@ -3854,6 +4122,7 @@ MonoBehaviour:
   targetSkalaClick: 0.93
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
+  jedaSebelumHover: 0.5
 --- !u!1 &598523490
 GameObject:
   m_ObjectHideFlags: 0
@@ -4193,13 +4462,14 @@ GameObject:
   - component: {fileID: 622721723}
   - component: {fileID: 622721725}
   - component: {fileID: 622721726}
+  - component: {fileID: 622721727}
   m_Layer: 5
   m_Name: Logo Panada
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &622721722
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4271,11 +4541,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gunakanSpinning: 1
   kecepatanPutar: -28
+  jedaSebelumPutar: 0.55
   skalaKecelup: 0.72
   durasiCelup: 0.1
   durasiKembali: 0.35
   kekuatanBounce: 1.5
   geserBawahKecelup: 6
+  saatLogoDiklik:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &622721726
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4320,6 +4594,42 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &622721727
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 622721721}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7609eb0368836a340b9f1a7d0b065524, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gunakanAnimasiIn: 1
+  modeAnimasiIn: 7
+  delayMuncul: 2.65
+  durasiAnimasiIn: 0.48
+  kekuatanBounceIn: 1.8
+  geserBawahAwal: 35
+  jarakSlideIn: 800
+  gunakanAnimasiOut: 1
+  modeAnimasiOut: 7
+  durasiAnimasiOut: 0.35
+  jarakSlideOut: 800
+  gunakanAnimasiStay: 0
+  modeStay: 0
+  kecepatanStay: 3.2
+  intensitasSkalaStay: 0.04
+  intensitasPosisiStay: 4.5
+  intensitasRotasiStay: 2
+  kecepatanPutarStay: -25
+  gunakanHoverDanClick: 0
+  targetSkalaHover: 1.1
+  targetSkalaClick: 0.93
+  kecepatanHover: 16
+  bawaKeDepanSaatHover: 0
+  jedaSebelumHover: 0.5
 --- !u!1 &622797553
 GameObject:
   m_ObjectHideFlags: 0
@@ -4952,7 +5262,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &743782413
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5040,11 +5350,12 @@ MonoBehaviour:
   intensitasPosisiStay: 4.5
   intensitasRotasiStay: 2
   kecepatanPutarStay: -25
-  gunakanHoverDanClick: 1
+  gunakanHoverDanClick: 0
   targetSkalaHover: 1.1
   targetSkalaClick: 0.93
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
+  jedaSebelumHover: 0.5
 --- !u!1 &753061261
 GameObject:
   m_ObjectHideFlags: 0
@@ -5062,7 +5373,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &753061262
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5135,6 +5446,7 @@ GameObject:
   - component: {fileID: 755163795}
   - component: {fileID: 755163797}
   - component: {fileID: 755163796}
+  - component: {fileID: 755163798}
   m_Layer: 5
   m_Name: Claisty (3)
   m_TagString: Untagged
@@ -5200,6 +5512,42 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 755163794}
   m_CullTransparentMesh: 1
+--- !u!114 &755163798
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 755163794}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7609eb0368836a340b9f1a7d0b065524, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gunakanAnimasiIn: 1
+  modeAnimasiIn: 5
+  delayMuncul: 0
+  durasiAnimasiIn: 0.45
+  kekuatanBounceIn: 1.5
+  geserBawahAwal: 35
+  jarakSlideIn: 800
+  gunakanAnimasiOut: 1
+  modeAnimasiOut: 5
+  durasiAnimasiOut: 0.35
+  jarakSlideOut: 800
+  gunakanAnimasiStay: 1
+  modeStay: 2
+  kecepatanStay: 3.2
+  intensitasSkalaStay: 0.04
+  intensitasPosisiStay: 4.5
+  intensitasRotasiStay: 2
+  kecepatanPutarStay: -25
+  gunakanHoverDanClick: 1
+  targetSkalaHover: 1.1
+  targetSkalaClick: 0.93
+  kecepatanHover: 16
+  bawaKeDepanSaatHover: 1
+  jedaSebelumHover: 0.5
 --- !u!1 &757571500
 GameObject:
   m_ObjectHideFlags: 0
@@ -5305,6 +5653,119 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!1 &810280662
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 810280663}
+  - component: {fileID: 810280665}
+  - component: {fileID: 810280664}
+  - component: {fileID: 810280666}
+  m_Layer: 5
+  m_Name: Elsa (4)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &810280663
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 810280662}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1752310573}
+  m_Father: {fileID: 1287388233}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -153, y: -374}
+  m_SizeDelta: {x: 375.97, y: 207.75}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &810280664
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 810280662}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0, g: 0, b: 0, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 8788e2ce165ad9c46a27601c344ae471, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &810280665
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 810280662}
+  m_CullTransparentMesh: 1
+--- !u!114 &810280666
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 810280662}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7609eb0368836a340b9f1a7d0b065524, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gunakanAnimasiIn: 1
+  modeAnimasiIn: 5
+  delayMuncul: 0
+  durasiAnimasiIn: 0.45
+  kekuatanBounceIn: 1.5
+  geserBawahAwal: 35
+  jarakSlideIn: 800
+  gunakanAnimasiOut: 1
+  modeAnimasiOut: 5
+  durasiAnimasiOut: 0.35
+  jarakSlideOut: 800
+  gunakanAnimasiStay: 1
+  modeStay: 6
+  kecepatanStay: 3.2
+  intensitasSkalaStay: 0.04
+  intensitasPosisiStay: 4.5
+  intensitasRotasiStay: 2
+  kecepatanPutarStay: -25
+  gunakanHoverDanClick: 1
+  targetSkalaHover: 1.1
+  targetSkalaClick: 0.93
+  kecepatanHover: 16
+  bawaKeDepanSaatHover: 1
+  jedaSebelumHover: 0.5
 --- !u!1 &839684669
 GameObject:
   m_ObjectHideFlags: 0
@@ -6089,6 +6550,7 @@ MonoBehaviour:
   targetSkalaClick: 0.93
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
+  jedaSebelumHover: 0.5
 --- !u!1 &957392510
 GameObject:
   m_ObjectHideFlags: 0
@@ -8002,7 +8464,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1257778153
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8116,8 +8578,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7609eb0368836a340b9f1a7d0b065524, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gunakanAnimasiIn: 0
-  modeAnimasiIn: 3
+  gunakanAnimasiIn: 1
+  modeAnimasiIn: 4
   delayMuncul: 0
   durasiAnimasiIn: 0.48
   kekuatanBounceIn: 1.8
@@ -8139,6 +8601,7 @@ MonoBehaviour:
   targetSkalaClick: 0.93
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
+  jedaSebelumHover: 0.5
 --- !u!1 &1258029032
 GameObject:
   m_ObjectHideFlags: 0
@@ -8233,7 +8696,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1271499528
 RectTransform:
   m_ObjectHideFlags: 0
@@ -8327,6 +8790,7 @@ MonoBehaviour:
   targetSkalaClick: 0.93
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
+  jedaSebelumHover: 0.5
 --- !u!225 &1271499532
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -8493,6 +8957,7 @@ GameObject:
   - component: {fileID: 1287388233}
   - component: {fileID: 1287388235}
   - component: {fileID: 1287388234}
+  - component: {fileID: 1287388236}
   m_Layer: 5
   m_Name: Elsa
   m_TagString: Untagged
@@ -8511,7 +8976,9 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 2022255406}
+  - {fileID: 810280663}
   m_Father: {fileID: 753061262}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -8557,6 +9024,42 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1287388232}
   m_CullTransparentMesh: 1
+--- !u!114 &1287388236
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1287388232}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7609eb0368836a340b9f1a7d0b065524, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gunakanAnimasiIn: 1
+  modeAnimasiIn: 5
+  delayMuncul: 0
+  durasiAnimasiIn: 0.45
+  kekuatanBounceIn: 1.5
+  geserBawahAwal: 35
+  jarakSlideIn: 800
+  gunakanAnimasiOut: 1
+  modeAnimasiOut: 5
+  durasiAnimasiOut: 0.35
+  jarakSlideOut: 800
+  gunakanAnimasiStay: 1
+  modeStay: 1
+  kecepatanStay: 3.2
+  intensitasSkalaStay: 0.04
+  intensitasPosisiStay: 4.5
+  intensitasRotasiStay: 2
+  kecepatanPutarStay: -25
+  gunakanHoverDanClick: 1
+  targetSkalaHover: 1.1
+  targetSkalaClick: 0.93
+  kecepatanHover: 16
+  bawaKeDepanSaatHover: 1
+  jedaSebelumHover: 0.5
 --- !u!1 &1311231806
 GameObject:
   m_ObjectHideFlags: 0
@@ -8916,6 +9419,81 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1388470137}
+  m_CullTransparentMesh: 1
+--- !u!1 &1388534067
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1388534068}
+  - component: {fileID: 1388534070}
+  - component: {fileID: 1388534069}
+  m_Layer: 5
+  m_Name: Edward (3)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1388534068
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1388534067}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 279455703}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -1.05, y: -6.7}
+  m_SizeDelta: {x: 232.63, y: 221.69}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1388534069
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1388534067}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: d73aa25f6ff6c89458e95e736485b83c, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1388534070
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1388534067}
   m_CullTransparentMesh: 1
 --- !u!1 &1428099461
 GameObject:
@@ -9321,6 +9899,18 @@ MonoBehaviour:
   - {fileID: 940039162}
   - {fileID: 461078578}
   - {fileID: 233975717}
+  panelCredit: {fileID: 753061261}
+  objekPanelCredit:
+  - {fileID: 554206633}
+  - {fileID: 1287388232}
+  - {fileID: 2022255405}
+  - {fileID: 810280662}
+  - {fileID: 1628873769}
+  - {fileID: 279455702}
+  - {fileID: 40583517}
+  - {fileID: 1530583982}
+  - {fileID: 246185544}
+  - {fileID: 755163794}
   jedaTransisi: 0.35
 --- !u!1 &1505623116
 GameObject:
@@ -9614,6 +10204,7 @@ GameObject:
   - component: {fileID: 1530583983}
   - component: {fileID: 1530583985}
   - component: {fileID: 1530583984}
+  - component: {fileID: 1530583986}
   m_Layer: 5
   m_Name: Claisty
   m_TagString: Untagged
@@ -9680,6 +10271,42 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1530583982}
   m_CullTransparentMesh: 1
+--- !u!114 &1530583986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1530583982}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7609eb0368836a340b9f1a7d0b065524, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gunakanAnimasiIn: 1
+  modeAnimasiIn: 5
+  delayMuncul: 0
+  durasiAnimasiIn: 0.45
+  kekuatanBounceIn: 1.5
+  geserBawahAwal: 35
+  jarakSlideIn: 800
+  gunakanAnimasiOut: 1
+  modeAnimasiOut: 5
+  durasiAnimasiOut: 0.35
+  jarakSlideOut: 800
+  gunakanAnimasiStay: 1
+  modeStay: 1
+  kecepatanStay: 3.2
+  intensitasSkalaStay: 0.04
+  intensitasPosisiStay: 4.5
+  intensitasRotasiStay: 2
+  kecepatanPutarStay: -25
+  gunakanHoverDanClick: 1
+  targetSkalaHover: 1.1
+  targetSkalaClick: 0.93
+  kecepatanHover: 16
+  bawaKeDepanSaatHover: 1
+  jedaSebelumHover: 0.5
 --- !u!1 &1560530415
 GameObject:
   m_ObjectHideFlags: 0
@@ -9891,6 +10518,7 @@ GameObject:
   - component: {fileID: 1628873770}
   - component: {fileID: 1628873772}
   - component: {fileID: 1628873771}
+  - component: {fileID: 1628873773}
   m_Layer: 5
   m_Name: Edward
   m_TagString: Untagged
@@ -9909,7 +10537,9 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 279455703}
+  - {fileID: 40583518}
   m_Father: {fileID: 753061262}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -9955,6 +10585,42 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1628873769}
   m_CullTransparentMesh: 1
+--- !u!114 &1628873773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1628873769}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7609eb0368836a340b9f1a7d0b065524, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gunakanAnimasiIn: 1
+  modeAnimasiIn: 5
+  delayMuncul: 0
+  durasiAnimasiIn: 0.45
+  kekuatanBounceIn: 1.5
+  geserBawahAwal: 35
+  jarakSlideIn: 800
+  gunakanAnimasiOut: 1
+  modeAnimasiOut: 5
+  durasiAnimasiOut: 0.35
+  jarakSlideOut: 800
+  gunakanAnimasiStay: 1
+  modeStay: 1
+  kecepatanStay: 3.2
+  intensitasSkalaStay: 0.04
+  intensitasPosisiStay: 4.5
+  intensitasRotasiStay: 2
+  kecepatanPutarStay: -25
+  gunakanHoverDanClick: 1
+  targetSkalaHover: 1.1
+  targetSkalaClick: 0.93
+  kecepatanHover: 16
+  bawaKeDepanSaatHover: 1
+  jedaSebelumHover: 0.5
 --- !u!1 &1677055725
 GameObject:
   m_ObjectHideFlags: 0
@@ -10089,6 +10755,118 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1677055725}
   m_CullTransparentMesh: 1
+--- !u!1 &1752310572
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1752310573}
+  - component: {fileID: 1752310575}
+  - component: {fileID: 1752310574}
+  - component: {fileID: 1752310576}
+  m_Layer: 5
+  m_Name: Elsa (5)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1752310573
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1752310572}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 810280663}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 3.83, y: 3.485}
+  m_SizeDelta: {x: 368.31, y: 214.72}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1752310574
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1752310572}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 8788e2ce165ad9c46a27601c344ae471, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1752310575
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1752310572}
+  m_CullTransparentMesh: 1
+--- !u!114 &1752310576
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1752310572}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7609eb0368836a340b9f1a7d0b065524, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gunakanAnimasiIn: 1
+  modeAnimasiIn: 5
+  delayMuncul: 0
+  durasiAnimasiIn: 0.45
+  kekuatanBounceIn: 1.5
+  geserBawahAwal: 35
+  jarakSlideIn: 800
+  gunakanAnimasiOut: 1
+  modeAnimasiOut: 5
+  durasiAnimasiOut: 0.35
+  jarakSlideOut: 800
+  gunakanAnimasiStay: 1
+  modeStay: 6
+  kecepatanStay: 3.2
+  intensitasSkalaStay: 0.04
+  intensitasPosisiStay: 4.5
+  intensitasRotasiStay: 2
+  kecepatanPutarStay: -25
+  gunakanHoverDanClick: 1
+  targetSkalaHover: 1.1
+  targetSkalaClick: 0.93
+  kecepatanHover: 16
+  bawaKeDepanSaatHover: 1
+  jedaSebelumHover: 0.5
 --- !u!1 &1781380115
 GameObject:
   m_ObjectHideFlags: 0
@@ -10548,7 +11326,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1840297146
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10641,6 +11419,7 @@ MonoBehaviour:
   targetSkalaClick: 0.93
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
+  jedaSebelumHover: 0.5
 --- !u!1 &1918638983
 GameObject:
   m_ObjectHideFlags: 0
@@ -11413,6 +12192,118 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2015189410}
   m_CullTransparentMesh: 1
+--- !u!1 &2022255405
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2022255406}
+  - component: {fileID: 2022255408}
+  - component: {fileID: 2022255407}
+  - component: {fileID: 2022255409}
+  m_Layer: 5
+  m_Name: Elsa (3)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &2022255406
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2022255405}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1287388233}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 192, y: 308}
+  m_SizeDelta: {x: 186.51, y: 175.39}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &2022255407
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2022255405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: ef64574ba8fe307489dc44b172a46d21, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &2022255408
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2022255405}
+  m_CullTransparentMesh: 1
+--- !u!114 &2022255409
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2022255405}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7609eb0368836a340b9f1a7d0b065524, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gunakanAnimasiIn: 1
+  modeAnimasiIn: 5
+  delayMuncul: 0
+  durasiAnimasiIn: 0.45
+  kekuatanBounceIn: 1.5
+  geserBawahAwal: 35
+  jarakSlideIn: 800
+  gunakanAnimasiOut: 1
+  modeAnimasiOut: 5
+  durasiAnimasiOut: 0.35
+  jarakSlideOut: 800
+  gunakanAnimasiStay: 1
+  modeStay: 3
+  kecepatanStay: 8.17
+  intensitasSkalaStay: 0.04
+  intensitasPosisiStay: 4.5
+  intensitasRotasiStay: 2
+  kecepatanPutarStay: -25
+  gunakanHoverDanClick: 1
+  targetSkalaHover: 1.1
+  targetSkalaClick: 0.93
+  kecepatanHover: 16
+  bawaKeDepanSaatHover: 1
+  jedaSebelumHover: 0.5
 --- !u!1 &2027578365
 GameObject:
   m_ObjectHideFlags: 0
@@ -12102,6 +12993,81 @@ RectTransform:
   m_AnchoredPosition: {x: -4.9999847, y: 0}
   m_SizeDelta: {x: -20, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &2134965323
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2134965324}
+  - component: {fileID: 2134965326}
+  - component: {fileID: 2134965325}
+  m_Layer: 5
+  m_Name: Edward (3)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &2134965324
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2134965323}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 40583518}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 8.91, y: 4.1}
+  m_SizeDelta: {x: 254.6, y: 242.61}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &2134965325
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2134965323}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 88a1080c769f67a4d978d0d67dce6370, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &2134965326
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2134965323}
+  m_CullTransparentMesh: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

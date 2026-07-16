@@ -49,6 +49,38 @@ public class TransisiMenuUI : MonoBehaviour
     }
 
     /// <summary>
+    /// Panggil fungsi ini pada OnClick() tombol Mulai / Play di Main Menu untuk pindah ke scene permainan dengan animasi Loading Screen (GIF/Video).
+    /// </summary>
+    public void BukaSceneDenganLoading(string namaScene)
+    {
+        if (LoadingScreenController.Instance != null)
+        {
+            LoadingScreenController.Instance.MuatScene(namaScene);
+        }
+        else
+        {
+            Debug.LogWarning("LoadingScreenController.Instance belum ditemukan di adegan! Langsung memuat scene...");
+            UnityEngine.SceneManagement.SceneManager.LoadScene(namaScene);
+        }
+    }
+
+    /// <summary>
+    /// Panggil fungsi ini jika ingin memuat scene berdasarkan Index (nomor urut di Build Settings).
+    /// </summary>
+    public void BukaSceneDenganLoadingIndex(int indeksScene)
+    {
+        if (LoadingScreenController.Instance != null)
+        {
+            LoadingScreenController.Instance.MuatSceneIndex(indeksScene);
+        }
+        else
+        {
+            UnityEngine.SceneManagement.SceneManager.LoadScene(indeksScene);
+        }
+    }
+
+
+    /// <summary>
     /// Panggil fungsi ini pada OnClick() tombol Kembali/Tutup di dalam Setting Panel atau Credit Panel
     /// </summary>
     public void KembaliKeMainMenu()
