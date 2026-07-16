@@ -56,6 +56,10 @@ public class LoadingScreenController : MonoBehaviour
     /// </summary>
     public void MuatScene(string namaSceneTujuan)
     {
+        // Aktifkan GameObject terlebih dahulu jika dalam keadaan nonaktif di scene.
+        // Awake() yang terpanggil setelah ini TIDAK akan mematikan kembali (sudah pakai CanvasGroup).
+        if (!gameObject.activeInHierarchy) gameObject.SetActive(true);
+
         StopAllCoroutines();
         StartCoroutine(ProsesLoading(namaSceneTujuan));
     }
@@ -65,6 +69,8 @@ public class LoadingScreenController : MonoBehaviour
     /// </summary>
     public void MuatSceneIndex(int indeksScene)
     {
+        if (!gameObject.activeInHierarchy) gameObject.SetActive(true);
+
         StopAllCoroutines();
         StartCoroutine(ProsesLoadingIndex(indeksScene));
     }

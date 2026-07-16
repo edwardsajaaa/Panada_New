@@ -53,13 +53,14 @@ public class TransisiMenuUI : MonoBehaviour
     /// </summary>
     public void BukaSceneDenganLoading(string namaScene)
     {
-        if (LoadingScreenController.Instance != null)
+        LoadingScreenController lsc = DapatkanLoadingScreenController();
+        if (lsc != null)
         {
-            LoadingScreenController.Instance.MuatScene(namaScene);
+            lsc.MuatScene(namaScene);
         }
         else
         {
-            Debug.LogWarning("LoadingScreenController.Instance belum ditemukan di adegan! Langsung memuat scene...");
+            Debug.LogWarning("LoadingScreenController tidak ditemukan di adegan! Langsung memuat scene...");
             UnityEngine.SceneManagement.SceneManager.LoadScene(namaScene);
         }
     }
@@ -69,9 +70,10 @@ public class TransisiMenuUI : MonoBehaviour
     /// </summary>
     public void BukaSceneDenganLoadingIndex(int indeksScene)
     {
-        if (LoadingScreenController.Instance != null)
+        LoadingScreenController lsc = DapatkanLoadingScreenController();
+        if (lsc != null)
         {
-            LoadingScreenController.Instance.MuatSceneIndex(indeksScene);
+            lsc.MuatSceneIndex(indeksScene);
         }
         else
         {
@@ -85,6 +87,26 @@ public class TransisiMenuUI : MonoBehaviour
     public void BukaSceneKamar()
     {
         BukaSceneDenganLoading("Kamar");
+    }
+
+    /// <summary>
+    /// Mencari LoadingScreenController — cek Instance dulu, jika null cari manual di scene (termasuk di GameObject nonaktif).
+    /// </summary>
+    private LoadingScreenController DapatkanLoadingScreenController()
+    {
+        if (LoadingScreenController.Instance != null) return LoadingScreenController.Instance;
+
+        // Instance null karena Loading Screen Panel nonaktif di scene dan Awake belum pernah jalan.
+        // Cari secara manual di seluruh scene, termasuk yang nonaktif.
+        LoadingScreenController lsc = FindObjectOfType<LoadingScreenController>(true);
+        if (lsc != null)
+        {
+            // Aktifkan dulu agar Awake() berjalan dan Instance ter-set
+            if (!lsc.gameObject.activeInHierarchy) lsc.gameObject.SetActive(true);
+            return lsc;
+        }
+
+        return null;
     }
 
 
