@@ -16,6 +16,8 @@ public class AnimasiHoverUI : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     public float kecepatanAnimasi = 14f;
     [Tooltip("Apakah objek dibawa ke lapisan paling depan saat di-hover agar tidak tertutup objek lain")]
     public bool bawaKeDepanSaatHover = true;
+    [Tooltip("Waktu jeda (detik) saat objek baru aktif sebelum efek hover diperbolehkan bereaksi")]
+    public float jedaSebelumHover = 0.5f;
 
     private Vector3 skalaAwal;
     private Vector2 posisiAwal;
@@ -23,6 +25,7 @@ public class AnimasiHoverUI : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     private int indeksSiblingAwal;
     private bool sedangHover = false;
     private bool sudahInisialisasi = false;
+    private bool siapMenerimaHover = false;
     private RectTransform rectTransform;
 
     void Awake()
@@ -56,10 +59,35 @@ public class AnimasiHoverUI : MonoBehaviour, IPointerEnterHandler, IPointerExitH
         }
     }
 
+    void OnEnable()
+    {
+        sedangHover = false;
+        siapMenerimaHover = false;
+        StopAllCoroutines();
+        StartCoroutine(TungguSiapHover());
+    }
+
+    IEnumerator TungguSiapHover()
+    {
+        siapMenerimaHover = false;
+        if (jedaSebelumHover > 0f)
+            yield return new WaitForSeconds(jedaSebelumHover);
+        siapMenerimaHover = true;
+
+        if (rectTransform != null && !DraggableUI.isInteractingWithUI && !Pengenalan.sedangDialogAktif)
+        {
+            bool kursorDiAtas = RectTransformUtility.RectangleContainsScreenPoint(rectTransform, Input.mousePosition, null);
+            if (kursorDiAtas && !sedangHover)
+            {
+                OnPointerEnter(null);
+            }
+        }
+    }
+
     public void OnPointerEnter(PointerEventData eventData)
     {
-        // Jangan jalankan efek jika UI sedang menyeret barang (DraggableUI) atau dialog sedang berlangsung
-        if (DraggableUI.isInteractingWithUI || Pengenalan.sedangDialogAktif) return;
+        // Jangan jalankan efek jika UI belum siap, sedang menyeret barang (DraggableUI), atau dialog sedang berlangsung
+        if (!siapMenerimaHover || DraggableUI.isInteractingWithUI || Pengenalan.sedangDialogAktif) return;
 
         // Rekam posisi aktual objek tepat sebelum di-hover agar posisi desain Editor 100% akurat
         if (!sedangHover)
@@ -91,7 +119,7 @@ public class AnimasiHoverUI : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (!sudahInisialisasi) return;
+        if (!siapMenerimaHover || !sudahInisialisasi) return;
         sedangHover = false;
         if (bawaKeDepanSaatHover)
         {
@@ -103,6 +131,7 @@ public class AnimasiHoverUI : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
     void OnDisable()
     {
+        StopAllCoroutines();
         if (!sudahInisialisasi) return;
         sedangHover = false;
         transform.localScale = skalaAwal != Vector3.zero ? skalaAwal : Vector3.one;

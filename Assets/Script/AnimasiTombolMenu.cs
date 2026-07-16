@@ -81,6 +81,8 @@ public class AnimasiTombolMenu : MonoBehaviour, IPointerEnterHandler, IPointerEx
     public float kecepatanHover = 16f;
     [Tooltip("Apakah tombol dibawa ke lapisan terdepan saat di-hover")]
     public bool bawaKeDepanSaatHover = true;
+    [Tooltip("Waktu jeda (detik) setelah tombol baru aktif / setelah animasi muncul selesai sebelum efek hover diizinkan aktif. Mencegah tombol langsung muncul instan/meledak jika kursor sudah diam di atas tombol saat panel baru dibuka.")]
+    public float jedaSebelumHover = 0.5f;
 
     private Vector3 skalaAwal;
     private Vector2 posisiAwal;
@@ -90,6 +92,7 @@ public class AnimasiTombolMenu : MonoBehaviour, IPointerEnterHandler, IPointerEx
     private bool sedangHover = false;
     private bool sedangDitekan = false;
     private bool sudahInisialisasi = false;
+    private bool siapMenerimaHover = false;
     private RectTransform rectTransform;
     private CanvasGroup canvasGroup;
 
@@ -129,6 +132,7 @@ public class AnimasiTombolMenu : MonoBehaviour, IPointerEnterHandler, IPointerEx
         sedangHover = false;
         sedangDitekan = false;
         sudutPutaran = 0f;
+        siapMenerimaHover = false;
 
         // Matikan AnimasiHoverUI jika ada pada tombol yang sama agar tidak bentrok
         AnimasiHoverUI hov = GetComponent<AnimasiHoverUI>();
@@ -139,9 +143,13 @@ public class AnimasiTombolMenu : MonoBehaviour, IPointerEnterHandler, IPointerEx
         {
             StartCoroutine(ProsesAnimasiIn());
         }
-        else if (gunakanAnimasiStay)
+        else
         {
-            StartCoroutine(ProsesAnimasiStay());
+            StartCoroutine(TungguJedaSiapHover(jedaSebelumHover));
+            if (gunakanAnimasiStay)
+            {
+                StartCoroutine(ProsesAnimasiStay());
+            }
         }
     }
 
@@ -291,10 +299,32 @@ public class AnimasiTombolMenu : MonoBehaviour, IPointerEnterHandler, IPointerEx
         transform.localRotation = rotasiAwal;
         if (canvasGroup != null) canvasGroup.alpha = 1f;
 
+        // Tunggu jeda setelah animasi muncul selesai agar tombol benar-benar aktif & siap sebelum merespon hover
+        StartCoroutine(TungguJedaSiapHover(jedaSebelumHover));
+
         // Setelah Animasi In selesai, langsung lanjut ke Animasi Stay jika diaktifkan
         if (gunakanAnimasiStay && !sedangHover && !sedangDitekan)
         {
             StartCoroutine(ProsesAnimasiStay());
+        }
+    }
+
+    IEnumerator TungguJedaSiapHover(float durasi)
+    {
+        siapMenerimaHover = false;
+        if (durasi > 0f)
+            yield return new WaitForSeconds(durasi);
+        
+        siapMenerimaHover = true;
+
+        // Jika setelah tombol siap ternyata kursor saat ini sedang diam tepat di atas tombol ini, langsung picu hover secara halus!
+        if (gunakanHoverDanClick && rectTransform != null && !DraggableUI.isInteractingWithUI)
+        {
+            bool kursorDiAtas = RectTransformUtility.RectangleContainsScreenPoint(rectTransform, Input.mousePosition, null);
+            if (kursorDiAtas && !sedangHover)
+            {
+                OnPointerEnter(null);
+            }
         }
     }
 
@@ -368,7 +398,7 @@ public class AnimasiTombolMenu : MonoBehaviour, IPointerEnterHandler, IPointerEx
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        if (!gunakanHoverDanClick || DraggableUI.isInteractingWithUI) return;
+        if (!siapMenerimaHover || !gunakanHoverDanClick || DraggableUI.isInteractingWithUI) return;
 
         sedangHover = true;
         if (canvasGroup != null && canvasGroup.alpha < 1f) canvasGroup.alpha = 1f;
@@ -384,7 +414,7 @@ public class AnimasiTombolMenu : MonoBehaviour, IPointerEnterHandler, IPointerEx
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (!gunakanHoverDanClick || !sudahInisialisasi) return;
+        if (!siapMenerimaHover || !gunakanHoverDanClick || !sudahInisialisasi) return;
 
         sedangHover = false;
         sedangDitekan = false;
@@ -399,7 +429,7 @@ public class AnimasiTombolMenu : MonoBehaviour, IPointerEnterHandler, IPointerEx
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        if (!gunakanHoverDanClick || DraggableUI.isInteractingWithUI) return;
+        if (!siapMenerimaHover || !gunakanHoverDanClick || DraggableUI.isInteractingWithUI) return;
 
         sedangDitekan = true;
         StopAllCoroutines();
@@ -409,7 +439,7 @@ public class AnimasiTombolMenu : MonoBehaviour, IPointerEnterHandler, IPointerEx
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        if (!gunakanHoverDanClick || !sudahInisialisasi) return;
+        if (!siapMenerimaHover || !gunakanHoverDanClick || !sudahInisialisasi) return;
 
         sedangDitekan = false;
         if (sedangHover)
