@@ -79,6 +79,14 @@ public class TransisiMenuUI : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Panggil fungsi ini dari OnClick() tombol Play di Main Menu untuk langsung memuat scene Kamar dengan Loading Screen.
+    /// </summary>
+    public void BukaSceneKamar()
+    {
+        BukaSceneDenganLoading("Kamar");
+    }
+
 
     /// <summary>
     /// Panggil fungsi ini pada OnClick() tombol Kembali/Tutup di dalam Setting Panel atau Credit Panel

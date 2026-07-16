@@ -80,6 +80,14 @@ public class LoadingScreenController : MonoBehaviour
         StartCoroutine(ProsesLoadingIndex(indeksScene));
     }
 
+    /// <summary>
+    /// Panggil fungsi ini dari OnClick() tombol Play di Main Menu untuk memuat scene Kamar dengan Loading Screen.
+    /// </summary>
+    public void BukaSceneKamar()
+    {
+        MuatScene("Kamar");
+    }
+
     IEnumerator ProsesLoading(string namaScene)
     {
         // 1. Jika aktif, jalankan animasi keluar pada semua tombol di Main Menu
@@ -118,7 +126,7 @@ public class LoadingScreenController : MonoBehaviour
         {
             if (transisiMenu.objekMainMenu != null)
             {
-                foreach (var o in transisiMenu.objekMainMenu) if (o != null && !daftarKeluar.Contains(o)) daftarKeluar.Add(o);
+                foreach (var o in transisiMenu.objekMainMenu) if (o != null && o != panelLoading && !daftarKeluar.Contains(o)) daftarKeluar.Add(o);
             }
             foreach (Transform anak in transisiMenu.transform)
             {
