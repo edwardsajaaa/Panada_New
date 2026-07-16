@@ -50,6 +50,12 @@ public class LoadingScreenController : MonoBehaviour
     /// </summary>
     public void MuatScene(string namaSceneTujuan)
     {
+        // Pastikan GameObject tempat script ini terpasang aktif agar Coroutine bisa berjalan tanpa error!
+        if (!gameObject.activeInHierarchy)
+        {
+            gameObject.SetActive(true);
+        }
+
         StopAllCoroutines();
         StartCoroutine(ProsesLoading(namaSceneTujuan));
     }
@@ -59,6 +65,11 @@ public class LoadingScreenController : MonoBehaviour
     /// </summary>
     public void MuatSceneIndex(int indeksScene)
     {
+        if (!gameObject.activeInHierarchy)
+        {
+            gameObject.SetActive(true);
+        }
+
         StopAllCoroutines();
         StartCoroutine(ProsesLoadingIndex(indeksScene));
     }
@@ -73,13 +84,21 @@ public class LoadingScreenController : MonoBehaviour
 
     IEnumerator ProsesLoading(string namaScene)
     {
-        // 1. Jika aktif, jalankan animasi keluar pada semua tombol di Main Menu
+        // 1. Jika aktif, jalankan animasi keluar pada semua tombol di Main Menu terlebih dahulu
         if (transisiKeluarMenuDulu)
         {
+            if (panelLoading != null)
+            {
+                CanvasGroup cgSementara = panelLoading.GetComponent<CanvasGroup>();
+                if (cgSementara == null) cgSementara = panelLoading.AddComponent<CanvasGroup>();
+                cgSementara.alpha = 0f;
+                cgSementara.blocksRaycasts = false;
+            }
+
             yield return StartCoroutine(JalankanAnimasiOutSemuaMenu());
         }
 
-        // 2. Aktifkan Panel Loading
+        // 2. Aktifkan Panel Loading (muncul penuh)
         AktifkanPanelDanMulaiGif();
 
         // 3. Mulai proses load scene di belakang layar (Async)
@@ -91,6 +110,14 @@ public class LoadingScreenController : MonoBehaviour
     {
         if (transisiKeluarMenuDulu)
         {
+            if (panelLoading != null)
+            {
+                CanvasGroup cgSementara = panelLoading.GetComponent<CanvasGroup>();
+                if (cgSementara == null) cgSementara = panelLoading.AddComponent<CanvasGroup>();
+                cgSementara.alpha = 0f;
+                cgSementara.blocksRaycasts = false;
+            }
+
             yield return StartCoroutine(JalankanAnimasiOutSemuaMenu());
         }
 
