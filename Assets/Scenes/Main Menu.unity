@@ -4611,7 +4611,7 @@ GameObject:
   - component: {fileID: 926296001}
   - component: {fileID: 926296003}
   m_Layer: 5
-  m_Name: Loading Screen Panel
+  m_Name: PixelOverlay
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4634,8 +4634,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 2.3220825, y: 1.5216064}
-  m_SizeDelta: {x: 13.356, y: 3.0431}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &926296001
 MonoBehaviour:
@@ -4649,7 +4649,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 2100000, guid: 6ae42d144753325489fe573aad85d735, type: 2}
   m_Color: {r: 0, g: 0, b: 0, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -4691,6 +4691,8 @@ MonoBehaviour:
   transisiKeluarMenuDulu: 1
   durasiKeluarMenu: 0.35
   minimalWaktuLoading: 1.2
+  materialTransisiPixel: {fileID: 2100000, guid: 6ae42d144753325489fe573aad85d735, type: 2}
+  durasiTransisiPixel: 0.5
 --- !u!1 &940039162
 GameObject:
   m_ObjectHideFlags: 0
