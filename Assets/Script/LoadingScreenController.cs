@@ -102,7 +102,10 @@ public class LoadingScreenController : MonoBehaviour
         
         if (materialTransisiPixel != null)
         {
-            yield return StartCoroutine(JalankanTransisiPixel(true)); // Transisi IN (Muncul)
+            yield return StartCoroutine(JalankanTransisiPixel(true)); // Transisi IN (Muncul/Layar Hitam)
+            
+            // 2b. MUNCULKAN VIDEO SETELAH LAYAR BENAR-BENAR HITAM SEPENUHNYA!
+            AturVisibilitasVideo(true);
         }
 
         // 3. Mulai proses load scene di belakang layar (Async)
@@ -121,7 +124,10 @@ public class LoadingScreenController : MonoBehaviour
 
         if (materialTransisiPixel != null)
         {
-            yield return StartCoroutine(JalankanTransisiPixel(true)); // Transisi IN (Muncul)
+            yield return StartCoroutine(JalankanTransisiPixel(true)); // Transisi IN (Muncul/Layar Hitam)
+            
+            // MUNCULKAN VIDEO SETELAH LAYAR BENAR-BENAR HITAM SEPENUHNYA!
+            AturVisibilitasVideo(true);
         }
 
         AsyncOperation operasi = SceneManager.LoadSceneAsync(indeksScene);
@@ -257,10 +263,24 @@ public class LoadingScreenController : MonoBehaviour
                     }
                 }
 
+                // Sembunyikan visual RawImage sementara sebelum layar benar-benar hitam (transisi selesai)
+                RawImage rImg = vp.GetComponent<RawImage>();
+                if (rImg != null && materialTransisiPixel != null) rImg.enabled = false;
+
                 // Mulai putar video dari awal
                 vp.Stop();
                 vp.Play();
             }
+        }
+    }
+
+    void AturVisibilitasVideo(bool terlihat)
+    {
+        if (panelLoading == null) return;
+        RawImage[] rawImages = panelLoading.GetComponentsInChildren<RawImage>(true);
+        foreach (var img in rawImages)
+        {
+            if (img != null) img.enabled = terlihat;
         }
     }
 
@@ -279,6 +299,9 @@ public class LoadingScreenController : MonoBehaviour
                 // Jalankan Transisi OUT (Loading Screen menghilang ke scene baru)
                 if (materialTransisiPixel != null)
                 {
+                    // SEMBUNYIKAN VIDEO SEBELUM LAYAR TERBUKA KEMBALI
+                    AturVisibilitasVideo(false);
+
                     yield return StartCoroutine(JalankanTransisiPixel(false));
                 }
                 else
