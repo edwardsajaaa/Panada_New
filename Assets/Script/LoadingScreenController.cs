@@ -24,6 +24,12 @@ public class LoadingScreenController : MonoBehaviour
     [Tooltip("Waktu jeda minimal (detik) agar loading screen tidak terkesan berkedip terlalu cepat jika komputer pemain sangat cepat")]
     public float minimalWaktuLoading = 1.2f;
 
+    [Header("=== 3. Efek Transisi Pixel Art ===")]
+    [Tooltip("Material UI yang menggunakan PixelTransitionUI.shader (kosongkan jika tidak dipakai)")]
+    public Material materialTransisiPixel;
+    [Tooltip("Durasi animasi masuk/keluar pixel art")]
+    public float durasiTransisiPixel = 0.5f;
+
     void Awake()
     {
         // Setup Singleton agar mudah dipanggil dari tombol mana saja
@@ -91,8 +97,13 @@ public class LoadingScreenController : MonoBehaviour
             yield return StartCoroutine(JalankanAnimasiOutSemuaMenu());
         }
 
-        // 2. Aktifkan Panel Loading (muncul penuh)
+        // 2. Aktifkan Panel Loading (muncul penuh atau dengan Transisi Pixel)
         AktifkanPanelDanMulaiGif();
+        
+        if (materialTransisiPixel != null)
+        {
+            yield return StartCoroutine(JalankanTransisiPixel(true)); // Transisi IN (Muncul)
+        }
 
         // 3. Mulai proses load scene di belakang layar (Async)
         AsyncOperation operasi = SceneManager.LoadSceneAsync(namaScene);
@@ -108,8 +119,36 @@ public class LoadingScreenController : MonoBehaviour
 
         AktifkanPanelDanMulaiGif();
 
+        if (materialTransisiPixel != null)
+        {
+            yield return StartCoroutine(JalankanTransisiPixel(true)); // Transisi IN (Muncul)
+        }
+
         AsyncOperation operasi = SceneManager.LoadSceneAsync(indeksScene);
         yield return StartCoroutine(PantauProgressDanSelesaikan(operasi));
+    }
+
+    IEnumerator JalankanTransisiPixel(bool isMasuk)
+    {
+        if (materialTransisiPixel == null) yield break;
+
+        // isMasuk = True: Transisi Muncul (Invisible -> Visible) (Progress 1 -> 0)
+        // isMasuk = False: Transisi Keluar (Visible -> Invisible) (Progress 0 -> 1)
+        float startVal = isMasuk ? 1f : 0f;
+        float endVal = isMasuk ? 0f : 1f;
+        float timer = 0f;
+
+        materialTransisiPixel.SetFloat("_Invert", 0f);
+
+        while (timer < durasiTransisiPixel)
+        {
+            timer += Time.deltaTime;
+            float p = Mathf.Lerp(startVal, endVal, timer / durasiTransisiPixel);
+            materialTransisiPixel.SetFloat("_Progress", p);
+            yield return null;
+        }
+
+        materialTransisiPixel.SetFloat("_Progress", endVal);
     }
 
     IEnumerator JalankanAnimasiOutSemuaMenu()
@@ -237,8 +276,17 @@ public class LoadingScreenController : MonoBehaviour
             // Jika progress sudah mencapai 100% (0.9 pada Unity) dan waktu minimal loading sudah terpenuhi
             if (operasi.progress >= 0.9f && (Time.time - waktuMulaiLoading) >= minimalWaktuLoading)
             {
-                // Jeda pendek sebelum scene baru terbuka agar animasi selesai dengan sempurna
-                yield return new WaitForSeconds(0.3f);
+                // Jalankan Transisi OUT (Loading Screen menghilang ke scene baru)
+                if (materialTransisiPixel != null)
+                {
+                    yield return StartCoroutine(JalankanTransisiPixel(false));
+                }
+                else
+                {
+                    // Jeda pendek sebelum scene baru terbuka agar animasi selesai dengan sempurna
+                    yield return new WaitForSeconds(0.3f);
+                }
+
                 operasi.allowSceneActivation = true;
             }
 
