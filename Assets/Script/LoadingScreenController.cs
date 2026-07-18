@@ -296,21 +296,55 @@ public class LoadingScreenController : MonoBehaviour
             // Jika progress sudah mencapai 100% (0.9 pada Unity) dan waktu minimal loading sudah terpenuhi
             if (operasi.progress >= 0.9f && (Time.time - waktuMulaiLoading) >= minimalWaktuLoading)
             {
-                // Jalankan Transisi OUT (Loading Screen menghilang ke scene baru)
+                // SEMBUNYIKAN VIDEO SEBELUM PINDAH SCENE
+                AturVisibilitasVideo(false);
+
+                // --- LOGIKA LINTAS SCENE (CROSS-SCENE) ---
+                // Agar script ini dan layar loading tidak hancur saat pindah scene:
+                if (panelLoading != null)
+                {
+                    // Cabut panel dari Canvas utamanya agar mandiri
+                    panelLoading.transform.SetParent(null);
+                    
+                    // Beri komponen Canvas sendiri agar tetap terlihat di layar
+                    Canvas c = panelLoading.GetComponent<Canvas>();
+                    if (c == null)
+                    {
+                        c = panelLoading.AddComponent<Canvas>();
+                        c.renderMode = RenderMode.ScreenSpaceOverlay;
+                        c.sortingOrder = 9999; // Tampil paling depan menutupi segalanya
+                        panelLoading.AddComponent<UnityEngine.UI.GraphicRaycaster>();
+                    }
+
+                    // Bawa Panel ini ke Scene Baru
+                    DontDestroyOnLoad(panelLoading);
+                    
+                    // Jika script ini tidak menempel di panelLoading, bawa juga script ini!
+                    if (this.gameObject != panelLoading) DontDestroyOnLoad(this.gameObject);
+                }
+
+                // 1. IZINKAN BERPINDAH KE SCENE BARU (KAMAR) SEKARANG!
+                operasi.allowSceneActivation = true;
+
+                // Tunggu sampai scene baru benar-benar sudah aktif di layar
+                yield return new WaitUntil(() => operasi.isDone);
+                yield return new WaitForEndOfFrame();
+
+                // 2. JALANKAN TRANSISI OUT (Layar terbuka menampilkan Scene Baru!)
                 if (materialTransisiPixel != null)
                 {
-                    // SEMBUNYIKAN VIDEO SEBELUM LAYAR TERBUKA KEMBALI
-                    AturVisibilitasVideo(false);
-
                     yield return StartCoroutine(JalankanTransisiPixel(false));
                 }
                 else
                 {
-                    // Jeda pendek sebelum scene baru terbuka agar animasi selesai dengan sempurna
                     yield return new WaitForSeconds(0.3f);
                 }
 
-                operasi.allowSceneActivation = true;
+                // 3. SETELAH SELESAI, HANCURKAN PANEL LOADING AGAR TIDAK MENGGANGGU GAME
+                if (panelLoading != null) Destroy(panelLoading);
+                if (this.gameObject != panelLoading) Destroy(this.gameObject);
+
+                yield break;
             }
 
             yield return null;
