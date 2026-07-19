@@ -93,6 +93,7 @@ public class AnimasiHandphoneKamar : MonoBehaviour
         // --- FITUR BARU: CLAMPING AGAR TIDAK KELUAR BATAS LAYAR ---
         // Ambil ukuran layar/canvas saat ini di world space
         Vector3[] canvasCorners = new Vector3[4];
+        RectTransform canvasRect = canvas.GetComponent<RectTransform>();
         canvasRect.GetWorldCorners(canvasCorners);
         float screenW = canvasCorners[2].x - canvasCorners[0].x;
         float screenH = canvasCorners[2].y - canvasCorners[0].y;
