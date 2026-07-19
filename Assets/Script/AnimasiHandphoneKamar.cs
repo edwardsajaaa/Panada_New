@@ -86,14 +86,41 @@ public class AnimasiHandphoneKamar : MonoBehaviour
         Vector3 skalaAkhir = skalaAwal * targetSkalaZoom;
 
         // 3. Hitung target posisi akhir Panel Meja secara matematis
-        // Jarak (offset) dari pivot Meja ke titik target saat ini
         Vector3 offsetTargetAwal = targetRect.position - posisiAwal;
-        
-        // Seberapa besar panel ini akan membengkak dibanding sekarang
         float rasioSkala = targetSkalaZoom / skalaAwal.x;
-        
-        // Posisi yang dituju Panel Meja agar Target tepat jatuh di tengah layar
         Vector3 posisiAkhir = posisiTengahLayar - (offsetTargetAwal * rasioSkala);
+
+        // --- FITUR BARU: CLAMPING AGAR TIDAK KELUAR BATAS LAYAR ---
+        // Ambil ukuran layar/canvas saat ini di world space
+        Vector3[] canvasCorners = new Vector3[4];
+        canvasRect.GetWorldCorners(canvasCorners);
+        float screenW = canvasCorners[2].x - canvasCorners[0].x;
+        float screenH = canvasCorners[2].y - canvasCorners[0].y;
+
+        // Ambil ukuran Panel Meja saat ini di world space, lalu proyeksikan ukurannya di masa depan (setelah zoom)
+        Vector3[] panelCorners = new Vector3[4];
+        panelMejaYangAkanDizoom.GetWorldCorners(panelCorners);
+        float panelW = (panelCorners[2].x - panelCorners[0].x) * rasioSkala;
+        float panelH = (panelCorners[2].y - panelCorners[0].y) * rasioSkala;
+
+        // Hitung batas maksimal pergeseran (selisih ukuran dibagi 2)
+        float marginX = Mathf.Max(0, (panelW - screenW) / 2f);
+        float marginY = Mathf.Max(0, (panelH - screenH) / 2f);
+
+        // Cari titik "netral" yaitu posisi pivot Meja jika tengah-tengah Meja persis berada di tengah layar
+        // Offset dari pivot ke center pada skala awal = Center - Pivot(Position)
+        Vector3 currentPanelCenter = (panelCorners[2] + panelCorners[0]) / 2f;
+        Vector3 pivotToCenterAwal = currentPanelCenter - posisiAwal;
+        // Offset dari pivot ke center pada skala akhir
+        Vector3 pivotToCenterAkhir = pivotToCenterAwal * rasioSkala;
+        
+        // Titik netral: jika center Meja ada di posisiTengahLayar, maka pivotnya ada di:
+        Vector3 neutralPos = posisiTengahLayar - pivotToCenterAkhir;
+
+        // Batasi (Clamp) posisi akhir agar tidak melebihi margin dari titik netral!
+        posisiAkhir.x = Mathf.Clamp(posisiAkhir.x, neutralPos.x - marginX, neutralPos.x + marginX);
+        posisiAkhir.y = Mathf.Clamp(posisiAkhir.y, neutralPos.y - marginY, neutralPos.y + marginY);
+        // -----------------------------------------------------------
 
         // 4. Jalankan animasi perlahan (Lerp)
         float elapsed = 0f;
