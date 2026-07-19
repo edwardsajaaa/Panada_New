@@ -143,6 +143,17 @@ public class TransisiMenuUI : MonoBehaviour
         foreach (Transform anak in transform)
         {
             if (anak.gameObject == panelSetting || anak.gameObject == panelCredit || !anak.gameObject.activeInHierarchy) continue;
+
+            // FITUR BARU: Pastikan panel loading TIDAK ikut terseret/dianimasikan
+            if (LoadingScreenController.Instance != null)
+            {
+                if (anak.gameObject == LoadingScreenController.Instance.gameObject || 
+                    anak.gameObject == LoadingScreenController.Instance.panelLoading)
+                {
+                    continue;
+                }
+            }
+
             if (!daftarKeluar.Contains(anak.gameObject)) daftarKeluar.Add(anak.gameObject);
         }
 
@@ -224,6 +235,17 @@ public class TransisiMenuUI : MonoBehaviour
         foreach (Transform anak in transform)
         {
             if (anak.gameObject == panelSetting || anak.gameObject == panelCredit) continue;
+            
+            // FITUR BARU: Pastikan panel loading TIDAK ikut terseret/dianimasikan
+            if (LoadingScreenController.Instance != null)
+            {
+                if (anak.gameObject == LoadingScreenController.Instance.gameObject || 
+                    anak.gameObject == LoadingScreenController.Instance.panelLoading)
+                {
+                    continue;
+                }
+            }
+
             if (!daftarMasuk.Contains(anak.gameObject)) daftarMasuk.Add(anak.gameObject);
         }
 
