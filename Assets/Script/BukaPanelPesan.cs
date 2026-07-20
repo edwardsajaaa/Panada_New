@@ -15,6 +15,9 @@ public class BukaPanelPesan : MonoBehaviour
     [Tooltip("Masukkan material EyeBlinkMat dari folder Shaders (opsional). Kalau kosong, pakai fade hitam biasa.")]
     public Material materialBlink;
 
+    [Tooltip("Masukkan sprite 'Background' yang sama seperti di BlackScreenPanel scene Pengenalan.")]
+    public Sprite spriteBlink;
+
     void Start()
     {
         if (panelPesan != null)
@@ -52,6 +55,14 @@ public class BukaPanelPesan : MonoBehaviour
 
         Image img = layarHitam.AddComponent<Image>();
         img.raycastTarget = false; // jangan blokir klik apapun
+
+        // Pasang sprite dan tipe yang sama persis seperti BlackScreenPanel di Pengenalan
+        if (spriteBlink != null)
+        {
+            img.sprite = spriteBlink;
+            img.type = Image.Type.Sliced;
+            img.fillCenter = true;
+        }
 
         RectTransform rect = img.rectTransform;
         rect.anchorMin = Vector2.zero;
