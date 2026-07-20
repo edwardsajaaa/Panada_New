@@ -3,36 +3,25 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Collections;
 
-/// <summary>
-/// Pengelola Loading Screen (memutar animasi GIF dari VideoPlayer atau Sprite Sequence, 
-/// transisi keluar dari Main Menu, serta menampilkan Progress Bar & Teks Persentase).
-/// Pasang script ini di Canvas utama atau di GameObject khusus LoadingScreenController.
-/// </summary>
 public class LoadingScreenController : MonoBehaviour
 {
     public static LoadingScreenController Instance { get; private set; }
 
-    [Header("=== 1. Referensi Panel Loading ===")]
-    [Tooltip("Panel UI Loading Screen (misalnya GameObject Panel Loading yang berisi RawImage VideoPlayer)")]
+    [Header("Panel Loading")]
     public GameObject panelLoading;
 
-    [Header("=== 2. Pengaturan Transisi & Jeda ===")]
-    [Tooltip("Apakah jalankan dulu animasi keluar (Out) pada Main Menu sebelum Loading Screen muncul?")]
+    [Header("Transisi & Jeda")]
     public bool transisiKeluarMenuDulu = true;
-    [Tooltip("Durasi animasi keluar Main Menu (detik)")]
     public float durasiKeluarMenu = 0.35f;
-    [Tooltip("Waktu jeda minimal (detik) agar loading screen tidak terkesan berkedip terlalu cepat jika komputer pemain sangat cepat")]
     public float minimalWaktuLoading = 1.2f;
 
-    [Header("=== 3. Efek Transisi Pixel Art ===")]
-    [Tooltip("Material UI yang menggunakan PixelTransitionUI.shader (kosongkan jika tidak dipakai)")]
+    [Header("Efek Transisi Pixel")]
     public Material materialTransisiPixel;
-    [Tooltip("Durasi animasi masuk/keluar pixel art")]
     public float durasiTransisiPixel = 0.5f;
 
     void Awake()
     {
-        // Setup Singleton agar mudah dipanggil dari tombol mana saja
+        // setup singleton
         if (Instance == null)
         {
             Instance = this;
@@ -43,9 +32,8 @@ public class LoadingScreenController : MonoBehaviour
             return;
         }
 
-        // Sembunyikan panel loading secara visual menggunakan CanvasGroup (alpha = 0)
-        // JANGAN gunakan SetActive(false) karena script ini terpasang di panel loading itu sendiri —
-        // jika dimatikan, Coroutine tidak bisa dijalankan saat tombol Play diklik!
+        // sembunyiin panel loading tapi jangan di nonaktifin (SetActive false)
+        // soalnya coroutine ga jalan kalau objectnya mati
         if (panelLoading != null)
         {
             CanvasGroup cg = panelLoading.GetComponent<CanvasGroup>();
@@ -56,23 +44,16 @@ public class LoadingScreenController : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Panggil fungsi ini dari OnClick() Tombol Mulai / Play di Inspector atau dari script lain.
-    /// Contoh: LoadingScreenController.Instance.MuatScene("NamaSceneTujuan");
-    /// </summary>
+    // panggil ini buat load scene
     public void MuatScene(string namaSceneTujuan)
     {
-        // Aktifkan GameObject terlebih dahulu jika dalam keadaan nonaktif di scene.
-        // Awake() yang terpanggil setelah ini TIDAK akan mematikan kembali (sudah pakai CanvasGroup).
         if (!gameObject.activeInHierarchy) gameObject.SetActive(true);
 
         StopAllCoroutines();
         StartCoroutine(ProsesLoading(namaSceneTujuan));
     }
 
-    /// <summary>
-    /// Panggil fungsi ini jika ingin memuat scene berdasarkan Index (nomor urut di Build Settings).
-    /// </summary>
+    // load pakai index
     public void MuatSceneIndex(int indeksScene)
     {
         if (!gameObject.activeInHierarchy) gameObject.SetActive(true);
@@ -81,9 +62,7 @@ public class LoadingScreenController : MonoBehaviour
         StartCoroutine(ProsesLoadingIndex(indeksScene));
     }
 
-    /// <summary>
-    /// Panggil fungsi ini dari OnClick() tombol Play di Main Menu untuk memuat scene Kamar dengan Loading Screen.
-    /// </summary>
+    // shortcut load kamar
     public void BukaSceneKamar()
     {
         MuatScene("Kamar");

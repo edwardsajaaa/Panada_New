@@ -2,55 +2,37 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
 
-/// <summary>
-/// Pengelola transisi animasi Out & In antara Main Menu dan Setting Panel (atau panel lainnya).
-/// Pasang script ini di GameObject MainMenu atau Canvas utama.
-/// </summary>
 public class TransisiMenuUI : MonoBehaviour
 {
-    [Header("=== 1. Referensi Objek Main Menu ===")]
-    [Tooltip("Daftar semua GameObject di Main Menu yang ingin meluncur KELUAR berbarengan saat masuk ke Setting/Credit (misal: Koran, HP, Kopi, Logo Rerantau)")]
+    [Header("Main Menu")]
     public GameObject[] objekMainMenu;
 
-    [Header("=== 2. Referensi Panel Setting ===")]
-    [Tooltip("Panel Setting yang akan muncul setelah Main Menu meluncur keluar (misal: Setting Panel)")]
+    [Header("Panel Setting")]
     public GameObject panelSetting;
-
-    [Tooltip("Daftar tombol/objek di dalam Setting Panel yang akan meluncur KELUAR saat tombol Kembali ditekan (opsional)")]
     public GameObject[] objekPanelSetting;
 
-    [Header("=== 3. Referensi Panel Credit ===")]
-    [Tooltip("Panel Credit yang akan muncul setelah Main Menu meluncur keluar saat Logo Panada diklik (misal: Credit Panel)")]
+    [Header("Panel Credit")]
     public GameObject panelCredit;
-
-    [Tooltip("Daftar tombol/objek di dalam Panel Credit yang akan meluncur KELUAR saat tombol Kembali ditekan (opsional)")]
     public GameObject[] objekPanelCredit;
 
-    [Header("=== 4. Pengaturan Transisi ===")]
-    [Tooltip("Waktu tunggu (durasi Animasi Out) sebelum Panel Setting/Credit dibuka")]
+    [Header("Transisi")]
     public float jedaTransisi = 0.35f;
 
-    /// <summary>
-    /// Panggil fungsi ini pada OnClick() tombol Setting di Main Menu
-    /// </summary>
+    // dipanggil pas tombol Setting diklik
     public void BukaPanelSetting()
     {
         StopAllCoroutines();
         StartCoroutine(ProsesBukaPanel(panelSetting));
     }
 
-    /// <summary>
-    /// Panggil fungsi ini saat Logo Panada diklik untuk membuka Credit Panel
-    /// </summary>
+    // dipanggil pas Logo Panada diklik
     public void BukaPanelCredit()
     {
         StopAllCoroutines();
         StartCoroutine(ProsesBukaPanel(panelCredit));
     }
 
-    /// <summary>
-    /// Panggil fungsi ini pada OnClick() tombol Mulai / Play di Main Menu untuk pindah ke scene permainan dengan animasi Loading Screen (GIF/Video).
-    /// </summary>
+    // buat pindah scene pakai loading screen
     public void BukaSceneDenganLoading(string namaScene)
     {
         LoadingScreenController lsc = DapatkanLoadingScreenController();
@@ -60,14 +42,12 @@ public class TransisiMenuUI : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("LoadingScreenController tidak ditemukan di adegan! Langsung memuat scene...");
+            Debug.LogWarning("LoadingScreenController ga ketemu, langsung load scene aja...");
             UnityEngine.SceneManagement.SceneManager.LoadScene(namaScene);
         }
     }
 
-    /// <summary>
-    /// Panggil fungsi ini jika ingin memuat scene berdasarkan Index (nomor urut di Build Settings).
-    /// </summary>
+    // load scene pakai index build
     public void BukaSceneDenganLoadingIndex(int indeksScene)
     {
         LoadingScreenController lsc = DapatkanLoadingScreenController();
@@ -81,27 +61,20 @@ public class TransisiMenuUI : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Panggil fungsi ini dari OnClick() tombol Play di Main Menu untuk langsung memuat scene Kamar dengan Loading Screen.
-    /// </summary>
+    // shortcut buat buka kamar
     public void BukaSceneKamar()
     {
         BukaSceneDenganLoading("Kamar");
     }
 
-    /// <summary>
-    /// Mencari LoadingScreenController — cek Instance dulu, jika null cari manual di scene (termasuk di GameObject nonaktif).
-    /// </summary>
+    // cari controller loading (bisa jadi nonaktif)
     private LoadingScreenController DapatkanLoadingScreenController()
     {
         if (LoadingScreenController.Instance != null) return LoadingScreenController.Instance;
 
-        // Instance null karena Loading Screen Panel nonaktif di scene dan Awake belum pernah jalan.
-        // Cari secara manual di seluruh scene, termasuk yang nonaktif.
         LoadingScreenController lsc = FindObjectOfType<LoadingScreenController>(true);
         if (lsc != null)
         {
-            // Aktifkan dulu agar Awake() berjalan dan Instance ter-set
             if (!lsc.gameObject.activeInHierarchy) lsc.gameObject.SetActive(true);
             return lsc;
         }
@@ -109,10 +82,8 @@ public class TransisiMenuUI : MonoBehaviour
         return null;
     }
 
+    // dipanggil pas tombol Kembali diklik
 
-    /// <summary>
-    /// Panggil fungsi ini pada OnClick() tombol Kembali/Tutup di dalam Setting Panel atau Credit Panel
-    /// </summary>
     public void KembaliKeMainMenu()
     {
         StopAllCoroutines();
@@ -134,7 +105,7 @@ public class TransisiMenuUI : MonoBehaviour
     {
         if (targetPanel == null) yield break;
 
-        // Kumpulkan semua objek yang akan di-animasikan keluar (dari array + otomatis semua anak MainMenu selain panelSetting dan panelCredit)
+        // kumpulin semua objek yang mau dihilangin
         System.Collections.Generic.List<GameObject> daftarKeluar = new System.Collections.Generic.List<GameObject>();
         if (objekMainMenu != null)
         {
@@ -144,7 +115,7 @@ public class TransisiMenuUI : MonoBehaviour
         {
             if (anak.gameObject == panelSetting || anak.gameObject == panelCredit || !anak.gameObject.activeInHierarchy) continue;
 
-            // FITUR BARU: Pastikan panel loading TIDAK ikut terseret/dianimasikan
+            // biarin loading screen
             if (LoadingScreenController.Instance != null)
             {
                 if (anak.gameObject == LoadingScreenController.Instance.gameObject || 
@@ -157,7 +128,7 @@ public class TransisiMenuUI : MonoBehaviour
             if (!daftarKeluar.Contains(anak.gameObject)) daftarKeluar.Add(anak.gameObject);
         }
 
-        // 1. Jalankan Animasi Out secara berbarengan pada semua objek
+        // play animasi keluar
         foreach (GameObject obj in daftarKeluar)
         {
             if (obj == null || !obj.activeInHierarchy) continue;
@@ -172,16 +143,16 @@ public class TransisiMenuUI : MonoBehaviour
             anim.JalankanAnimasiOut(null, true);
         }
 
-        // 2. Tunggu sampai semua objek Main Menu selesai meluncur keluar
+        // tunggu selesai
         yield return new WaitForSeconds(jedaTransisi);
 
-        // Pastikan tidak ada tombol yang masih tertinggal aktif di layar
+        // pastiin mati semua
         foreach (GameObject obj in daftarKeluar)
         {
             if (obj != null) obj.SetActive(false);
         }
 
-        // 3. Aktifkan Panel Target (Setting atau Credit) dan jalankan animasi In-nya secara berbarengan
+        // munculin panel target
         targetPanel.SetActive(true);
         AnimasiTombolMenu[] animAnak = targetPanel.GetComponentsInChildren<AnimasiTombolMenu>(true);
         foreach (var a in animAnak)
@@ -193,7 +164,7 @@ public class TransisiMenuUI : MonoBehaviour
 
     IEnumerator ProsesKembaliKeMainMenu(GameObject targetPanel, GameObject[] objekTargetPanel)
     {
-        // 1. Jalankan Animasi Out pada Panel Target (Setting/Credit) beserta anak-anaknya
+        // play animasi keluar panel target
         if (objekTargetPanel != null && objekTargetPanel.Length > 0)
         {
             foreach (GameObject obj in objekTargetPanel)
@@ -222,11 +193,11 @@ public class TransisiMenuUI : MonoBehaviour
             else targetPanel.SetActive(false);
         }
 
-        // 2. Tunggu sampai Panel Target selesai keluar
+        // tunggu beres
         yield return new WaitForSeconds(jedaTransisi);
         if (targetPanel != null) targetPanel.SetActive(false);
 
-        // 3. Aktifkan kembali semua objek Main Menu secara berbarengan (baik dari array maupun semua anak MainMenu selain panelSetting dan panelCredit)
+        // idupin menu utama lagi
         System.Collections.Generic.List<GameObject> daftarMasuk = new System.Collections.Generic.List<GameObject>();
         if (objekMainMenu != null)
         {
@@ -236,7 +207,7 @@ public class TransisiMenuUI : MonoBehaviour
         {
             if (anak.gameObject == panelSetting || anak.gameObject == panelCredit) continue;
             
-            // FITUR BARU: Pastikan panel loading TIDAK ikut terseret/dianimasikan
+            // biarin loading screen
             if (LoadingScreenController.Instance != null)
             {
                 if (anak.gameObject == LoadingScreenController.Instance.gameObject || 
