@@ -7,8 +7,8 @@ public class AnimasiHandphoneKamar : MonoBehaviour
     [Header("Waktu")]
     public float waktuTunggu = 4.0f; // di set 4 detik sesuai request
 
-    [Header("Visual Notifikasi")]
-    public GameObject visualHpMenyala;
+    [Header("Visual Yang Muncul (HP & Tombol)")]
+    public GameObject[] visualYangMuncul;
     
     [Header("Zoom Setup")]
     public RectTransform panelMeja;
@@ -21,8 +21,12 @@ public class AnimasiHandphoneKamar : MonoBehaviour
 
     void Start()
     {
-        // matiin layar pas mulai
-        if (visualHpMenyala != null) visualHpMenyala.SetActive(false);
+        // matiin semua visual pas mulai
+        if (visualYangMuncul != null)
+        {
+            foreach(var obj in visualYangMuncul)
+                if (obj != null) obj.SetActive(false);
+        }
         StartCoroutine(ProsesMulai());
     }
 
@@ -35,11 +39,16 @@ public class AnimasiHandphoneKamar : MonoBehaviour
         if (panelMeja != null)
             yield return StartCoroutine(AnimasiZoomPanel());
 
-        // 3. Jeda 1 detik
-        yield return new WaitForSeconds(1f);
+        // 3. Jeda 2 detik
+        yield return new WaitForSeconds(2f);
 
-        // 4. Nyalain notifikasi
-        if (visualHpMenyala != null) visualHpMenyala.SetActive(true);
+        // 4. Nyalain semua object
+        if (visualYangMuncul != null)
+        {
+            foreach (var obj in visualYangMuncul)
+                if (obj != null) obj.SetActive(true);
+        }
+
         if (eventSaatHpMenyala != null) eventSaatHpMenyala.Invoke();
     }
 
