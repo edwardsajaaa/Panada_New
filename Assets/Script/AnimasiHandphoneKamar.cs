@@ -38,16 +38,16 @@ public class AnimasiHandphoneKamar : MonoBehaviour
         // 1. Tunggu 4 detik (atau sesuai waktuTunggu)
         yield return new WaitForSeconds(waktuTunggu);
 
-        // 2. Langsung jalankan Zoom duluan
+        // 2. Langsung jalankan Zoom duluan dan TUNGGU sampai selesai
         if (gunakanZoomOtomatisScriptIni)
         {
             if (kameraYangAkanDizoom != null)
-                StartCoroutine(AnimasiZoomKamera());
+                yield return StartCoroutine(AnimasiZoomKamera());
             else if (panelMejaYangAkanDizoom != null)
-                StartCoroutine(AnimasiZoomPanelMeja());
+                yield return StartCoroutine(AnimasiZoomPanelMeja());
         }
 
-        // 3. Tunggu 1 detik setelah zoom mulai
+        // 3. Tunggu 1 detik setelah zoom SELESAI
         yield return new WaitForSeconds(1f);
 
         // 4. Baru nyalain/munculin HP
