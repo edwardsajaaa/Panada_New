@@ -85,12 +85,13 @@ public class BukaPanelPesan : MonoBehaviour
                 blinkMat = new Material(imgHitam.material);
                 imgHitam.material = blinkMat;
             }
-            else
-            {
-                cg = layarHitam.GetComponent<CanvasGroup>();
-                if (cg == null) cg = layarHitam.AddComponent<CanvasGroup>();
-            }
         }
+
+        // Matikan interaksi dan sembunyikan visual notif supaya tidak diklik 2x
+        Image imgTombol = GetComponent<Image>();
+        if (imgTombol != null) imgTombol.enabled = false;
+        Button btnTombol = GetComponent<Button>();
+        if (btnTombol != null) btnTombol.interactable = false;
 
         // 2. Mata tertutup (Fade In)
         float waktu = 0f;
@@ -100,16 +101,24 @@ public class BukaPanelPesan : MonoBehaviour
             float t = Mathf.Clamp01(waktu / durasiTutupMata);
             
             if (blinkMat != null) blinkMat.SetFloat("_Blink", t); // 0 (buka) ke 1 (tutup)
-            else if (cg != null) cg.alpha = t;
-            else if (imgHitam != null) imgHitam.color = new Color(0, 0, 0, t);
+            else if (imgHitam != null)
+            {
+                Color c = imgHitam.color;
+                c.a = t;
+                imgHitam.color = c;
+            }
             
             yield return null;
         }
 
         // Pastikan mentok tertutup
         if (blinkMat != null) blinkMat.SetFloat("_Blink", 1f);
-        else if (cg != null) cg.alpha = 1f;
-        else if (imgHitam != null) imgHitam.color = Color.black;
+        else if (imgHitam != null)
+        {
+            Color c = imgHitam.color;
+            c.a = 1f;
+            imgHitam.color = c;
+        }
 
         // Jeda bentar pas mata nutup
         yield return new WaitForSeconds(0.15f);
@@ -119,8 +128,6 @@ public class BukaPanelPesan : MonoBehaviour
         {
             panelPesan.SetActive(true);
         }
-        // Sembunyikan notif ini
-        gameObject.SetActive(false);
 
         // 4. Mata terbuka lagi (Fade Out)
         waktu = 0f;
@@ -130,16 +137,24 @@ public class BukaPanelPesan : MonoBehaviour
             float t = Mathf.Clamp01(1f - (waktu / durasiBukaMata));
             
             if (blinkMat != null) blinkMat.SetFloat("_Blink", t); // 1 (tutup) ke 0 (buka)
-            else if (cg != null) cg.alpha = t;
-            else if (imgHitam != null) imgHitam.color = new Color(0, 0, 0, t);
+            else if (imgHitam != null)
+            {
+                Color c = imgHitam.color;
+                c.a = t;
+                imgHitam.color = c;
+            }
             
             yield return null;
         }
 
         // Pastikan mentok terbuka
         if (blinkMat != null) blinkMat.SetFloat("_Blink", 0f);
-        else if (cg != null) cg.alpha = 0f;
-        else if (imgHitam != null) imgHitam.color = new Color(0, 0, 0, 0);
+        else if (imgHitam != null)
+        {
+            Color c = imgHitam.color;
+            c.a = 0f;
+            imgHitam.color = c;
+        }
 
         // 5. Bersih-bersih
         if (buatLayarDadakan)
@@ -150,5 +165,8 @@ public class BukaPanelPesan : MonoBehaviour
         {
             layarHitam.SetActive(false);
         }
+        
+        // Akhirnya, matikan diri sendiri setelah semua animasi selesai
+        gameObject.SetActive(false);
     }
 }
