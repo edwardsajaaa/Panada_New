@@ -35,19 +35,10 @@ public class AnimasiHandphoneKamar : MonoBehaviour
 
     IEnumerator ProsesHandphoneMenyala()
     {
+        // 1. Tunggu 4 detik (atau sesuai waktuTunggu)
         yield return new WaitForSeconds(waktuTunggu);
 
-        if (visualHpMenyala != null)
-            visualHpMenyala.SetActive(true);
-
-        if (eventSaatHpMenyala != null)
-            eventSaatHpMenyala.Invoke();
-
-        // trigger klik biar tombol jalan otomatis
-        Button tombolHp = GetComponent<Button>();
-        if (tombolHp != null)
-            tombolHp.onClick.Invoke();
-
+        // 2. Langsung jalankan Zoom duluan
         if (gunakanZoomOtomatisScriptIni)
         {
             if (kameraYangAkanDizoom != null)
@@ -55,6 +46,17 @@ public class AnimasiHandphoneKamar : MonoBehaviour
             else if (panelMejaYangAkanDizoom != null)
                 StartCoroutine(AnimasiZoomPanelMeja());
         }
+
+        // 3. Tunggu 1 detik setelah zoom mulai
+        yield return new WaitForSeconds(1f);
+
+        // 4. Baru nyalain/munculin HP
+        if (visualHpMenyala != null)
+            visualHpMenyala.SetActive(true);
+
+        // 5. Jalankan event tambahan kalau ada
+        if (eventSaatHpMenyala != null)
+            eventSaatHpMenyala.Invoke();
     }
 
     IEnumerator AnimasiZoomPanelMeja()
