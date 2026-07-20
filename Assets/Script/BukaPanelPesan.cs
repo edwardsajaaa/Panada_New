@@ -110,10 +110,8 @@ public class BukaPanelPesan : MonoBehaviour
                 
                 if (imgHitam.material != null && imgHitam.material.HasProperty("_Blink"))
                 {
-                    // Paksa alpha color menjadi 1 agar material shader tetap terlihat walau image-nya diset transparan
-                    Color c = imgHitam.color;
-                    c.a = 1f;
-                    imgHitam.color = c;
+                    // Paksa warna menjadi hitam pekat agar material shader merender kegelapan dengan sempurna
+                    imgHitam.color = Color.black;
 
                     blinkMat = new Material(imgHitam.material);
                     imgHitam.material = blinkMat;
