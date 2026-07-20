@@ -54,14 +54,22 @@ public class BukaPanelPesan : MonoBehaviour
         CanvasGroup cg = null;
         bool buatLayarDadakan = false;
 
+        Canvas canvasUtama = GetComponentInParent<Canvas>();
+        if (canvasUtama == null) canvasUtama = FindObjectOfType<Canvas>();
+
+        // Cek apakah layarHitam adalah prefab dari Project (bukan dari Hierarchy scene)
+        if (layarHitam != null && string.IsNullOrEmpty(layarHitam.scene.name))
+        {
+            layarHitam = Instantiate(layarHitam);
+            if (canvasUtama != null) layarHitam.transform.SetParent(canvasUtama.transform, false);
+            buatLayarDadakan = true; // agar nanti dihapus
+        }
+
         // 1. Siapkan layar hitam
         if (layarHitam == null)
         {
-            Canvas canvasUtama = GetComponentInParent<Canvas>();
-            if (canvasUtama == null) canvasUtama = FindObjectOfType<Canvas>();
-            
             layarHitam = new GameObject("LayarHitamKedip");
-            layarHitam.transform.SetParent(canvasUtama.transform, false);
+            if (canvasUtama != null) layarHitam.transform.SetParent(canvasUtama.transform, false);
             layarHitam.transform.SetAsLastSibling();
 
             imgHitam = layarHitam.AddComponent<Image>();
@@ -82,6 +90,11 @@ public class BukaPanelPesan : MonoBehaviour
             
             if (imgHitam != null && imgHitam.material != null && imgHitam.material.HasProperty("_Blink"))
             {
+                // Paksa alpha color menjadi 1 agar material shader tetap terlihat walau image-nya diset transparan
+                Color c = imgHitam.color;
+                c.a = 1f;
+                imgHitam.color = c;
+
                 blinkMat = new Material(imgHitam.material);
                 imgHitam.material = blinkMat;
             }
