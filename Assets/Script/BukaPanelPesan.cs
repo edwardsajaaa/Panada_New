@@ -15,9 +15,6 @@ public class BukaPanelPesan : MonoBehaviour
     [Tooltip("Masukkan material EyeBlinkMat dari folder Shaders (opsional). Kalau kosong, pakai fade hitam biasa.")]
     public Material materialBlink;
 
-    [Tooltip("Masukkan sprite 'Background' yang sama seperti di BlackScreenPanel scene Pengenalan.")]
-    public Sprite spriteBlink;
-
     void Start()
     {
         if (panelPesan != null)
@@ -30,36 +27,33 @@ public class BukaPanelPesan : MonoBehaviour
 
     void OnKlik()
     {
-        // Pindahkan coroutine ke object yang TIDAK akan dimatikan
         Canvas canvas = GetComponentInParent<Canvas>();
         if (canvas == null) canvas = FindObjectOfType<Canvas>();
 
-        // Jalankan coroutine di object Canvas (bukan di tombol ini) supaya tidak mati
         MonoBehaviour runner = canvas.GetComponent<MonoBehaviour>();
         runner.StartCoroutine(ProsesKedipLaluBukaPanel());
     }
 
     IEnumerator ProsesKedipLaluBukaPanel()
     {
-        // --- SEMBUNYIKAN TOMBOL NOTIF ---
         gameObject.SetActive(false);
 
-        // --- CARI CANVAS ---
         Canvas canvas = FindObjectOfType<Canvas>();
         if (canvas == null) yield break;
 
-        // --- BUAT LAYAR HITAM BARU (fullscreen, paling depan) ---
+        // --- BUAT LAYAR BLINK BARU ---
         GameObject layarHitam = new GameObject("LayarKedip");
         layarHitam.transform.SetParent(canvas.transform, false);
         layarHitam.transform.SetAsLastSibling();
 
         Image img = layarHitam.AddComponent<Image>();
-        img.raycastTarget = false; // jangan blokir klik apapun
+        img.raycastTarget = false;
 
-        // Pasang sprite dan tipe yang sama persis seperti BlackScreenPanel di Pengenalan
-        if (spriteBlink != null)
+        // Pakai sprite built-in "Background" persis seperti di BlackScreenPanel Pengenalan
+        Sprite bgSprite = Resources.GetBuiltinResource<Sprite>("UI/Skin/Background.psd");
+        if (bgSprite != null)
         {
-            img.sprite = spriteBlink;
+            img.sprite = bgSprite;
             img.type = Image.Type.Sliced;
             img.fillCenter = true;
         }
