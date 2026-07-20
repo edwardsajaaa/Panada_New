@@ -28,60 +28,36 @@ public class AnimasiTombolMenu : MonoBehaviour, IPointerEnterHandler, IPointerEx
         Fade                // Murni memudar halus (alpha 0 -> 1) tanpa perubahan skala/posisi/rotasi
     }
 
-    [Header("1. Pengaturan Animasi In (Muncul)")]
-    [Tooltip("Apakah animasi In dijalankan saat tombol aktif (OnEnable)?")]
+    [Header("Animasi Masuk")]
     public bool gunakanAnimasiIn = true;
-    [Tooltip("Jenis animasi saat muncul")]
     public ModeAnimasiIn modeAnimasiIn = ModeAnimasiIn.PopInBawah;
-    [Tooltip("Waktu jeda sebelum tombol mulai muncul (sangat bagus untuk efek muncul bergantian/staggered)")]
     public float delayMuncul = 0f;
-    [Tooltip("Durasi animasi saat muncul")]
     public float durasiAnimasiIn = 0.48f;
-    [Tooltip("Kekuatan pantulan saat muncul (Overshoot bounce)")]
     public float kekuatanBounceIn = 1.8f;
-    [Tooltip("Pergeseran awal dari bawah sebelum pop-in (dalam pixel) untuk PopInBawah")]
     public float geserBawahAwal = 35f;
-    [Tooltip("Jarak geser masuk (dalam pixel) jika menggunakan mode Slide (misal 800 untuk dari luar layar)")]
     public float jarakSlideIn = 800f;
 
-    [Header("4. Pengaturan Animasi Out (Keluar)")]
-    [Tooltip("Apakah menggunakan animasi Out saat menutup menu/panel?")]
+    [Header("Animasi Keluar")]
     public bool gunakanAnimasiOut = true;
-    [Tooltip("Jenis animasi saat keluar/menutup")]
     public ModeAnimasiIn modeAnimasiOut = ModeAnimasiIn.SlideDariKiri;
-    [Tooltip("Durasi animasi saat keluar (detik)")]
     public float durasiAnimasiOut = 0.35f;
-    [Tooltip("Jarak geser keluar (dalam pixel) jika menggunakan mode Slide")]
     public float jarakSlideOut = 800f;
 
-    [Header("2. Pengaturan Animasi Stay (Idle)")]
-    [Tooltip("Apakah tombol terus bergerak santai saat diam di layar?")]
+    [Header("Animasi Diam (Idle)")]
     public bool gunakanAnimasiStay = true;
-    [Tooltip("Pilihan jenis animasi stay")]
     public ModeStay modeStay = ModeStay.Breathing;
-    [Tooltip("Kecepatan gerakan animasi stay")]
     public float kecepatanStay = 3.2f;
-    [Tooltip("Intensitas perubahan skala saat Breathing (misal 0.04 untuk 4%)")]
     public float intensitasSkalaStay = 0.04f;
-    [Tooltip("Intensitas naik-turun dalam pixel saat Floating")]
     public float intensitasPosisiStay = 4.5f;
-    [Tooltip("Intensitas goyangan miring dalam derajat saat Wobble")]
     public float intensitasRotasiStay = 2f;
-    [Tooltip("Kecepatan putaran 360 derajat saat Spinning (derajat per detik, minus untuk putar searah jarum jam)")]
     public float kecepatanPutarStay = -25f;
 
-    [Header("3. Pengaturan Animasi Hover & Click")]
-    [Tooltip("Apakah tombol membesar saat kursor diarahkan ke atasnya?")]
+    [Header("Efek Kursor Hover & Klik")]
     public bool gunakanHoverDanClick = true;
-    [Tooltip("Target skala saat di-hover (misal 1.1 untuk membesar 10%)")]
     public float targetSkalaHover = 1.10f;
-    [Tooltip("Target skala saat ditekan/diklik (efek squash menekan tombol)")]
     public float targetSkalaClick = 0.93f;
-    [Tooltip("Kecepatan transisi hover")]
     public float kecepatanHover = 16f;
-    [Tooltip("Apakah tombol dibawa ke lapisan terdepan saat di-hover")]
     public bool bawaKeDepanSaatHover = true;
-    [Tooltip("Waktu jeda (detik) setelah tombol baru aktif / setelah animasi muncul selesai sebelum efek hover diizinkan aktif. Mencegah tombol langsung muncul instan/meledak jika kursor sudah diam di atas tombol saat panel baru dibuka.")]
     public float jedaSebelumHover = 0.5f;
 
     private Vector3 skalaAwal;

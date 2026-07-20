@@ -2,37 +2,21 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using System.Collections;
 
-/// <summary>
-/// Animasi khusus Logo Panada:
-/// - Berputar 360 derajat terus-menerus (Spinning)
-/// - Saat diklik: "kecelup ke dalam kopi" (mengecil + turun) lalu balik sendiri dengan bounce
-/// - Tidak ada efek hover sama sekali
-/// Pasang script ini langsung di GameObject logo (Image Panada).
-/// </summary>
 public class AnimasiLogoPanada : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerClickHandler
 {
-    [Header("=== Efek Spinning ===")]
-    [Tooltip("Aktifkan efek berputar terus-menerus")]
+    [Header("Efek Spinning")]
     public bool gunakanSpinning = true;
-    [Tooltip("Kecepatan putaran dalam derajat per detik. Negatif = searah jarum jam (lebih natural untuk piringan kopi)")]
     public float kecepatanPutar = -28f;
-    [Tooltip("Waktu jeda (detik) sebelum logo mulai berputar saat baru muncul (supaya saat meluncur horizontal di awal logo tetap lurus horizontal)")]
     public float jedaSebelumPutar = 0.55f;
 
-    [Header("=== Efek Kecelup Saat Klik ===")]
-    [Tooltip("Seberapa kecil logo saat 'kecelup' (misal 0.72 = mengecil 28%)")]
+    [Header("Efek Kecelup Saat Klik")]
     public float skalaKecelup = 0.72f;
-    [Tooltip("Durasi animasi mengecil saat ditekan (detik)")]
     public float durasiCelup = 0.10f;
-    [Tooltip("Durasi animasi balik ke ukuran semula setelah dilepas (detik)")]
     public float durasiKembali = 0.35f;
-    [Tooltip("Kekuatan 'mental' saat balik (overshoot bounce, misal 1.5 = sedikit bounce)")]
     public float kekuatanBounce = 1.5f;
-    [Tooltip("Pergerakan turun ke bawah saat 'kecelup' (pixel, positif = turun)")]
     public float geserBawahKecelup = 6f;
 
-    [Header("=== Event Saat Diklik ===")]
-    [Tooltip("Event yang dijalankan setelah logo selesai dicelup & diklik (misal membuka Credit Panel)")]
+    [Header("Event Saat Diklik")]
     public UnityEngine.Events.UnityEvent saatLogoDiklik;
 
     // State internal
