@@ -19,6 +19,7 @@ public class AnimasiTombolMenu : MonoBehaviour, IPointerEnterHandler, IPointerEx
     public enum ModeAnimasiIn
     {
         PopInBawah,         // Pop-in membesar dari bawah (Default tombol)
+        PopUpMurni,         // Pop-in murni di tempat tanpa geser atau miring
         SlideDariKiri,      // Meluncur masuk dari sisi kiri layar ke kanan
         SlideDariKanan,     // Meluncur masuk dari sisi kanan layar ke kiri
         SlideDariAtas,      // Meluncur masuk dari atas
@@ -176,6 +177,12 @@ public class AnimasiTombolMenu : MonoBehaviour, IPointerEnterHandler, IPointerEx
             posisiMulai = posisiAwal - new Vector2(0f, geserBawahAwal);
             rotasiMulai = rotasiAwal * Quaternion.Euler(0f, 0f, -6f);
         }
+        else if (modeAnimasiIn == ModeAnimasiIn.PopUpMurni)
+        {
+            skalaMulai = Vector3.zero;
+            posisiMulai = posisiAwal;
+            rotasiMulai = rotasiAwal;
+        }
         else if (modeAnimasiIn == ModeAnimasiIn.SlideDariKiri)
         {
             skalaMulai = skalaAwal;
@@ -222,7 +229,7 @@ public class AnimasiTombolMenu : MonoBehaviour, IPointerEnterHandler, IPointerEx
         transform.localScale = skalaMulai;
         if (rectTransform != null) rectTransform.anchoredPosition = posisiMulai;
         transform.localRotation = rotasiMulai;
-        if (modeAnimasiIn == ModeAnimasiIn.PopInBawah || modeAnimasiIn == ModeAnimasiIn.FlipKartu3D || modeAnimasiIn == ModeAnimasiIn.JatuhKartuMeja || modeAnimasiIn == ModeAnimasiIn.Fade)
+        if (modeAnimasiIn == ModeAnimasiIn.PopInBawah || modeAnimasiIn == ModeAnimasiIn.PopUpMurni || modeAnimasiIn == ModeAnimasiIn.FlipKartu3D || modeAnimasiIn == ModeAnimasiIn.JatuhKartuMeja || modeAnimasiIn == ModeAnimasiIn.Fade)
             canvasGroup.alpha = 0f;
         else
             canvasGroup.alpha = 0.15f;
@@ -260,7 +267,7 @@ public class AnimasiTombolMenu : MonoBehaviour, IPointerEnterHandler, IPointerEx
                 else
                     transform.localRotation = Quaternion.Lerp(rotasiMulai, rotasiAwal, progress);
                 
-                if (modeAnimasiIn == ModeAnimasiIn.PopInBawah || modeAnimasiIn == ModeAnimasiIn.FlipKartu3D || modeAnimasiIn == ModeAnimasiIn.JatuhKartuMeja)
+                if (modeAnimasiIn == ModeAnimasiIn.PopInBawah || modeAnimasiIn == ModeAnimasiIn.PopUpMurni || modeAnimasiIn == ModeAnimasiIn.FlipKartu3D || modeAnimasiIn == ModeAnimasiIn.JatuhKartuMeja)
                     canvasGroup.alpha = Mathf.Clamp01(progress * 1.6f);
                 else
                     canvasGroup.alpha = Mathf.Clamp01(0.15f + progress * 1.5f);
@@ -554,6 +561,13 @@ public class AnimasiTombolMenu : MonoBehaviour, IPointerEnterHandler, IPointerEx
         {
             targetSkala = Vector3.zero;
             targetPosisi = posisiAwal - new Vector2(0f, geserBawahAwal);
+            targetAlpha = 0f;
+        }
+        else if (modeAnimasiOut == ModeAnimasiIn.PopUpMurni)
+        {
+            targetSkala = Vector3.zero;
+            targetPosisi = posisiAwal;
+            targetRotasi = rotasiAwal;
             targetAlpha = 0f;
         }
         else if (modeAnimasiOut == ModeAnimasiIn.SlideDariKiri)
