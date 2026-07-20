@@ -123,11 +123,7 @@ public class BukaPanelPesan : MonoBehaviour
         // Jeda bentar pas mata nutup
         yield return new WaitForSeconds(0.15f);
 
-        // 3. BUKA PANEL PESAN! (saat layar gelap total)
-        if (panelPesan != null)
-        {
-            panelPesan.SetActive(true);
-        }
+        // (Panel Pesan DITUNDA agar baru aktif setelah mata terbuka penuh)
 
         // 4. Mata terbuka lagi (Fade Out)
         waktu = 0f;
@@ -154,6 +150,13 @@ public class BukaPanelPesan : MonoBehaviour
             Color c = imgHitam.color;
             c.a = 0f;
             imgHitam.color = c;
+        }
+
+        // 5. BUKA PANEL PESAN! (saat layar sudah terang sepenuhnya)
+        // Hal ini akan memicu animasi tangan "SlideDariBawah" muncul tepat setelah mata terbuka!
+        if (panelPesan != null)
+        {
+            panelPesan.SetActive(true);
         }
 
         // 5. Bersih-bersih
