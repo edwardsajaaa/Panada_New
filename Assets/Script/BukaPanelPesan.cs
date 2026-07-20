@@ -31,8 +31,9 @@ public class BukaPanelPesan : MonoBehaviour
         Canvas canvas = GetComponentInParent<Canvas>();
         if (canvas == null) canvas = FindObjectOfType<Canvas>();
 
-        // Jalankan coroutine di Canvas (bukan di tombol ini) supaya tidak mati
-        canvas.StartCoroutine(ProsesKedipLaluBukaPanel());
+        // Jalankan coroutine di object Canvas (bukan di tombol ini) supaya tidak mati
+        MonoBehaviour runner = canvas.GetComponent<MonoBehaviour>();
+        runner.StartCoroutine(ProsesKedipLaluBukaPanel());
     }
 
     IEnumerator ProsesKedipLaluBukaPanel()
