@@ -270,11 +270,11 @@ RectTransform:
   m_LocalScale: {x: 0.00926, y: 0.00926, z: 0.00926}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 698921737}
+  m_Father: {fileID: 2080376894}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -960, y: -540}
+  m_AnchoredPosition: {x: 307175.12, y: 172786}
   m_SizeDelta: {x: 0.00024414062, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &82838149
@@ -297,8 +297,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
+  m_Sprite: {fileID: 21300000, guid: 6814f86aa4bfb654fb717bea31d4f1f1, type: 3}
+  m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -1123,7 +1123,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   panelPesan: {fileID: 2080376893}
-  gunakanKedip: 1
+  gunakanKedip: 0
   durasiTutupMata: 0.3
   durasiBukaMata: 0.4
   panelLayarHitam: {fileID: 82838147}
@@ -1193,7 +1193,6 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 82838148}
   - {fileID: 1411375589}
   - {fileID: 111700598}
   m_Father: {fileID: 272911842}
@@ -1638,6 +1637,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 82838148}
   - {fileID: 572935906}
   m_Father: {fileID: 272911842}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

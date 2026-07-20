@@ -8,200 +8,123 @@ public class BukaPanelPesan : MonoBehaviour
     public GameObject panelPesan;
 
     [Header("Animasi Kedip")]
-    public bool gunakanKedip = true;
     public float durasiTutupMata = 0.3f;
+    public float jedaGelap = 0.15f;
     public float durasiBukaMata = 0.4f;
-    [Tooltip("Masukkan layar hitam (opsional). Jika ada material _Blink, akan pakai efek kelopak mata!")]
-    public GameObject panelLayarHitam;
+
+    [Tooltip("Masukkan material EyeBlinkMat dari folder Shaders (opsional). Kalau kosong, pakai fade hitam biasa.")]
+    public Material materialBlink;
 
     void Start()
     {
         if (panelPesan != null)
-        {
             panelPesan.SetActive(false);
-        }
 
         Button tombol = GetComponent<Button>();
         if (tombol != null)
-        {
-            tombol.onClick.AddListener(TampilkanPesan);
-        }
+            tombol.onClick.AddListener(OnKlik);
     }
 
-    public void TampilkanPesan()
+    void OnKlik()
     {
-        if (gunakanKedip)
+        // Pindahkan coroutine ke object yang TIDAK akan dimatikan
+        Canvas canvas = GetComponentInParent<Canvas>();
+        if (canvas == null) canvas = FindObjectOfType<Canvas>();
+
+        // Jalankan coroutine di Canvas (bukan di tombol ini) supaya tidak mati
+        canvas.StartCoroutine(ProsesKedipLaluBukaPanel());
+    }
+
+    IEnumerator ProsesKedipLaluBukaPanel()
+    {
+        // --- SEMBUNYIKAN TOMBOL NOTIF ---
+        gameObject.SetActive(false);
+
+        // --- CARI CANVAS ---
+        Canvas canvas = FindObjectOfType<Canvas>();
+        if (canvas == null) yield break;
+
+        // --- BUAT LAYAR HITAM BARU (fullscreen, paling depan) ---
+        GameObject layarHitam = new GameObject("LayarKedip");
+        layarHitam.transform.SetParent(canvas.transform, false);
+        layarHitam.transform.SetAsLastSibling();
+
+        Image img = layarHitam.AddComponent<Image>();
+        img.raycastTarget = false; // jangan blokir klik apapun
+
+        RectTransform rect = img.rectTransform;
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        rect.sizeDelta = Vector2.zero;
+
+        // --- PASANG MATERIAL BLINK JIKA ADA ---
+        Material matInstance = null;
+        bool pakaiShader = false;
+
+        if (materialBlink != null && materialBlink.HasProperty("_Blink"))
         {
-            StartCoroutine(ProsesAnimasiKedip());
+            matInstance = new Material(materialBlink);
+            img.material = matInstance;
+            img.color = Color.black;
+            matInstance.SetFloat("_Blink", 0f); // mulai dari mata terbuka
+            pakaiShader = true;
         }
         else
         {
-            BukaLangsung();
-        }
-    }
-
-    void BukaLangsung()
-    {
-        if (panelPesan != null) panelPesan.SetActive(true);
-        gameObject.SetActive(false); 
-    }
-
-    IEnumerator ProsesAnimasiKedip()
-    {
-        GameObject layarHitam = panelLayarHitam;
-        Image imgHitam = null;
-        Material blinkMat = null;
-        CanvasGroup cg = null;
-        bool buatLayarDadakan = false;
-
-        Canvas canvasUtama = GetComponentInParent<Canvas>();
-        if (canvasUtama == null) canvasUtama = FindObjectOfType<Canvas>();
-
-        // Cek apakah layarHitam adalah prefab dari Project (bukan dari Hierarchy scene)
-        if (layarHitam != null && string.IsNullOrEmpty(layarHitam.scene.name))
-        {
-            layarHitam = Instantiate(layarHitam);
-            if (canvasUtama != null) layarHitam.transform.SetParent(canvasUtama.transform, false);
-            buatLayarDadakan = true; // agar nanti dihapus
+            img.color = new Color(0, 0, 0, 0); // mulai dari transparan
         }
 
-        // 1. Siapkan layar hitam
-        if (layarHitam == null)
-        {
-            layarHitam = new GameObject("LayarHitamKedip");
-            if (canvasUtama != null) layarHitam.transform.SetParent(canvasUtama.transform, false);
-            layarHitam.transform.SetAsLastSibling();
-
-            imgHitam = layarHitam.AddComponent<Image>();
-            imgHitam.color = new Color(0, 0, 0, 0); 
-            
-            RectTransform rect = imgHitam.rectTransform;
-            rect.anchorMin = Vector2.zero;
-            rect.anchorMax = Vector2.one;
-            rect.sizeDelta = Vector2.zero;
-            
-            buatLayarDadakan = true;
-        }
-        else
-        {
-            layarHitam.SetActive(true);
-            
-            // PAKSA RENDER PALING DEPAN
-            Canvas canvasLayar = layarHitam.GetComponent<Canvas>();
-            if (canvasLayar == null) canvasLayar = layarHitam.AddComponent<Canvas>();
-            canvasLayar.overrideSorting = true;
-            canvasLayar.sortingOrder = 32000;
-            
-            // PAKSA FULL SCREEN
-            RectTransform rect = layarHitam.GetComponent<RectTransform>();
-            if (rect != null)
-            {
-                rect.anchorMin = Vector2.zero;
-                rect.anchorMax = Vector2.one;
-                rect.sizeDelta = Vector2.zero;
-                rect.anchoredPosition = Vector2.zero;
-            }
-
-            imgHitam = layarHitam.GetComponent<Image>();
-            
-            if (imgHitam != null)
-            {
-                imgHitam.enabled = true; // Pastikan tidak ter-disable di inspector
-                
-                if (imgHitam.material != null && imgHitam.material.HasProperty("_Blink"))
-                {
-                    // Paksa warna menjadi hitam pekat agar material shader merender kegelapan dengan sempurna
-                    imgHitam.color = Color.black;
-
-                    blinkMat = new Material(imgHitam.material);
-                    imgHitam.material = blinkMat;
-                }
-            }
-        }
-
-        // Matikan interaksi dan sembunyikan visual notif supaya tidak diklik 2x
-        Image imgTombol = GetComponent<Image>();
-        if (imgTombol != null) imgTombol.enabled = false;
-        Button btnTombol = GetComponent<Button>();
-        if (btnTombol != null) btnTombol.interactable = false;
-
-        // 2. Mata tertutup (Fade In)
+        // --- FASE 1: TUTUP MATA ---
         float waktu = 0f;
         while (waktu < durasiTutupMata)
         {
             waktu += Time.unscaledDeltaTime;
             float t = Mathf.Clamp01(waktu / durasiTutupMata);
-            
-            if (blinkMat != null) blinkMat.SetFloat("_Blink", t); // 0 (buka) ke 1 (tutup)
-            else if (imgHitam != null)
-            {
-                Color c = imgHitam.color;
-                c.a = t;
-                imgHitam.color = c;
-            }
-            
+
+            if (pakaiShader)
+                matInstance.SetFloat("_Blink", t);
+            else
+                img.color = new Color(0, 0, 0, t);
+
             yield return null;
         }
 
         // Pastikan mentok tertutup
-        if (blinkMat != null) blinkMat.SetFloat("_Blink", 1f);
-        else if (imgHitam != null)
-        {
-            Color c = imgHitam.color;
-            c.a = 1f;
-            imgHitam.color = c;
-        }
+        if (pakaiShader)
+            matInstance.SetFloat("_Blink", 1f);
+        else
+            img.color = Color.black;
 
-        // Jeda bentar pas mata nutup
-        yield return new WaitForSecondsRealtime(0.15f);
+        // --- JEDA GELAP ---
+        yield return new WaitForSecondsRealtime(jedaGelap);
 
-        // (Panel Pesan DITUNDA agar baru aktif setelah mata terbuka penuh)
-
-        // 4. Mata terbuka lagi (Fade Out)
+        // --- FASE 2: BUKA MATA ---
         waktu = 0f;
         while (waktu < durasiBukaMata)
         {
             waktu += Time.unscaledDeltaTime;
             float t = Mathf.Clamp01(1f - (waktu / durasiBukaMata));
-            
-            if (blinkMat != null) blinkMat.SetFloat("_Blink", t); // 1 (tutup) ke 0 (buka)
-            else if (imgHitam != null)
-            {
-                Color c = imgHitam.color;
-                c.a = t;
-                imgHitam.color = c;
-            }
-            
+
+            if (pakaiShader)
+                matInstance.SetFloat("_Blink", t);
+            else
+                img.color = new Color(0, 0, 0, t);
+
             yield return null;
         }
 
         // Pastikan mentok terbuka
-        if (blinkMat != null) blinkMat.SetFloat("_Blink", 0f);
-        else if (imgHitam != null)
-        {
-            Color c = imgHitam.color;
-            c.a = 0f;
-            imgHitam.color = c;
-        }
-
-        // 5. BUKA PANEL PESAN! (saat layar sudah terang sepenuhnya)
-        // Hal ini akan memicu animasi tangan "SlideDariBawah" muncul tepat setelah mata terbuka!
-        if (panelPesan != null)
-        {
-            panelPesan.SetActive(true);
-        }
-
-        // 5. Bersih-bersih
-        if (buatLayarDadakan)
-        {
-            Destroy(layarHitam);
-        }
+        if (pakaiShader)
+            matInstance.SetFloat("_Blink", 0f);
         else
-        {
-            layarHitam.SetActive(false);
-        }
-        
-        // Akhirnya, matikan diri sendiri setelah semua animasi selesai
-        gameObject.SetActive(false);
+            img.color = new Color(0, 0, 0, 0);
+
+        // --- BUKA PANEL PESAN (tangan meluncur) ---
+        if (panelPesan != null)
+            panelPesan.SetActive(true);
+
+        // --- BERSIH-BERSIH ---
+        if (matInstance != null) Destroy(matInstance);
+        Destroy(layarHitam);
     }
 }
