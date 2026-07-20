@@ -85,18 +85,39 @@ public class BukaPanelPesan : MonoBehaviour
         else
         {
             layarHitam.SetActive(true);
-            layarHitam.transform.SetAsLastSibling();
+            
+            // PAKSA RENDER PALING DEPAN
+            Canvas canvasLayar = layarHitam.GetComponent<Canvas>();
+            if (canvasLayar == null) canvasLayar = layarHitam.AddComponent<Canvas>();
+            canvasLayar.overrideSorting = true;
+            canvasLayar.sortingOrder = 32000;
+            
+            // PAKSA FULL SCREEN
+            RectTransform rect = layarHitam.GetComponent<RectTransform>();
+            if (rect != null)
+            {
+                rect.anchorMin = Vector2.zero;
+                rect.anchorMax = Vector2.one;
+                rect.sizeDelta = Vector2.zero;
+                rect.anchoredPosition = Vector2.zero;
+            }
+
             imgHitam = layarHitam.GetComponent<Image>();
             
-            if (imgHitam != null && imgHitam.material != null && imgHitam.material.HasProperty("_Blink"))
+            if (imgHitam != null)
             {
-                // Paksa alpha color menjadi 1 agar material shader tetap terlihat walau image-nya diset transparan
-                Color c = imgHitam.color;
-                c.a = 1f;
-                imgHitam.color = c;
+                imgHitam.enabled = true; // Pastikan tidak ter-disable di inspector
+                
+                if (imgHitam.material != null && imgHitam.material.HasProperty("_Blink"))
+                {
+                    // Paksa alpha color menjadi 1 agar material shader tetap terlihat walau image-nya diset transparan
+                    Color c = imgHitam.color;
+                    c.a = 1f;
+                    imgHitam.color = c;
 
-                blinkMat = new Material(imgHitam.material);
-                imgHitam.material = blinkMat;
+                    blinkMat = new Material(imgHitam.material);
+                    imgHitam.material = blinkMat;
+                }
             }
         }
 
@@ -110,7 +131,7 @@ public class BukaPanelPesan : MonoBehaviour
         float waktu = 0f;
         while (waktu < durasiTutupMata)
         {
-            waktu += Time.deltaTime;
+            waktu += Time.unscaledDeltaTime;
             float t = Mathf.Clamp01(waktu / durasiTutupMata);
             
             if (blinkMat != null) blinkMat.SetFloat("_Blink", t); // 0 (buka) ke 1 (tutup)
@@ -134,7 +155,7 @@ public class BukaPanelPesan : MonoBehaviour
         }
 
         // Jeda bentar pas mata nutup
-        yield return new WaitForSeconds(0.15f);
+        yield return new WaitForSecondsRealtime(0.15f);
 
         // (Panel Pesan DITUNDA agar baru aktif setelah mata terbuka penuh)
 
@@ -142,7 +163,7 @@ public class BukaPanelPesan : MonoBehaviour
         waktu = 0f;
         while (waktu < durasiBukaMata)
         {
-            waktu += Time.deltaTime;
+            waktu += Time.unscaledDeltaTime;
             float t = Mathf.Clamp01(1f - (waktu / durasiBukaMata));
             
             if (blinkMat != null) blinkMat.SetFloat("_Blink", t); // 1 (tutup) ke 0 (buka)
