@@ -8,17 +8,21 @@ public class BukaPanelPesan : MonoBehaviour
     public GameObject panelPesan;
 
     [Header("Animasi Kedip")]
-    public float durasiTutupMata = 0.3f;
+    public float durasiTutupMata = 0.25f;
     public float jedaGelap = 0.15f;
     public float durasiBukaMata = 0.4f;
 
-    [Tooltip("Masukkan material EyeBlinkMat dari folder Shaders (opsional). Kalau kosong, pakai fade hitam biasa.")]
-    public Material materialBlink;
+    [Tooltip("Masukkan BlackScreenPanel yang sudah ada di scene (panel Image dengan material EyeBlinkMat).")]
+    public GameObject panelLayarHitam;
 
     void Start()
     {
         if (panelPesan != null)
             panelPesan.SetActive(false);
+
+        // Pastikan layar hitam mati di awal agar tidak menghalangi
+        if (panelLayarHitam != null)
+            panelLayarHitam.SetActive(false);
 
         Button tombol = GetComponent<Button>();
         if (tombol != null)
@@ -27,110 +31,83 @@ public class BukaPanelPesan : MonoBehaviour
 
     void OnKlik()
     {
-        Canvas canvas = GetComponentInParent<Canvas>();
-        if (canvas == null) canvas = FindObjectOfType<Canvas>();
+        // Jalankan coroutine di object lain yang tidak akan dimatikan
+        MonoBehaviour runner = panelLayarHitam != null 
+            ? panelLayarHitam.GetComponent<MonoBehaviour>() ?? FindObjectOfType<Canvas>().GetComponent<MonoBehaviour>()
+            : FindObjectOfType<Canvas>().GetComponent<MonoBehaviour>();
 
-        MonoBehaviour runner = canvas.GetComponent<MonoBehaviour>();
-        runner.StartCoroutine(ProsesKedipLaluBukaPanel());
+        // Kalau panelLayarHitam belum punya MonoBehaviour, tambahkan helper sementara
+        if (runner == null)
+        {
+            runner = panelLayarHitam.AddComponent<BukaPanelPesanHelper>();
+        }
+
+        runner.StartCoroutine(ProsesKedip());
     }
 
-    IEnumerator ProsesKedipLaluBukaPanel()
+    IEnumerator ProsesKedip()
     {
+        // 1. Sembunyikan tombol notif
         gameObject.SetActive(false);
 
-        Canvas canvas = FindObjectOfType<Canvas>();
-        if (canvas == null) yield break;
+        // 2. Nyalakan BlackScreenPanel
+        if (panelLayarHitam == null) yield break;
+        panelLayarHitam.SetActive(true);
+        panelLayarHitam.transform.SetAsLastSibling();
 
-        // --- BUAT LAYAR BLINK BARU ---
-        GameObject layarHitam = new GameObject("LayarKedip");
-        layarHitam.transform.SetParent(canvas.transform, false);
-        layarHitam.transform.SetAsLastSibling();
+        // 3. Ambil material blink dari Image yang sudah terpasang di BlackScreenPanel
+        Image bgImage = panelLayarHitam.GetComponent<Image>();
+        Material blinkMat = null;
 
-        Image img = layarHitam.AddComponent<Image>();
-        img.raycastTarget = false;
-
-        // Pakai sprite built-in "Background" persis seperti di BlackScreenPanel Pengenalan
-        Sprite bgSprite = Resources.GetBuiltinResource<Sprite>("UI/Skin/Background.psd");
-        if (bgSprite != null)
+        if (bgImage != null && bgImage.material != null && bgImage.material.HasProperty("_Blink"))
         {
-            img.sprite = bgSprite;
-            img.type = Image.Type.Sliced;
-            img.fillCenter = true;
+            blinkMat = new Material(bgImage.material);
+            bgImage.material = blinkMat;
+            blinkMat.SetFloat("_Blink", 0f); // mulai dari mata terbuka
         }
 
-        RectTransform rect = img.rectTransform;
-        rect.anchorMin = Vector2.zero;
-        rect.anchorMax = Vector2.one;
-        rect.sizeDelta = Vector2.zero;
-
-        // --- PASANG MATERIAL BLINK JIKA ADA ---
-        Material matInstance = null;
-        bool pakaiShader = false;
-
-        if (materialBlink != null && materialBlink.HasProperty("_Blink"))
-        {
-            matInstance = new Material(materialBlink);
-            img.material = matInstance;
-            img.color = Color.black;
-            matInstance.SetFloat("_Blink", 0f); // mulai dari mata terbuka
-            pakaiShader = true;
-        }
-        else
-        {
-            img.color = new Color(0, 0, 0, 0); // mulai dari transparan
-        }
-
-        // --- FASE 1: TUTUP MATA ---
+        // 4. TUTUP MATA (0 → 1)
         float waktu = 0f;
         while (waktu < durasiTutupMata)
         {
             waktu += Time.unscaledDeltaTime;
             float t = Mathf.Clamp01(waktu / durasiTutupMata);
 
-            if (pakaiShader)
-                matInstance.SetFloat("_Blink", t);
-            else
-                img.color = new Color(0, 0, 0, t);
+            if (blinkMat != null)
+                blinkMat.SetFloat("_Blink", t);
 
             yield return null;
         }
+        if (blinkMat != null) blinkMat.SetFloat("_Blink", 1f);
 
-        // Pastikan mentok tertutup
-        if (pakaiShader)
-            matInstance.SetFloat("_Blink", 1f);
-        else
-            img.color = Color.black;
-
-        // --- JEDA GELAP ---
+        // 5. JEDA GELAP
         yield return new WaitForSecondsRealtime(jedaGelap);
 
-        // --- FASE 2: BUKA MATA ---
+        // 6. BUKA MATA (1 → 0)
         waktu = 0f;
         while (waktu < durasiBukaMata)
         {
             waktu += Time.unscaledDeltaTime;
             float t = Mathf.Clamp01(1f - (waktu / durasiBukaMata));
 
-            if (pakaiShader)
-                matInstance.SetFloat("_Blink", t);
-            else
-                img.color = new Color(0, 0, 0, t);
+            if (blinkMat != null)
+                blinkMat.SetFloat("_Blink", t);
 
             yield return null;
         }
+        if (blinkMat != null) blinkMat.SetFloat("_Blink", 0f);
 
-        // Pastikan mentok terbuka
-        if (pakaiShader)
-            matInstance.SetFloat("_Blink", 0f);
-        else
-            img.color = new Color(0, 0, 0, 0);
+        // 7. Matikan BlackScreenPanel
+        panelLayarHitam.SetActive(false);
 
-        // --- BUKA PANEL PESAN (tangan meluncur) ---
+        // 8. Buka Panel Pesan (tangan meluncur)
         if (panelPesan != null)
             panelPesan.SetActive(true);
 
-        // --- BERSIH-BERSIH ---
-        if (matInstance != null) Destroy(matInstance);
-        Destroy(layarHitam);
+        // 9. Bersihkan material instance
+        if (blinkMat != null) Destroy(blinkMat);
     }
 }
+
+// Helper kecil supaya coroutine bisa jalan di BlackScreenPanel
+public class BukaPanelPesanHelper : MonoBehaviour { }
