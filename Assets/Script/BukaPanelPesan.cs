@@ -31,24 +31,18 @@ public class BukaPanelPesan : MonoBehaviour
 
     void OnKlik()
     {
-        // Jalankan coroutine di object lain yang tidak akan dimatikan
-        MonoBehaviour runner = panelLayarHitam != null 
-            ? panelLayarHitam.GetComponent<MonoBehaviour>() ?? FindObjectOfType<Canvas>().GetComponent<MonoBehaviour>()
-            : FindObjectOfType<Canvas>().GetComponent<MonoBehaviour>();
-
-        // Kalau panelLayarHitam belum punya MonoBehaviour, tambahkan helper sementara
-        if (runner == null)
-        {
-            runner = panelLayarHitam.AddComponent<BukaPanelPesanHelper>();
-        }
-
-        runner.StartCoroutine(ProsesKedip());
+        // Jalankan coroutine di object ini sendiri
+        StartCoroutine(ProsesKedip());
     }
 
     IEnumerator ProsesKedip()
     {
-        // 1. Sembunyikan tombol notif
-        gameObject.SetActive(false);
+        // 1. Sembunyikan visual dan interaksi tombol notif agar tidak diklik 2x
+        Image imgTombol = GetComponent<Image>();
+        if (imgTombol != null) imgTombol.enabled = false;
+        
+        Button btnTombol = GetComponent<Button>();
+        if (btnTombol != null) btnTombol.enabled = false;
 
         // 2. Nyalakan BlackScreenPanel
         if (panelLayarHitam == null) yield break;
@@ -106,8 +100,10 @@ public class BukaPanelPesan : MonoBehaviour
 
         // 9. Bersihkan material instance
         if (blinkMat != null) Destroy(blinkMat);
+
+        // 10. Matikan tombol ini sepenuhnya setelah semua proses selesai
+        gameObject.SetActive(false);
     }
 }
 
-// Helper kecil supaya coroutine bisa jalan di BlackScreenPanel
-public class BukaPanelPesanHelper : MonoBehaviour { }
+
