@@ -77,6 +77,11 @@ public class BukaPanelPesan : MonoBehaviour
         // 5. JEDA GELAP
         yield return new WaitForSecondsRealtime(jedaGelap);
 
+        // 5.5. AKTIFKAN PANEL BARU (TANGAN MELUNCUR) SAAT LAYAR MASIH GELAP
+        // Sehingga ketika mata mulai terbuka, panel baru sudah dalam proses transisi masuk
+        if (panelPesan != null)
+            panelPesan.SetActive(true);
+
         // 6. BUKA MATA (1 → 0)
         waktu = 0f;
         while (waktu < durasiBukaMata)
@@ -94,11 +99,7 @@ public class BukaPanelPesan : MonoBehaviour
         // 7. Matikan BlackScreenPanel
         panelLayarHitam.SetActive(false);
 
-        // 8. Buka Panel Pesan (tangan meluncur)
-        if (panelPesan != null)
-            panelPesan.SetActive(true);
-
-        // 9. Bersihkan material instance
+        // 8. Bersihkan material instance
         if (blinkMat != null) Destroy(blinkMat);
 
         // 10. Matikan tombol ini sepenuhnya setelah semua proses selesai
