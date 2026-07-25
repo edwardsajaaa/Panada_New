@@ -5,7 +5,7 @@ using TMPro;
 public class SistemDialogKamar : MonoBehaviour
 {
     [Header("Referensi UI")]
-    public GameObject panelBubleName; // Keseluruhan objek Buble Name
+    public GameObject panelBubleName;
     public TMP_Text teksNamaKarakter;
     public TMP_Text teksIsiDialog;
 
@@ -13,17 +13,23 @@ public class SistemDialogKamar : MonoBehaviour
     [Tooltip("Isi dengan dialog-dialog yang akan muncul")]
     public DataDialog[] percakapan;
 
-    [Header("Pengaturan")]
-    public float durasiKetikAnimasi = 0.02f; // Kecepatan efek ngetik (ketik per huruf)
+    [Header("Pengaturan Transisi")]
+    public float durasiTransisiTeks = 0.3f; 
 
     private int indeksDialog = 0;
-    private bool sedangNgetik = false;
-    private Coroutine ngetikCoroutine;
+    private bool sedangTransisi = false;
+    private Coroutine transisiCoroutine;
 
     void OnEnable()
     {
-        // Mulai dialog dari awal setiap kali Buble Name diaktifkan
         indeksDialog = 0;
+        
+        // Animasi popup awal untuk keseluruhan panel
+        if (panelBubleName != null)
+        {
+            StartCoroutine(PopupAwalObjek(panelBubleName.transform, durasiTransisiTeks));
+        }
+
         if (percakapan != null && percakapan.Length > 0)
         {
             TampilkanDialogSekarang();
@@ -32,17 +38,14 @@ public class SistemDialogKamar : MonoBehaviour
 
     void Update()
     {
-        // Deteksi klik (Bisa klik kiri mouse atau tap layar)
         if (Input.GetMouseButtonDown(0))
         {
-            // Jika teks masih sedang diketik, langsung tampilkan semua secara instan
-            if (sedangNgetik)
+            if (sedangTransisi)
             {
-                if (ngetikCoroutine != null) StopCoroutine(ngetikCoroutine);
-                teksIsiDialog.text = percakapan[indeksDialog].teksDialog;
-                sedangNgetik = false;
+                if (transisiCoroutine != null) StopCoroutine(transisiCoroutine);
+                SetTeksAlpha(1f);
+                sedangTransisi = false;
             }
-            // Jika teks sudah selesai diketik, lanjut ke dialog berikutnya
             else
             {
                 LanjutKeDialogBerikutnya();
@@ -54,52 +57,105 @@ public class SistemDialogKamar : MonoBehaviour
     {
         if (indeksDialog < percakapan.Length)
         {
-            // Set nama karakter
             if (teksNamaKarakter != null)
                 teksNamaKarakter.text = percakapan[indeksDialog].namaKarakter;
 
-            // Mulai efek ngetik
-            if (ngetikCoroutine != null) StopCoroutine(ngetikCoroutine);
-            ngetikCoroutine = StartCoroutine(EfekNgetik(percakapan[indeksDialog].teksDialog));
+            teksIsiDialog.text = percakapan[indeksDialog].teksDialog;
+
+            if (transisiCoroutine != null) StopCoroutine(transisiCoroutine);
+            transisiCoroutine = StartCoroutine(FadeTeks(0f, 1f, durasiTransisiTeks));
         }
     }
 
-    IEnumerator EfekNgetik(string teksLengkap)
+    IEnumerator FadeTeks(float alphaAwal, float alphaAkhir, float durasi)
     {
-        sedangNgetik = true;
-        teksIsiDialog.text = "";
-
-        foreach (char huruf in teksLengkap.ToCharArray())
+        sedangTransisi = true;
+        SetTeksAlpha(alphaAwal);
+        
+        float waktuMulai = Time.time;
+        while (Time.time < waktuMulai + durasi)
         {
-            teksIsiDialog.text += huruf;
-            yield return new WaitForSeconds(durasiKetikAnimasi);
+            float progress = (Time.time - waktuMulai) / durasi;
+            SetTeksAlpha(Mathf.Lerp(alphaAwal, alphaAkhir, progress));
+            yield return null;
         }
+        
+        SetTeksAlpha(alphaAkhir);
+        sedangTransisi = false;
+    }
 
-        sedangNgetik = false;
+    void SetTeksAlpha(float alpha)
+    {
+        if (teksIsiDialog != null)
+        {
+            Color c = teksIsiDialog.color;
+            c.a = alpha;
+            teksIsiDialog.color = c;
+        }
+    }
+
+    IEnumerator PopupAwalObjek(Transform obj, float durasi)
+    {
+        CanvasGroup cg = obj.GetComponent<CanvasGroup>();
+        if (cg == null) cg = obj.gameObject.AddComponent<CanvasGroup>();
+        
+        cg.alpha = 0f;
+        obj.localScale = new Vector3(0.2f, 0.2f, 1f);
+        
+        float waktuMulai = Time.time;
+        while (Time.time < waktuMulai + durasi)
+        {
+            float progress = (Time.time - waktuMulai) / durasi;
+            float t = progress - 1f;
+            float s = 2.0f;
+            float easeOutBack = (t * t * ((s + 1f) * t + s) + 1f);
+            
+            float scale = Mathf.Lerp(0.2f, 1f, easeOutBack);
+            obj.localScale = new Vector3(scale, scale, 1f);
+            cg.alpha = Mathf.Lerp(0f, 1f, progress);
+            
+            yield return null;
+        }
+        
+        obj.localScale = Vector3.one;
+        cg.alpha = 1f;
     }
 
     void LanjutKeDialogBerikutnya()
     {
         indeksDialog++;
-
-        // Jika dialog masih ada, tampilkan
         if (indeksDialog < percakapan.Length)
         {
             TampilkanDialogSekarang();
         }
         else
         {
-            // Dialog habis, tutup Buble Name
             TutupDialog();
         }
     }
 
     void TutupDialog()
     {
+        // Jalankan animasi fade out sebelum menutup
+        StartCoroutine(FadeOutLaluTutup());
+    }
+
+    IEnumerator FadeOutLaluTutup()
+    {
         if (panelBubleName != null)
+        {
+            CanvasGroup cg = panelBubleName.GetComponent<CanvasGroup>();
+            if (cg == null) cg = panelBubleName.AddComponent<CanvasGroup>();
+
+            float waktuMulai = Time.time;
+            while (Time.time < waktuMulai + durasiTransisiTeks)
+            {
+                float progress = (Time.time - waktuMulai) / durasiTransisiTeks;
+                cg.alpha = Mathf.Lerp(1f, 0f, progress);
+                yield return null;
+            }
+            cg.alpha = 0f;
             panelBubleName.SetActive(false);
-            
-        // TODO: Taruh logika transisi scene/aksi lanjutan di sini jika diperlukan
-        Debug.Log("Dialog Selesai!");
+        }
     }
 }
