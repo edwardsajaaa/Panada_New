@@ -71,6 +71,10 @@ public class SistemDialogKamar : MonoBehaviour
     private Coroutine transisiCoroutine;
     private bool sedangDitutup = false;
 
+    private Vector3 savedZoomInScale;
+    private Vector2 savedZoomInMin;
+    private Vector2 savedZoomInMax;
+
     void OnEnable()
     {
         indeksDialog = 0;
@@ -238,6 +242,24 @@ public class SistemDialogKamar : MonoBehaviour
         if (objekYangIkutMati != null) foreach (var obj in objekYangIkutMati) if (obj != null) obj.SetActive(false);
         if (objekYangDinyalakan != null) foreach (var obj in objekYangDinyalakan) if (obj != null) obj.SetActive(true);
 
+        // SNAP INSTAN ZOOM OUT (Saat layar gelap)
+        if (panelUntukZoom != null)
+        {
+            savedZoomInScale = gunakanPosisiAwalSebagaiZoomIn ? panelUntukZoom.localScale : skalaZoomIn;
+            savedZoomInMin = gunakanPosisiAwalSebagaiZoomIn ? panelUntukZoom.offsetMin : offsetMinZoomIn;
+            savedZoomInMax = gunakanPosisiAwalSebagaiZoomIn ? panelUntukZoom.offsetMax : offsetMaxZoomIn;
+
+            if (zoomOutInstan)
+            {
+                panelUntukZoom.localScale = skalaZoomOut;
+                if (ubahPosisiJuga)
+                {
+                    panelUntukZoom.offsetMin = offsetMinZoomOut;
+                    panelUntukZoom.offsetMax = offsetMaxZoomOut;
+                }
+            }
+        }
+
         // 3. BUKA MATA
         waktu = 0f;
         while (waktu < durasiBukaMata)
@@ -267,6 +289,23 @@ public class SistemDialogKamar : MonoBehaviour
     IEnumerator FadeOutLaluTutup()
     {
         // ================= JIKA BUKAN BLINK =================
+
+        if (panelUntukZoom != null)
+        {
+            savedZoomInScale = gunakanPosisiAwalSebagaiZoomIn ? panelUntukZoom.localScale : skalaZoomIn;
+            savedZoomInMin = gunakanPosisiAwalSebagaiZoomIn ? panelUntukZoom.offsetMin : offsetMinZoomIn;
+            savedZoomInMax = gunakanPosisiAwalSebagaiZoomIn ? panelUntukZoom.offsetMax : offsetMaxZoomIn;
+
+            if (zoomOutInstan)
+            {
+                panelUntukZoom.localScale = skalaZoomOut;
+                if (ubahPosisiJuga)
+                {
+                    panelUntukZoom.offsetMin = offsetMinZoomOut;
+                    panelUntukZoom.offsetMax = offsetMaxZoomOut;
+                }
+            }
+        }
 
         // 1. Jalankan animasi keluar untuk semua objek yang ikut mati
         if (objekYangIkutMati != null)
@@ -352,35 +391,33 @@ public class SistemDialogKamar : MonoBehaviour
             yield break;
         }
 
-        // Catat posisi dan skala awal sebagai target Zoom In
-        Vector3 targetZoomInScale = gunakanPosisiAwalSebagaiZoomIn ? panelUntukZoom.localScale : skalaZoomIn;
-        Vector2 targetZoomInMin = gunakanPosisiAwalSebagaiZoomIn ? panelUntukZoom.offsetMin : offsetMinZoomIn;
-        Vector2 targetZoomInMax = gunakanPosisiAwalSebagaiZoomIn ? panelUntukZoom.offsetMax : offsetMaxZoomIn;
-
-        // 1. Animasi Zoom Out
-        float waktu = 0f;
-        Vector3 awalScale = panelUntukZoom.localScale;
-        Vector2 awalMin = panelUntukZoom.offsetMin;
-        Vector2 awalMax = panelUntukZoom.offsetMax;
-
-        while (waktu < durasiAnimasiZoom)
+        // 1. Animasi Zoom Out (Dilewati jika instan)
+        if (!zoomOutInstan)
         {
-            waktu += Time.unscaledDeltaTime;
-            float progress = waktu / durasiAnimasiZoom;
-            panelUntukZoom.localScale = Vector3.Lerp(awalScale, skalaZoomOut, progress);
-            
+            float waktu = 0f;
+            Vector3 awalScale = panelUntukZoom.localScale;
+            Vector2 awalMin = panelUntukZoom.offsetMin;
+            Vector2 awalMax = panelUntukZoom.offsetMax;
+
+            while (waktu < durasiAnimasiZoom)
+            {
+                waktu += Time.unscaledDeltaTime;
+                float progress = waktu / durasiAnimasiZoom;
+                panelUntukZoom.localScale = Vector3.Lerp(awalScale, skalaZoomOut, progress);
+                
+                if (ubahPosisiJuga)
+                {
+                    panelUntukZoom.offsetMin = Vector2.Lerp(awalMin, offsetMinZoomOut, progress);
+                    panelUntukZoom.offsetMax = Vector2.Lerp(awalMax, offsetMaxZoomOut, progress);
+                }
+                yield return null;
+            }
+            panelUntukZoom.localScale = skalaZoomOut;
             if (ubahPosisiJuga)
             {
-                panelUntukZoom.offsetMin = Vector2.Lerp(awalMin, offsetMinZoomOut, progress);
-                panelUntukZoom.offsetMax = Vector2.Lerp(awalMax, offsetMaxZoomOut, progress);
+                panelUntukZoom.offsetMin = offsetMinZoomOut;
+                panelUntukZoom.offsetMax = offsetMaxZoomOut;
             }
-            yield return null;
-        }
-        panelUntukZoom.localScale = skalaZoomOut;
-        if (ubahPosisiJuga)
-        {
-            panelUntukZoom.offsetMin = offsetMinZoomOut;
-            panelUntukZoom.offsetMax = offsetMaxZoomOut;
         }
 
         // 2. Jeda
@@ -392,30 +429,30 @@ public class SistemDialogKamar : MonoBehaviour
             objekNyalaSaatZoomIn.SetActive(true);
         }
 
-        // 3. Animasi Zoom In (kembali ke posisi target)
-        waktu = 0f;
-        awalScale = panelUntukZoom.localScale;
-        awalMin = panelUntukZoom.offsetMin;
-        awalMax = panelUntukZoom.offsetMax;
+        // 3. Animasi Zoom In (kembali ke posisi target yang sudah direkam)
+        float waktuIn = 0f;
+        Vector3 awalScaleIn = panelUntukZoom.localScale;
+        Vector2 awalMinIn = panelUntukZoom.offsetMin;
+        Vector2 awalMaxIn = panelUntukZoom.offsetMax;
 
-        while (waktu < durasiAnimasiZoom)
+        while (waktuIn < durasiAnimasiZoom)
         {
-            waktu += Time.unscaledDeltaTime;
-            float progress = waktu / durasiAnimasiZoom;
-            panelUntukZoom.localScale = Vector3.Lerp(awalScale, targetZoomInScale, progress);
+            waktuIn += Time.unscaledDeltaTime;
+            float progress = waktuIn / durasiAnimasiZoom;
+            panelUntukZoom.localScale = Vector3.Lerp(awalScaleIn, savedZoomInScale, progress);
             
             if (ubahPosisiJuga)
             {
-                panelUntukZoom.offsetMin = Vector2.Lerp(awalMin, targetZoomInMin, progress);
-                panelUntukZoom.offsetMax = Vector2.Lerp(awalMax, targetZoomInMax, progress);
+                panelUntukZoom.offsetMin = Vector2.Lerp(awalMinIn, savedZoomInMin, progress);
+                panelUntukZoom.offsetMax = Vector2.Lerp(awalMaxIn, savedZoomInMax, progress);
             }
             yield return null;
         }
-        panelUntukZoom.localScale = targetZoomInScale;
+        panelUntukZoom.localScale = savedZoomInScale;
         if (ubahPosisiJuga)
         {
-            panelUntukZoom.offsetMin = targetZoomInMin;
-            panelUntukZoom.offsetMax = targetZoomInMax;
+            panelUntukZoom.offsetMin = savedZoomInMin;
+            panelUntukZoom.offsetMax = savedZoomInMax;
         }
 
         // 4. Aktifkan trigger notifikasi (jika ada)
