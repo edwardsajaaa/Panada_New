@@ -10,14 +10,12 @@ public class SistemDialogKamar : MonoBehaviour
     public TMP_Text teksIsiDialog;
 
     [Header("Data Percakapan")]
-    [Tooltip("Isi dengan dialog-dialog yang akan muncul")]
     public DataDialog[] percakapan;
 
     [Header("Pengaturan Transisi")]
     public float durasiTransisiTeks = 0.3f; 
 
     [Header("Aksi Setelah Dialog Habis")]
-    [Tooltip("Masukkan objek apa saja yang ingin dimatikan bersamaan dengan hilangnya Buble Name (misal: Panel Pesan, Nathan)")]
     public GameObject[] objekYangIkutMati;
 
     private int indeksDialog = 0;
@@ -28,7 +26,6 @@ public class SistemDialogKamar : MonoBehaviour
     {
         indeksDialog = 0;
         
-        // Animasi popup awal untuk keseluruhan panel
         if (panelBubleName != null)
         {
             StartCoroutine(PopupAwalObjek(panelBubleName.transform, durasiTransisiTeks));
@@ -134,14 +131,8 @@ public class SistemDialogKamar : MonoBehaviour
         }
         else
         {
-            TutupDialog();
+            StartCoroutine(FadeOutLaluTutup());
         }
-    }
-
-    void TutupDialog()
-    {
-        // Jalankan animasi fade out sebelum menutup
-        StartCoroutine(FadeOutLaluTutup());
     }
 
     IEnumerator FadeOutLaluTutup()
@@ -162,7 +153,7 @@ public class SistemDialogKamar : MonoBehaviour
             panelBubleName.SetActive(false);
         }
 
-        // Matikan juga objek-objek lain yang terdaftar (seperti HP, dll)
+        // Matiin barengan yg lain (misal HP)
         if (objekYangIkutMati != null)
         {
             foreach (var obj in objekYangIkutMati)
