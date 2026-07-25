@@ -100,6 +100,12 @@ public class AnimasiTombolMenu : MonoBehaviour, IPointerEnterHandler, IPointerEx
         sudahInisialisasi = true;
     }
 
+    public void PerbaruiPosisiAwal(Vector2 posisiBaru)
+    {
+        posisiAwal = posisiBaru;
+        if (rectTransform != null) rectTransform.anchoredPosition = posisiBaru;
+    }
+
     void OnEnable()
     {
         InisialisasiAwal();

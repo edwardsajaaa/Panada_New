@@ -43,7 +43,17 @@ public class ResponPilihanPesan : MonoBehaviour
             }
         }
         if (tombolDimatikan != null) tombolDimatikan.SetActive(false);
-        if (tombolDitengah != null) tombolDitengah.anchoredPosition = posisiTengah;
+        if (tombolDitengah != null) 
+        {
+            tombolDitengah.anchoredPosition = posisiTengah;
+            
+            // Perbarui posisi awal di script AnimasiTombolMenu agar tidak ter-reset
+            AnimasiTombolMenu anim = tombolDitengah.GetComponent<AnimasiTombolMenu>();
+            if (anim != null)
+            {
+                anim.PerbaruiPosisiAwal(posisiTengah);
+            }
+        }
 
         // Tutup opsi
         if (panelPilihan != null) panelPilihan.SetActive(false);
