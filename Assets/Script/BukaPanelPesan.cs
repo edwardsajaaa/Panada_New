@@ -21,6 +21,16 @@ public class BukaPanelPesan : MonoBehaviour
     [Tooltip("Waktu tunggu sebelum panel lanjutan muncul (disesuaikan dengan durasi animasi tangan).")]
     public float jedaPanelLanjutan = 0.5f;
 
+    [Header("Pengaturan Tambahan Pesan Kedua (Opsional)")]
+    [Tooltip("Objek pesan tambahan yang akan dimunculkan (misal: Pesan (1) & Pesan (2))")]
+    public GameObject[] pesanBaru;
+    [Tooltip("Tombol yang ingin dinonaktifkan (misal: Nanti Saja)")]
+    public GameObject tombolDimatikan;
+    [Tooltip("Tombol yang ingin dipindah ke tengah (misal: Balas Sekarang)")]
+    public RectTransform tombolDitengah;
+    [Tooltip("Posisi tujuan untuk tombol ditengah (X, Y)")]
+    public Vector2 posisiTengah = new Vector2(-16f, -129.359f);
+
     void Start()
     {
         if (panelPesan != null)
@@ -93,6 +103,17 @@ public class BukaPanelPesan : MonoBehaviour
         // Sehingga ketika mata mulai terbuka, panel baru sudah dalam proses transisi masuk
         if (panelPesan != null)
             panelPesan.SetActive(true);
+
+        // -- MUNCULKAN PESAN KEDUA & UBAH POSISI TOMBOL (JIKA ADA) --
+        if (pesanBaru != null)
+        {
+            foreach (var pesan in pesanBaru)
+            {
+                if (pesan != null) pesan.SetActive(true);
+            }
+        }
+        if (tombolDimatikan != null) tombolDimatikan.SetActive(false);
+        if (tombolDitengah != null) tombolDitengah.anchoredPosition = posisiTengah;
 
         // 6. BUKA MATA (1 -> 0)
         waktu = 0f;
