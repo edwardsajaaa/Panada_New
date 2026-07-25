@@ -192,7 +192,11 @@ public class SistemDialogKamar : MonoBehaviour
             // 2. JEDA GELAP & TUKAR OBJEK
             yield return new WaitForSecondsRealtime(jedaGelap);
             
-            if (panelBubleName != null) panelBubleName.SetActive(false);
+            // Sembunyikan panel secara visual, jangan di-SetActive(false) dulu karena coroutine akan mati!
+            CanvasGroup cgBlink = panelBubleName.GetComponent<CanvasGroup>();
+            if (cgBlink == null) cgBlink = panelBubleName.AddComponent<CanvasGroup>();
+            cgBlink.alpha = 0f;
+
             if (objekYangIkutMati != null) foreach (var obj in objekYangIkutMati) if (obj != null) obj.SetActive(false);
             if (objekYangDinyalakan != null) foreach (var obj in objekYangDinyalakan) if (obj != null) obj.SetActive(true);
 
@@ -211,6 +215,10 @@ public class SistemDialogKamar : MonoBehaviour
             if (blinkMat != null) Destroy(blinkMat);
             
             sedangDitutup = false;
+            
+            // Matikan sepenuhnya di paling akhir
+            if (panelBubleName != null) panelBubleName.SetActive(false);
+
             yield break; // Selesai
         }
 
