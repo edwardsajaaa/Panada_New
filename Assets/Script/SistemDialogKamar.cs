@@ -30,10 +30,12 @@ public class SistemDialogKamar : MonoBehaviour
     private int indeksDialog = 0;
     private bool sedangTransisi = false;
     private Coroutine transisiCoroutine;
+    private bool sedangDitutup = false;
 
     void OnEnable()
     {
         indeksDialog = 0;
+        sedangDitutup = false;
         
         if (panelBubleName != null)
         {
@@ -48,6 +50,8 @@ public class SistemDialogKamar : MonoBehaviour
 
     void Update()
     {
+        if (sedangDitutup) return; // Kunci input jika sedang proses tutup
+
         if (Input.GetMouseButtonDown(0))
         {
             if (sedangTransisi)
@@ -140,7 +144,11 @@ public class SistemDialogKamar : MonoBehaviour
         }
         else
         {
-            StartCoroutine(FadeOutLaluTutup());
+            if (!sedangDitutup)
+            {
+                sedangDitutup = true;
+                StartCoroutine(FadeOutLaluTutup());
+            }
         }
     }
 
@@ -157,7 +165,9 @@ public class SistemDialogKamar : MonoBehaviour
                 if (anim == null)
                 {
                     anim = obj.gameObject.AddComponent<AnimasiTombolMenu>();
+                    anim.gunakanAnimasiIn = false; // Cegah ter-trigger animasi IN
                     anim.gunakanAnimasiOut = true;
+                    anim.ResetKePosisiAwal(); // Kembalikan ke wujud normal sebelum animasi out
                 }
                 anim.modeAnimasiOut = transisiObjekLain;
                 anim.durasiAnimasiOut = 0.4f;
