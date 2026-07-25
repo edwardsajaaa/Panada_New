@@ -45,6 +45,9 @@ public class SistemDialogKamar : MonoBehaviour
     public Vector3 skalaZoomOut = Vector3.one;
     public Vector3 skalaZoomIn = new Vector3(1.2f, 1.2f, 1f);
     
+    [Tooltip("Jika dicentang, proses Zoom Out tidak memiliki animasi (instan).")]
+    public bool zoomOutInstan = true;
+    
     [Header("Pengaturan Posisi (Berdasarkan Left, Bottom, Right, Top)")]
     public bool ubahPosisiJuga = true;
     [Tooltip("Normal: (Left, Bottom)")]
