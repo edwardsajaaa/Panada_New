@@ -12,11 +12,20 @@ public class SistemDialogKamar : MonoBehaviour
     [Header("Data Percakapan")]
     public DataDialog[] percakapan;
 
-    [Header("Pengaturan Transisi")]
+    [Header("Pengaturan Transisi Masuk")]
     public float durasiTransisiTeks = 0.3f; 
+
+    public enum TransisiKeluar { Fade, PopOut, HilangLangsung }
+    
+    [Header("Pengaturan Transisi Keluar")]
+    public TransisiKeluar transisiBuble = TransisiKeluar.PopOut;
+    [Tooltip("Durasi tutup untuk Buble Name")]
+    public float durasiTutupBuble = 0.3f;
 
     [Header("Aksi Setelah Dialog Habis")]
     public GameObject[] objekYangIkutMati;
+    [Tooltip("Animasi keluar untuk objek yang ikut mati (otomatis dipasangi script AnimasiTombolMenu)")]
+    public AnimasiTombolMenu.ModeAnimasiIn transisiObjekLain = AnimasiTombolMenu.ModeAnimasiIn.PopInBawah;
 
     private int indeksDialog = 0;
     private bool sedangTransisi = false;
@@ -137,7 +146,7 @@ public class SistemDialogKamar : MonoBehaviour
 
     IEnumerator FadeOutLaluTutup()
     {
-        // 1. Jalankan animasi keluar (Slide Down) untuk semua objek yang ikut mati
+        // 1. Jalankan animasi keluar untuk semua objek yang ikut mati
         if (objekYangIkutMati != null)
         {
             foreach (var obj in objekYangIkutMati)
@@ -148,32 +157,41 @@ public class SistemDialogKamar : MonoBehaviour
                 if (anim == null)
                 {
                     anim = obj.gameObject.AddComponent<AnimasiTombolMenu>();
-                    anim.modeAnimasiOut = AnimasiTombolMenu.ModeAnimasiIn.PopInBawah;
-                    anim.durasiAnimasiOut = 0.4f;
                     anim.gunakanAnimasiOut = true;
                 }
+                anim.modeAnimasiOut = transisiObjekLain;
+                anim.durasiAnimasiOut = 0.4f;
                 // Paksa objek animasi turun lalu mati otomatis
                 anim.JalankanAnimasiOut(null, true); 
             }
         }
 
-        // 2. Animasi mengecil dan memudar (Pop-Out) untuk Buble Name
+        // 2. Animasi keluar untuk Buble Name
         if (panelBubleName != null)
         {
+            if (transisiBuble == TransisiKeluar.HilangLangsung)
+            {
+                panelBubleName.SetActive(false);
+                yield break;
+            }
+
             CanvasGroup cg = panelBubleName.GetComponent<CanvasGroup>();
             if (cg == null) cg = panelBubleName.AddComponent<CanvasGroup>();
 
             float waktuMulai = Time.time;
-            while (Time.time < waktuMulai + durasiTransisiTeks)
+            while (Time.time < waktuMulai + durasiTutupBuble)
             {
-                float progress = (Time.time - waktuMulai) / durasiTransisiTeks;
+                float progress = (Time.time - waktuMulai) / durasiTutupBuble;
                 
-                // Fade out
+                // Fade out selalu jalan
                 cg.alpha = Mathf.Lerp(1f, 0f, progress);
                 
-                // Scale down dari 1 ke 0.2
-                float scale = Mathf.Lerp(1f, 0.2f, progress);
-                panelBubleName.transform.localScale = new Vector3(scale, scale, 1f);
+                // Scale down cuma kalau mode PopOut
+                if (transisiBuble == TransisiKeluar.PopOut)
+                {
+                    float scale = Mathf.Lerp(1f, 0.2f, progress);
+                    panelBubleName.transform.localScale = new Vector3(scale, scale, 1f);
+                }
                 
                 yield return null;
             }
