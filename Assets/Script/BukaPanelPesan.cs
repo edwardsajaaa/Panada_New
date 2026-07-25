@@ -41,6 +41,20 @@ public class BukaPanelPesan : MonoBehaviour
 
     void OnKlik()
     {
+        Debug.Log("Tombol ditekan: " + gameObject.name);
+        
+        if (panelLayarHitam == null)
+        {
+            Debug.LogError("GAGAL BUKA HP: Slot 'Panel Layar Hitam' di script BukaPanelPesan pada " + gameObject.name + " masih KOSONG! Silakan isi dulu di Inspector.");
+            return;
+        }
+        
+        if (panelPesan == null)
+        {
+            Debug.LogError("GAGAL BUKA HP: Slot 'Panel Pesan' di script BukaPanelPesan pada " + gameObject.name + " masih KOSONG! Silakan isi dulu di Inspector.");
+            return;
+        }
+
         // Jalankan coroutine di object ini sendiri
         StartCoroutine(ProsesKedip());
     }
