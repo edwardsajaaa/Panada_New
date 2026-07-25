@@ -155,73 +155,86 @@ public class SistemDialogKamar : MonoBehaviour
             if (!sedangDitutup)
             {
                 sedangDitutup = true;
-                StartCoroutine(FadeOutLaluTutup());
+                if (transisiBuble == TransisiKeluar.Blink && panelLayarHitam != null)
+                {
+                    // Aktifkan layar hitam lebih dulu agar bisa menjalankan coroutine
+                    panelLayarHitam.SetActive(true);
+                    
+                    // Gunakan Image dari panelLayarHitam sebagai runner coroutine
+                    // Agar jika objek dialog ini dimatikan (karena parent-nya mati), coroutine tetap jalan!
+                    MonoBehaviour runner = panelLayarHitam.GetComponent<UnityEngine.UI.Image>();
+                    if (runner != null)
+                    {
+                        runner.StartCoroutine(BlinkOutRoutine());
+                    }
+                    else
+                    {
+                        // Fallback jika tidak ada Image
+                        StartCoroutine(BlinkOutRoutine());
+                    }
+                }
+                else
+                {
+                    StartCoroutine(FadeOutLaluTutup());
+                }
             }
         }
     }
 
-    IEnumerator FadeOutLaluTutup()
+    IEnumerator BlinkOutRoutine()
     {
-        if (transisiBuble == TransisiKeluar.Blink && panelLayarHitam != null)
+        panelLayarHitam.transform.SetAsLastSibling();
+
+        UnityEngine.UI.Image bgImage = panelLayarHitam.GetComponent<UnityEngine.UI.Image>();
+        Material originalMat = null;
+        Material blinkMat = null;
+
+        if (bgImage != null && bgImage.material != null && bgImage.material.HasProperty("_Blink"))
         {
-            panelLayarHitam.SetActive(true);
-            panelLayarHitam.transform.SetAsLastSibling();
-
-            UnityEngine.UI.Image bgImage = panelLayarHitam.GetComponent<UnityEngine.UI.Image>();
-            Material originalMat = null;
-            Material blinkMat = null;
-
-            if (bgImage != null && bgImage.material != null && bgImage.material.HasProperty("_Blink"))
-            {
-                originalMat = bgImage.material;
-                blinkMat = new Material(originalMat);
-                bgImage.material = blinkMat;
-                blinkMat.SetFloat("_Blink", 0f);
-            }
-
-            // 1. TUTUP MATA
-            float waktu = 0f;
-            while (waktu < durasiTutupMata)
-            {
-                waktu += Time.unscaledDeltaTime;
-                if (blinkMat != null) blinkMat.SetFloat("_Blink", Mathf.Clamp01(waktu / durasiTutupMata));
-                yield return null;
-            }
-            if (blinkMat != null) blinkMat.SetFloat("_Blink", 1f);
-
-            // 2. JEDA GELAP & TUKAR OBJEK
-            yield return new WaitForSecondsRealtime(jedaGelap);
-            
-            // Sembunyikan panel secara visual, jangan di-SetActive(false) dulu karena coroutine akan mati!
-            CanvasGroup cgBlink = panelBubleName.GetComponent<CanvasGroup>();
-            if (cgBlink == null) cgBlink = panelBubleName.AddComponent<CanvasGroup>();
-            cgBlink.alpha = 0f;
-
-            if (objekYangIkutMati != null) foreach (var obj in objekYangIkutMati) if (obj != null) obj.SetActive(false);
-            if (objekYangDinyalakan != null) foreach (var obj in objekYangDinyalakan) if (obj != null) obj.SetActive(true);
-
-            // 3. BUKA MATA
-            waktu = 0f;
-            while (waktu < durasiBukaMata)
-            {
-                waktu += Time.unscaledDeltaTime;
-                if (blinkMat != null) blinkMat.SetFloat("_Blink", Mathf.Clamp01(1f - (waktu / durasiBukaMata)));
-                yield return null;
-            }
-            if (blinkMat != null) blinkMat.SetFloat("_Blink", 0f);
-
-            panelLayarHitam.SetActive(false);
-            if (bgImage != null && originalMat != null) bgImage.material = originalMat;
-            if (blinkMat != null) Destroy(blinkMat);
-            
-            sedangDitutup = false;
-            
-            // Matikan sepenuhnya di paling akhir
-            if (panelBubleName != null) panelBubleName.SetActive(false);
-
-            yield break; // Selesai
+            originalMat = bgImage.material;
+            blinkMat = new Material(originalMat);
+            bgImage.material = blinkMat;
+            blinkMat.SetFloat("_Blink", 0f);
         }
 
+        // 1. TUTUP MATA
+        float waktu = 0f;
+        while (waktu < durasiTutupMata)
+        {
+            waktu += Time.unscaledDeltaTime;
+            if (blinkMat != null) blinkMat.SetFloat("_Blink", Mathf.Clamp01(waktu / durasiTutupMata));
+            yield return null;
+        }
+        if (blinkMat != null) blinkMat.SetFloat("_Blink", 1f);
+
+        // 2. JEDA GELAP & TUKAR OBJEK
+        yield return new WaitForSecondsRealtime(jedaGelap);
+        
+        // MATIKAN SEPENUHNYA
+        // Karena coroutine sekarang menumpang di panelLayarHitam, kita aman mematikan objek apapun!
+        if (panelBubleName != null) panelBubleName.SetActive(false);
+        if (objekYangIkutMati != null) foreach (var obj in objekYangIkutMati) if (obj != null) obj.SetActive(false);
+        if (objekYangDinyalakan != null) foreach (var obj in objekYangDinyalakan) if (obj != null) obj.SetActive(true);
+
+        // 3. BUKA MATA
+        waktu = 0f;
+        while (waktu < durasiBukaMata)
+        {
+            waktu += Time.unscaledDeltaTime;
+            if (blinkMat != null) blinkMat.SetFloat("_Blink", Mathf.Clamp01(1f - (waktu / durasiBukaMata)));
+            yield return null;
+        }
+        if (blinkMat != null) blinkMat.SetFloat("_Blink", 0f);
+
+        panelLayarHitam.SetActive(false);
+        if (bgImage != null && originalMat != null) bgImage.material = originalMat;
+        if (blinkMat != null) Destroy(blinkMat);
+        
+        sedangDitutup = false;
+    }
+
+    IEnumerator FadeOutLaluTutup()
+    {
         // ================= JIKA BUKAN BLINK =================
 
         // 1. Jalankan animasi keluar untuk semua objek yang ikut mati
