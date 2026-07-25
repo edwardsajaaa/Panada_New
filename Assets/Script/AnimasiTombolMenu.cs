@@ -79,12 +79,9 @@ public class AnimasiTombolMenu : MonoBehaviour, IPointerEnterHandler, IPointerEx
         canvasGroup = GetComponent<CanvasGroup>();
         if (canvasGroup == null) canvasGroup = gameObject.AddComponent<CanvasGroup>();
 
-        // Matikan transisi warna/alpha bawaan Unity pada seluruh komponen Selectable (Button, Toggle, dll) di objek ini & anak-anaknya
-        UnityEngine.UI.Selectable[] selectables = GetComponentsInChildren<UnityEngine.UI.Selectable>(true);
-        foreach (var s in selectables)
-        {
-            if (s != null) s.transition = UnityEngine.UI.Selectable.Transition.None;
-        }
+        // Matikan transisi warna/alpha bawaan Unity pada komponen Selectable di objek ini saja (bukan anak-anaknya)
+        UnityEngine.UI.Selectable s = GetComponent<UnityEngine.UI.Selectable>();
+        if (s != null) s.transition = UnityEngine.UI.Selectable.Transition.None;
     }
 
     void InisialisasiAwal()
