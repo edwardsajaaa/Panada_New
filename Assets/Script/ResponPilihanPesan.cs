@@ -23,8 +23,28 @@ public class ResponPilihanPesan : MonoBehaviour
     public float jedaGelap = 0.15f;
     public float durasiBukaMata = 0.4f;
 
+    [Header("Perubahan HP (Disiapkan untuk dibuka lagi nanti)")]
+    [Tooltip("Pesan baru yang akan langsung muncul saat HP dibuka lagi")]
+    public GameObject[] pesanBaru;
+    [Tooltip("Tombol yang akan dimatikan permanen (misal: Nanti Saja)")]
+    public GameObject tombolDimatikan;
+    [Tooltip("Tombol yang akan digeser ke tengah (misal: Balas Sekarang)")]
+    public RectTransform tombolDitengah;
+    public Vector2 posisiTengah = new Vector2(-16f, -129.359f);
+
     public void KlikNantiSaja()
     {
+        // Siapkan perubahan UI HP di belakang layar untuk nanti
+        if (pesanBaru != null)
+        {
+            foreach (var pesan in pesanBaru)
+            {
+                if (pesan != null) pesan.SetActive(true);
+            }
+        }
+        if (tombolDimatikan != null) tombolDimatikan.SetActive(false);
+        if (tombolDitengah != null) tombolDitengah.anchoredPosition = posisiTengah;
+
         // Tutup opsi
         if (panelPilihan != null) panelPilihan.SetActive(false);
 
