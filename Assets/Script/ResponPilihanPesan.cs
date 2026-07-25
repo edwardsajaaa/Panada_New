@@ -20,8 +20,7 @@ public class ResponPilihanPesan : MonoBehaviour
     // Dipanggil saat tombol "Nanti Saja" ditekan
     public void KlikNantiSaja()
     {
-        // 1. Matikan UI HP dan panel pilihan
-        if (panelPesan != null) panelPesan.SetActive(false);
+        // 1. Matikan panel pilihan saja (HP/Panel Pesan dibiarkan tetap aktif)
         if (panelPilihan != null) panelPilihan.SetActive(false);
 
         // 2. Aktifkan Nathan

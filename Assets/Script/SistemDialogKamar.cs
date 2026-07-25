@@ -16,6 +16,10 @@ public class SistemDialogKamar : MonoBehaviour
     [Header("Pengaturan Transisi")]
     public float durasiTransisiTeks = 0.3f; 
 
+    [Header("Aksi Setelah Dialog Habis")]
+    [Tooltip("Masukkan objek apa saja yang ingin dimatikan bersamaan dengan hilangnya Buble Name (misal: Panel Pesan, Nathan)")]
+    public GameObject[] objekYangIkutMati;
+
     private int indeksDialog = 0;
     private bool sedangTransisi = false;
     private Coroutine transisiCoroutine;
@@ -156,6 +160,15 @@ public class SistemDialogKamar : MonoBehaviour
             }
             cg.alpha = 0f;
             panelBubleName.SetActive(false);
+        }
+
+        // Matikan juga objek-objek lain yang terdaftar (seperti HP, dll)
+        if (objekYangIkutMati != null)
+        {
+            foreach (var obj in objekYangIkutMati)
+            {
+                if (obj != null) obj.SetActive(false);
+            }
         }
     }
 }
