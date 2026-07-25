@@ -38,6 +38,10 @@ public class SistemDialogKamar : MonoBehaviour
     [Header("Pengaturan Efek Zoom (Opsional)")]
     [Tooltip("Masukkan Panel Meja atau background yang ingin di-zoom")]
     public RectTransform panelUntukZoom;
+    
+    [Tooltip("Jika dicentang, posisi & skala Zoom In akan otomatis mengikuti posisi meja saat dialog ini ditutup (Sangat disarankan!).")]
+    public bool gunakanPosisiAwalSebagaiZoomIn = true;
+    
     public Vector3 skalaZoomOut = Vector3.one;
     public Vector3 skalaZoomIn = new Vector3(1.2f, 1.2f, 1f);
     
@@ -47,15 +51,19 @@ public class SistemDialogKamar : MonoBehaviour
     public Vector2 offsetMinZoomOut = Vector2.zero;
     [Tooltip("Normal: (-Right, -Top)")]
     public Vector2 offsetMaxZoomOut = Vector2.zero;
-    [Tooltip("Zoom In: (Left, Bottom) sesuai gambar adalah (160, 94.585)")]
+    [Tooltip("Hanya dipakai jika gunakanPosisiAwal = false")]
     public Vector2 offsetMinZoomIn = new Vector2(160f, 94.585f);
-    [Tooltip("Zoom In: (-Right, -Top) sesuai gambar adalah (-160, -89.585)")]
+    [Tooltip("Hanya dipakai jika gunakanPosisiAwal = false")]
     public Vector2 offsetMaxZoomIn = new Vector2(-160f, -89.585f);
 
     public float durasiAnimasiZoom = 0.5f;
     [Tooltip("Waktu tunggu setelah zoom out sebelum kembali zoom in")]
     public float jedaSebelumZoomInLagi = 3f;
-    [Tooltip("Objek yang akan diaktifkan setelah zoom in selesai (misal: untuk memunculkan notifikasi baru)")]
+    
+    [Header("Trigger Objek")]
+    [Tooltip("Handphone atau objek yang akan dinyalakan tepat SEBELUM animasi zoom in dimulai")]
+    public GameObject objekNyalaSaatZoomIn;
+    [Tooltip("Objek yang akan diaktifkan SETELAH zoom in selesai (misal: untuk memunculkan notifikasi baru)")]
     public GameObject objekTriggerSetelahZoom;
 
     private int indeksDialog = 0;
@@ -344,6 +352,11 @@ public class SistemDialogKamar : MonoBehaviour
             yield break;
         }
 
+        // Catat posisi dan skala awal sebagai target Zoom In
+        Vector3 targetZoomInScale = gunakanPosisiAwalSebagaiZoomIn ? panelUntukZoom.localScale : skalaZoomIn;
+        Vector2 targetZoomInMin = gunakanPosisiAwalSebagaiZoomIn ? panelUntukZoom.offsetMin : offsetMinZoomIn;
+        Vector2 targetZoomInMax = gunakanPosisiAwalSebagaiZoomIn ? panelUntukZoom.offsetMax : offsetMaxZoomIn;
+
         // 1. Animasi Zoom Out
         float waktu = 0f;
         Vector3 awalScale = panelUntukZoom.localScale;
@@ -373,7 +386,13 @@ public class SistemDialogKamar : MonoBehaviour
         // 2. Jeda
         yield return new WaitForSecondsRealtime(jedaSebelumZoomInLagi);
 
-        // 3. Animasi Zoom In
+        // Nyalakan handphone tepat sebelum Zoom In
+        if (objekNyalaSaatZoomIn != null)
+        {
+            objekNyalaSaatZoomIn.SetActive(true);
+        }
+
+        // 3. Animasi Zoom In (kembali ke posisi target)
         waktu = 0f;
         awalScale = panelUntukZoom.localScale;
         awalMin = panelUntukZoom.offsetMin;
@@ -383,20 +402,20 @@ public class SistemDialogKamar : MonoBehaviour
         {
             waktu += Time.unscaledDeltaTime;
             float progress = waktu / durasiAnimasiZoom;
-            panelUntukZoom.localScale = Vector3.Lerp(awalScale, skalaZoomIn, progress);
+            panelUntukZoom.localScale = Vector3.Lerp(awalScale, targetZoomInScale, progress);
             
             if (ubahPosisiJuga)
             {
-                panelUntukZoom.offsetMin = Vector2.Lerp(awalMin, offsetMinZoomIn, progress);
-                panelUntukZoom.offsetMax = Vector2.Lerp(awalMax, offsetMaxZoomIn, progress);
+                panelUntukZoom.offsetMin = Vector2.Lerp(awalMin, targetZoomInMin, progress);
+                panelUntukZoom.offsetMax = Vector2.Lerp(awalMax, targetZoomInMax, progress);
             }
             yield return null;
         }
-        panelUntukZoom.localScale = skalaZoomIn;
+        panelUntukZoom.localScale = targetZoomInScale;
         if (ubahPosisiJuga)
         {
-            panelUntukZoom.offsetMin = offsetMinZoomIn;
-            panelUntukZoom.offsetMax = offsetMaxZoomIn;
+            panelUntukZoom.offsetMin = targetZoomInMin;
+            panelUntukZoom.offsetMax = targetZoomInMax;
         }
 
         // 4. Aktifkan trigger notifikasi (jika ada)
