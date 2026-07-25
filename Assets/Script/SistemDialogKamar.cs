@@ -40,6 +40,18 @@ public class SistemDialogKamar : MonoBehaviour
     public RectTransform panelUntukZoom;
     public Vector3 skalaZoomOut = Vector3.one;
     public Vector3 skalaZoomIn = new Vector3(1.2f, 1.2f, 1f);
+    
+    [Header("Pengaturan Posisi (Berdasarkan Left, Bottom, Right, Top)")]
+    public bool ubahPosisiJuga = true;
+    [Tooltip("Normal: (Left, Bottom)")]
+    public Vector2 offsetMinZoomOut = Vector2.zero;
+    [Tooltip("Normal: (-Right, -Top)")]
+    public Vector2 offsetMaxZoomOut = Vector2.zero;
+    [Tooltip("Zoom In: (Left, Bottom) sesuai gambar adalah (160, 94.585)")]
+    public Vector2 offsetMinZoomIn = new Vector2(160f, 94.585f);
+    [Tooltip("Zoom In: (-Right, -Top) sesuai gambar adalah (-160, -89.585)")]
+    public Vector2 offsetMaxZoomIn = new Vector2(-160f, -89.585f);
+
     public float durasiAnimasiZoom = 0.5f;
     [Tooltip("Waktu tunggu setelah zoom out sebelum kembali zoom in")]
     public float jedaSebelumZoomInLagi = 3f;
@@ -334,27 +346,58 @@ public class SistemDialogKamar : MonoBehaviour
 
         // 1. Animasi Zoom Out
         float waktu = 0f;
-        Vector3 awal = panelUntukZoom.localScale;
+        Vector3 awalScale = panelUntukZoom.localScale;
+        Vector2 awalMin = panelUntukZoom.offsetMin;
+        Vector2 awalMax = panelUntukZoom.offsetMax;
+
         while (waktu < durasiAnimasiZoom)
         {
             waktu += Time.unscaledDeltaTime;
-            panelUntukZoom.localScale = Vector3.Lerp(awal, skalaZoomOut, waktu / durasiAnimasiZoom);
+            float progress = waktu / durasiAnimasiZoom;
+            panelUntukZoom.localScale = Vector3.Lerp(awalScale, skalaZoomOut, progress);
+            
+            if (ubahPosisiJuga)
+            {
+                panelUntukZoom.offsetMin = Vector2.Lerp(awalMin, offsetMinZoomOut, progress);
+                panelUntukZoom.offsetMax = Vector2.Lerp(awalMax, offsetMaxZoomOut, progress);
+            }
             yield return null;
         }
         panelUntukZoom.localScale = skalaZoomOut;
+        if (ubahPosisiJuga)
+        {
+            panelUntukZoom.offsetMin = offsetMinZoomOut;
+            panelUntukZoom.offsetMax = offsetMaxZoomOut;
+        }
 
         // 2. Jeda
         yield return new WaitForSecondsRealtime(jedaSebelumZoomInLagi);
 
         // 3. Animasi Zoom In
         waktu = 0f;
+        awalScale = panelUntukZoom.localScale;
+        awalMin = panelUntukZoom.offsetMin;
+        awalMax = panelUntukZoom.offsetMax;
+
         while (waktu < durasiAnimasiZoom)
         {
             waktu += Time.unscaledDeltaTime;
-            panelUntukZoom.localScale = Vector3.Lerp(skalaZoomOut, skalaZoomIn, waktu / durasiAnimasiZoom);
+            float progress = waktu / durasiAnimasiZoom;
+            panelUntukZoom.localScale = Vector3.Lerp(awalScale, skalaZoomIn, progress);
+            
+            if (ubahPosisiJuga)
+            {
+                panelUntukZoom.offsetMin = Vector2.Lerp(awalMin, offsetMinZoomIn, progress);
+                panelUntukZoom.offsetMax = Vector2.Lerp(awalMax, offsetMaxZoomIn, progress);
+            }
             yield return null;
         }
         panelUntukZoom.localScale = skalaZoomIn;
+        if (ubahPosisiJuga)
+        {
+            panelUntukZoom.offsetMin = offsetMinZoomIn;
+            panelUntukZoom.offsetMax = offsetMaxZoomIn;
+        }
 
         // 4. Aktifkan trigger notifikasi (jika ada)
         if (objekTriggerSetelahZoom != null)
