@@ -426,12 +426,6 @@ public class SistemDialogKamar : MonoBehaviour
         // 2. Jeda
         yield return new WaitForSecondsRealtime(jedaSebelumZoomInLagi);
 
-        // Nyalakan handphone tepat sebelum Zoom In
-        if (objekNyalaSaatZoomIn != null)
-        {
-            objekNyalaSaatZoomIn.SetActive(true);
-        }
-
         // 3. Animasi Zoom In (kembali ke posisi target yang sudah direkam)
         float waktuIn = 0f;
         Vector3 awalScaleIn = panelUntukZoom.localScale;
@@ -456,6 +450,12 @@ public class SistemDialogKamar : MonoBehaviour
         {
             panelUntukZoom.offsetMin = savedZoomInMin;
             panelUntukZoom.offsetMax = savedZoomInMax;
+        }
+
+        // Nyalakan handphone tepat SETELAH Zoom In selesai
+        if (objekNyalaSaatZoomIn != null)
+        {
+            objekNyalaSaatZoomIn.SetActive(true);
         }
 
         // 4. Aktifkan trigger notifikasi (jika ada)
