@@ -15,6 +15,12 @@ public class BukaPanelPesan : MonoBehaviour
     [Tooltip("Masukkan BlackScreenPanel yang sudah ada di scene (panel Image dengan material EyeBlinkMat).")]
     public GameObject panelLayarHitam;
 
+    [Header("Panel Lanjutan (Opsional)")]
+    [Tooltip("Masukkan game object yang ingin dimunculkan SETELAH tangan selesai meluncur (misal: panel pilihan).")]
+    public GameObject panelLanjutan;
+    [Tooltip("Waktu tunggu sebelum panel lanjutan muncul (disesuaikan dengan durasi animasi tangan).")]
+    public float jedaPanelLanjutan = 0.5f;
+
     void Start()
     {
         if (panelPesan != null)
@@ -23,6 +29,10 @@ public class BukaPanelPesan : MonoBehaviour
         // Pastikan layar hitam mati di awal agar tidak menghalangi
         if (panelLayarHitam != null)
             panelLayarHitam.SetActive(false);
+
+        // Pastikan panel lanjutan juga mati di awal
+        if (panelLanjutan != null)
+            panelLanjutan.SetActive(false);
 
         Button tombol = GetComponent<Button>();
         if (tombol != null)
@@ -99,12 +109,17 @@ public class BukaPanelPesan : MonoBehaviour
         // 7. Matikan BlackScreenPanel
         panelLayarHitam.SetActive(false);
 
-        // 8. Bersihkan material instance
+        // 9. Bersihkan material instance
         if (blinkMat != null) Destroy(blinkMat);
 
-        // 10. Matikan tombol ini sepenuhnya setelah semua proses selesai
+        // 10. Tunggu sampai animasi tangan meluncur selesai, lalu munculkan panel pilihan
+        if (panelLanjutan != null)
+        {
+            yield return new WaitForSecondsRealtime(jedaPanelLanjutan);
+            panelLanjutan.SetActive(true);
+        }
+
+        // 11. Matikan tombol ini sepenuhnya setelah semua proses selesai
         gameObject.SetActive(false);
     }
 }
-
-
