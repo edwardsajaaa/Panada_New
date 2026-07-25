@@ -235,9 +235,12 @@ public class SistemDialogKamar : MonoBehaviour
         sedangDitutup = false;
 
         // 4. JALANKAN ZOOM SETELAH MATA TERBUKA
-        if (panelUntukZoom != null && runner != null)
+        if (panelUntukZoom != null)
         {
-            runner.StartCoroutine(ProsesZoomSekuensial());
+            // Buat objek sementara sebagai runner agar coroutine tidak mati
+            GameObject tempRunnerObj = new GameObject("TempZoomRunner");
+            MonoBehaviour zoomRunner = tempRunnerObj.AddComponent<AnimasiNotifikasiGanda>();
+            zoomRunner.StartCoroutine(ProsesZoomSekuensial(tempRunnerObj));
         }
     }
 
@@ -315,13 +318,19 @@ public class SistemDialogKamar : MonoBehaviour
         // 4. JALANKAN ZOOM SETELAH TRANSISI SELESAI
         if (panelUntukZoom != null)
         {
-            StartCoroutine(ProsesZoomSekuensial());
+            GameObject tempRunnerObj = new GameObject("TempZoomRunner");
+            MonoBehaviour zoomRunner = tempRunnerObj.AddComponent<AnimasiNotifikasiGanda>();
+            zoomRunner.StartCoroutine(ProsesZoomSekuensial(tempRunnerObj));
         }
     }
 
-    IEnumerator ProsesZoomSekuensial()
+    IEnumerator ProsesZoomSekuensial(GameObject tempRunnerObj = null)
     {
-        if (panelUntukZoom == null) yield break;
+        if (panelUntukZoom == null)
+        {
+            if (tempRunnerObj != null) Destroy(tempRunnerObj);
+            yield break;
+        }
 
         // 1. Animasi Zoom Out
         float waktu = 0f;
@@ -352,5 +361,8 @@ public class SistemDialogKamar : MonoBehaviour
         {
             objekTriggerSetelahZoom.SetActive(true);
         }
+
+        // Hancurkan runner sementara setelah selesai
+        if (tempRunnerObj != null) Destroy(tempRunnerObj);
     }
 }
