@@ -46,11 +46,13 @@ public class ResponPilihanPesan : MonoBehaviour
         panelLayarHitam.transform.SetAsLastSibling();
 
         UnityEngine.UI.Image bgImage = panelLayarHitam.GetComponent<UnityEngine.UI.Image>();
+        Material originalMat = null;
         Material blinkMat = null;
 
         if (bgImage != null && bgImage.material != null && bgImage.material.HasProperty("_Blink"))
         {
-            blinkMat = new Material(bgImage.material);
+            originalMat = bgImage.material;
+            blinkMat = new Material(originalMat);
             bgImage.material = blinkMat;
             blinkMat.SetFloat("_Blink", 0f);
         }
@@ -80,6 +82,10 @@ public class ResponPilihanPesan : MonoBehaviour
         if (blinkMat != null) blinkMat.SetFloat("_Blink", 0f);
 
         panelLayarHitam.SetActive(false);
+        if (bgImage != null && originalMat != null)
+        {
+            bgImage.material = originalMat;
+        }
         if (blinkMat != null) Destroy(blinkMat);
     }
 

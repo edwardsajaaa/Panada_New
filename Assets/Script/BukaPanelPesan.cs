@@ -61,16 +61,18 @@ public class BukaPanelPesan : MonoBehaviour
 
         // 3. Ambil material blink dari Image yang sudah terpasang di BlackScreenPanel
         Image bgImage = panelLayarHitam.GetComponent<Image>();
+        Material originalMat = null;
         Material blinkMat = null;
 
         if (bgImage != null && bgImage.material != null && bgImage.material.HasProperty("_Blink"))
         {
-            blinkMat = new Material(bgImage.material);
+            originalMat = bgImage.material;
+            blinkMat = new Material(originalMat);
             bgImage.material = blinkMat;
             blinkMat.SetFloat("_Blink", 0f); // mulai dari mata terbuka
         }
 
-        // 4. TUTUP MATA (0 → 1)
+        // 4. TUTUP MATA (0 -> 1)
         float waktu = 0f;
         while (waktu < durasiTutupMata)
         {
@@ -92,7 +94,7 @@ public class BukaPanelPesan : MonoBehaviour
         if (panelPesan != null)
             panelPesan.SetActive(true);
 
-        // 6. BUKA MATA (1 → 0)
+        // 6. BUKA MATA (1 -> 0)
         waktu = 0f;
         while (waktu < durasiBukaMata)
         {
@@ -109,7 +111,11 @@ public class BukaPanelPesan : MonoBehaviour
         // 7. Matikan BlackScreenPanel
         panelLayarHitam.SetActive(false);
 
-        // 9. Bersihkan material instance
+        // 9. Bersihkan material instance dan kembalikan originalnya
+        if (bgImage != null && originalMat != null)
+        {
+            bgImage.material = originalMat;
+        }
         if (blinkMat != null) Destroy(blinkMat);
 
         // 10. Tunggu sampai animasi tangan meluncur selesai, lalu munculkan panel pilihan
