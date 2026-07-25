@@ -43,6 +43,8 @@ public class SistemDialogKamar : MonoBehaviour
     public float durasiAnimasiZoom = 0.5f;
     [Tooltip("Waktu tunggu setelah zoom out sebelum kembali zoom in")]
     public float jedaSebelumZoomInLagi = 3f;
+    [Tooltip("Objek yang akan diaktifkan setelah zoom in selesai (misal: untuk memunculkan notifikasi baru)")]
+    public GameObject objekTriggerSetelahZoom;
 
     private int indeksDialog = 0;
     private bool sedangTransisi = false;
@@ -165,36 +167,25 @@ public class SistemDialogKamar : MonoBehaviour
             {
                 sedangDitutup = true;
 
-                MonoBehaviour runner = null;
-
                 if (transisiBuble == TransisiKeluar.Blink && panelLayarHitam != null)
                 {
                     // Aktifkan layar hitam lebih dulu agar bisa menjalankan coroutine
                     panelLayarHitam.SetActive(true);
                     
-                    // Gunakan Image dari panelLayarHitam sebagai runner coroutine
-                    // Agar jika objek dialog ini dimatikan (karena parent-nya mati), coroutine tetap jalan!
-                    runner = panelLayarHitam.GetComponent<UnityEngine.UI.Image>();
+                    MonoBehaviour runner = panelLayarHitam.GetComponent<UnityEngine.UI.Image>();
                     if (runner == null) runner = this;
 
-                    runner.StartCoroutine(BlinkOutRoutine());
+                    runner.StartCoroutine(BlinkOutRoutine(runner));
                 }
                 else
                 {
-                    runner = this;
-                    runner.StartCoroutine(FadeOutLaluTutup());
-                }
-
-                // Jalankan zoom efek jika diset
-                if (panelUntukZoom != null && runner != null)
-                {
-                    runner.StartCoroutine(ProsesZoomSekuensial());
+                    StartCoroutine(FadeOutLaluTutup());
                 }
             }
         }
     }
 
-    IEnumerator BlinkOutRoutine()
+    IEnumerator BlinkOutRoutine(MonoBehaviour runner)
     {
         panelLayarHitam.transform.SetAsLastSibling();
 
@@ -223,8 +214,6 @@ public class SistemDialogKamar : MonoBehaviour
         // 2. JEDA GELAP & TUKAR OBJEK
         yield return new WaitForSecondsRealtime(jedaGelap);
         
-        // MATIKAN SEPENUHNYA
-        // Karena coroutine sekarang menumpang di panelLayarHitam, kita aman mematikan objek apapun!
         if (panelBubleName != null) panelBubleName.SetActive(false);
         if (objekYangIkutMati != null) foreach (var obj in objekYangIkutMati) if (obj != null) obj.SetActive(false);
         if (objekYangDinyalakan != null) foreach (var obj in objekYangDinyalakan) if (obj != null) obj.SetActive(true);
@@ -244,6 +233,12 @@ public class SistemDialogKamar : MonoBehaviour
         if (blinkMat != null) Destroy(blinkMat);
         
         sedangDitutup = false;
+
+        // 4. JALANKAN ZOOM SETELAH MATA TERBUKA
+        if (panelUntukZoom != null && runner != null)
+        {
+            runner.StartCoroutine(ProsesZoomSekuensial());
+        }
     }
 
     IEnumerator FadeOutLaluTutup()
@@ -316,6 +311,12 @@ public class SistemDialogKamar : MonoBehaviour
         }
 
         sedangDitutup = false;
+
+        // 4. JALANKAN ZOOM SETELAH TRANSISI SELESAI
+        if (panelUntukZoom != null)
+        {
+            StartCoroutine(ProsesZoomSekuensial());
+        }
     }
 
     IEnumerator ProsesZoomSekuensial()
@@ -345,5 +346,11 @@ public class SistemDialogKamar : MonoBehaviour
             yield return null;
         }
         panelUntukZoom.localScale = skalaZoomIn;
+
+        // 4. Aktifkan trigger notifikasi (jika ada)
+        if (objekTriggerSetelahZoom != null)
+        {
+            objekTriggerSetelahZoom.SetActive(true);
+        }
     }
 }
