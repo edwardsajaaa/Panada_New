@@ -24,6 +24,7 @@ public class SistemDialogKamar : MonoBehaviour
 
     [Header("Aksi Setelah Dialog Habis")]
     public GameObject[] objekYangIkutMati;
+    public GameObject[] objekYangDinyalakan;
     [Tooltip("Animasi keluar untuk objek yang ikut mati (otomatis dipasangi script AnimasiTombolMenu)")]
     public AnimasiTombolMenu.ModeAnimasiIn transisiObjekLain = AnimasiTombolMenu.ModeAnimasiIn.PopInBawah;
 
@@ -207,6 +208,15 @@ public class SistemDialogKamar : MonoBehaviour
             }
             cg.alpha = 0f;
             panelBubleName.SetActive(false);
+        }
+
+        // 3. Nyalakan objek yang harus hidup lagi (misal HP meja)
+        if (objekYangDinyalakan != null)
+        {
+            foreach (var obj in objekYangDinyalakan)
+            {
+                if (obj != null) obj.SetActive(true);
+            }
         }
     }
 }
