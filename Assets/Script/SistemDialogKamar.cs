@@ -245,6 +245,13 @@ public class SistemDialogKamar : MonoBehaviour
         if (objekYangIkutMati != null) foreach (var obj in objekYangIkutMati) if (obj != null) obj.SetActive(false);
         if (objekYangDinyalakan != null) foreach (var obj in objekYangDinyalakan) if (obj != null) obj.SetActive(true);
 
+        // Paksa matikan Handphone (atau objek trigger) agar tidak muncul selama Zoom Out
+        // Berjaga-jaga jika user memasukkannya ke objekYangDinyalakan atau lupa mematikannya
+        if (objekNyalaSaatZoomIn != null)
+        {
+            objekNyalaSaatZoomIn.SetActive(false);
+        }
+
         // SNAP INSTAN ZOOM OUT (Saat layar gelap)
         if (panelUntukZoom != null)
         {
@@ -292,6 +299,12 @@ public class SistemDialogKamar : MonoBehaviour
     IEnumerator FadeOutLaluTutup()
     {
         // ================= JIKA BUKAN BLINK =================
+
+        // Paksa matikan Handphone agar tidak muncul selama Zoom Out
+        if (objekNyalaSaatZoomIn != null)
+        {
+            objekNyalaSaatZoomIn.SetActive(false);
+        }
 
         if (panelUntukZoom != null)
         {
