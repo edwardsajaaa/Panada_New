@@ -137,6 +137,27 @@ public class SistemDialogKamar : MonoBehaviour
 
     IEnumerator FadeOutLaluTutup()
     {
+        // 1. Jalankan animasi keluar (Slide Down) untuk semua objek yang ikut mati
+        if (objekYangIkutMati != null)
+        {
+            foreach (var obj in objekYangIkutMati)
+            {
+                if (obj == null) continue;
+                
+                AnimasiTombolMenu anim = obj.GetComponent<AnimasiTombolMenu>();
+                if (anim == null)
+                {
+                    anim = obj.gameObject.AddComponent<AnimasiTombolMenu>();
+                    anim.modeAnimasiOut = AnimasiTombolMenu.ModeAnimasiIn.PopInBawah;
+                    anim.durasiAnimasiOut = 0.4f;
+                    anim.gunakanAnimasiOut = true;
+                }
+                // Paksa objek animasi turun lalu mati otomatis
+                anim.JalankanAnimasiOut(null, true); 
+            }
+        }
+
+        // 2. Animasi mengecil dan memudar (Pop-Out) untuk Buble Name
         if (panelBubleName != null)
         {
             CanvasGroup cg = panelBubleName.GetComponent<CanvasGroup>();
@@ -146,20 +167,18 @@ public class SistemDialogKamar : MonoBehaviour
             while (Time.time < waktuMulai + durasiTransisiTeks)
             {
                 float progress = (Time.time - waktuMulai) / durasiTransisiTeks;
+                
+                // Fade out
                 cg.alpha = Mathf.Lerp(1f, 0f, progress);
+                
+                // Scale down dari 1 ke 0.2
+                float scale = Mathf.Lerp(1f, 0.2f, progress);
+                panelBubleName.transform.localScale = new Vector3(scale, scale, 1f);
+                
                 yield return null;
             }
             cg.alpha = 0f;
             panelBubleName.SetActive(false);
-        }
-
-        // Matiin barengan yg lain (misal HP)
-        if (objekYangIkutMati != null)
-        {
-            foreach (var obj in objekYangIkutMati)
-            {
-                if (obj != null) obj.SetActive(false);
-            }
         }
     }
 }
