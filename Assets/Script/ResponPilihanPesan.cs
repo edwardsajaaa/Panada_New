@@ -31,6 +31,15 @@ public class ResponPilihanPesan : MonoBehaviour
     [Tooltip("Scroll Rect HP agar bisa otomatis geser ke bawah")]
     public UnityEngine.UI.ScrollRect scrollRectPesan;
 
+    [Header("Transisi Kembali Ke Nathan (Setelah Balas)")]
+    [Tooltip("Centang jika ingin layar berkedip dan kembali ke Nathan setelah semua pesan terkirim")]
+    public bool kembaliKeNathanSetelahBalas = false;
+    public float jedaSebelumKembali = 2f;
+    [Tooltip("Objek Nathan yang akan diaktifkan (bisa pakai objek yang sama atau beda)")]
+    public GameObject nathanObjLanjutan;
+    [Tooltip("Objek Dialog (Buble Name) Lanjutan yang berisi teks baru")]
+    public GameObject bubleNameObjLanjutan;
+
     // Variabel statis untuk merekam riwayat pilihan pemain di scene ini
     public static bool pernahPilihNantiSaja = false;
 
@@ -81,12 +90,12 @@ public class ResponPilihanPesan : MonoBehaviour
         if (panelLayarHitam != null)
         {
             // Gunakan transisi blink
-            StartCoroutine(ProsesBlinkKeNathan());
+            StartCoroutine(ProsesBlinkKeNathan(nathanObj, bubleNameObj));
         }
         else
         {
             // Langsung ganti tanpa blink
-            MunculkanNathan();
+            MunculkanNathan(nathanObj, bubleNameObj);
         }
     }
 
@@ -125,6 +134,21 @@ public class ResponPilihanPesan : MonoBehaviour
                 }
             }
         }
+
+        // 3. Kembali ke Nathan jika diaktifkan
+        if (kembaliKeNathanSetelahBalas)
+        {
+            yield return new WaitForSeconds(jedaSebelumKembali);
+            
+            if (panelLayarHitam != null)
+            {
+                StartCoroutine(ProsesBlinkKeNathan(nathanObjLanjutan, bubleNameObjLanjutan));
+            }
+            else
+            {
+                MunculkanNathan(nathanObjLanjutan, bubleNameObjLanjutan);
+            }
+        }
     }
 
     private IEnumerator ScrollKeBawah()
@@ -139,7 +163,7 @@ public class ResponPilihanPesan : MonoBehaviour
         }
     }
 
-    IEnumerator ProsesBlinkKeNathan()
+    IEnumerator ProsesBlinkKeNathan(GameObject targetNathan, GameObject targetBuble)
     {
         panelLayarHitam.SetActive(true);
         panelLayarHitam.transform.SetAsLastSibling();
@@ -172,7 +196,7 @@ public class ResponPilihanPesan : MonoBehaviour
         // MATIKAN UI TANGAN/HP SAAT LAYAR SEDANG GELAP
         if (panelPesan != null) panelPesan.SetActive(false);
 
-        MunculkanNathan();
+        MunculkanNathan(targetNathan, targetBuble);
 
         // BUKA MATA
         waktu = 0f;
@@ -192,7 +216,7 @@ public class ResponPilihanPesan : MonoBehaviour
         if (blinkMat != null) Destroy(blinkMat);
     }
 
-    void MunculkanNathan()
+    void MunculkanNathan(GameObject targetNathan, GameObject targetBuble)
     {
         // Matikan UI Tangan/HP
         if (panelPesan != null) panelPesan.SetActive(false);
@@ -201,16 +225,16 @@ public class ResponPilihanPesan : MonoBehaviour
         if (handphoneMeja != null) handphoneMeja.SetActive(false);
 
         // Munculin char
-        if (nathanObj != null) nathanObj.SetActive(true);
+        if (targetNathan != null) targetNathan.SetActive(true);
 
-        if (bubleNameObj != null) StartCoroutine(ProsesMunculBuble());
+        if (targetBuble != null) StartCoroutine(ProsesMunculBuble(targetBuble));
     }
 
-    IEnumerator ProsesMunculBuble()
+    IEnumerator ProsesMunculBuble(GameObject targetBuble)
     {
-        bubleNameObj.SetActive(false);
+        targetBuble.SetActive(false);
         yield return new WaitForSeconds(jedaBubleName);
-        bubleNameObj.SetActive(true);
+        targetBuble.SetActive(true);
     }
 
 }
