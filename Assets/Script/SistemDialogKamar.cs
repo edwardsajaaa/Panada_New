@@ -54,6 +54,8 @@ public class SistemDialogKamar : MonoBehaviour
     public GameObject panelStoryUtama;
     [Tooltip("Pilih objek Loading Screen (misal: PixelOverlay) yang akan dinyalakan saat layar sudah gelap sempurna")]
     public GameObject panelLoadingScreen;
+    [Tooltip("Centang ini jika digunakan untuk pindah Scene (layar akan tetap hitam). JANGAN centang jika hanya pindah ke tampilan 3D.")]
+    public bool tahanLayarHitamSetelahLoading = false;
 
     [Header("Pengaturan Efek Zoom (Opsional)")]
     [Tooltip("Masukkan Panel Meja atau background yang ingin di-zoom")]
@@ -294,7 +296,12 @@ public class SistemDialogKamar : MonoBehaviour
                 panelLoadingScreen.transform.SetParent(null);
                 panelLoadingScreen.SetActive(true);
                 
-                // Transisi tetap dilanjutkan ke Buka Mata agar tampilan 3D terlihat
+                if (tahanLayarHitamSetelahLoading)
+                {
+                    // Karena pindah scene, layar harus TETAP HITAM.
+                    // Hentikan coroutine agar Buka Mata tidak berjalan.
+                    yield break;
+                }
             }
         }
         else
