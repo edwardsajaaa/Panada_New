@@ -315,6 +315,15 @@ public class SistemDialogKamar : MonoBehaviour
                     // Hentikan coroutine agar Buka Mata tidak berjalan.
                     yield break;
                 }
+                else
+                {
+                    // Jika hanya pindah ke 3D (tidak pindah scene), maka kita tunggu
+                    // sampai video Loading Screen selesai dan non-aktif dengan sendirinya.
+                    while (panelLoadingScreen != null && panelLoadingScreen.activeInHierarchy)
+                    {
+                        yield return null;
+                    }
+                }
             }
         }
         else
