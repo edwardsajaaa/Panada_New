@@ -10,7 +10,18 @@ public class SistemDialogKamar : MonoBehaviour
     public TMP_Text teksIsiDialog;
 
     [Header("Data Percakapan")]
+    [Tooltip("Percakapan utama yang dimainkan pertama kali")]
     public DataDialog[] percakapan;
+    [Tooltip("Percakapan yang dimainkan setelah membalas pesan (Skenario Lanjutan)")]
+    public DataDialog[] percakapanLanjutan;
+
+    [HideInInspector]
+    public bool gunakanLanjutan = false;
+
+    private DataDialog[] DialogAktif 
+    { 
+        get { return (gunakanLanjutan && percakapanLanjutan != null && percakapanLanjutan.Length > 0) ? percakapanLanjutan : percakapan; } 
+    }
 
     [Header("Pengaturan Transisi Masuk")]
     public float durasiTransisiTeks = 0.3f; 
@@ -88,7 +99,7 @@ public class SistemDialogKamar : MonoBehaviour
             StartCoroutine(PopupAwalObjek(panelBubleName.transform, durasiTransisiTeks));
         }
 
-        if (percakapan != null && percakapan.Length > 0)
+        if (DialogAktif != null && DialogAktif.Length > 0)
         {
             TampilkanDialogSekarang();
         }
@@ -115,12 +126,12 @@ public class SistemDialogKamar : MonoBehaviour
 
     void TampilkanDialogSekarang()
     {
-        if (indeksDialog < percakapan.Length)
+        if (indeksDialog < DialogAktif.Length)
         {
             if (teksNamaKarakter != null)
-                teksNamaKarakter.text = percakapan[indeksDialog].namaKarakter;
+                teksNamaKarakter.text = DialogAktif[indeksDialog].namaKarakter;
 
-            teksIsiDialog.text = percakapan[indeksDialog].teksDialog;
+            teksIsiDialog.text = DialogAktif[indeksDialog].teksDialog;
 
             if (transisiCoroutine != null) StopCoroutine(transisiCoroutine);
             transisiCoroutine = StartCoroutine(FadeTeks(0f, 1f, durasiTransisiTeks));
@@ -184,7 +195,7 @@ public class SistemDialogKamar : MonoBehaviour
     void LanjutKeDialogBerikutnya()
     {
         indeksDialog++;
-        if (indeksDialog < percakapan.Length)
+        if (indeksDialog < DialogAktif.Length)
         {
             TampilkanDialogSekarang();
         }
@@ -436,10 +447,9 @@ public class SistemDialogKamar : MonoBehaviour
             }
         }
 
-        // 2. Jeda
+
         yield return new WaitForSecondsRealtime(jedaSebelumZoomInLagi);
 
-        // 3. Animasi Zoom In (kembali ke posisi target yang sudah direkam)
         float waktuIn = 0f;
         Vector3 awalScaleIn = panelUntukZoom.localScale;
         Vector2 awalMinIn = panelUntukZoom.offsetMin;
@@ -465,19 +475,17 @@ public class SistemDialogKamar : MonoBehaviour
             panelUntukZoom.offsetMax = savedZoomInMax;
         }
 
-        // Nyalakan handphone tepat SETELAH Zoom In selesai
+  
         if (objekNyalaSaatZoomIn != null)
         {
             objekNyalaSaatZoomIn.SetActive(true);
         }
 
-        // 4. Aktifkan trigger notifikasi (jika ada)
         if (objekTriggerSetelahZoom != null)
         {
             objekTriggerSetelahZoom.SetActive(true);
         }
 
-        // Hancurkan runner sementara setelah selesai
         if (tempRunnerObj != null) Destroy(tempRunnerObj);
     }
 }
