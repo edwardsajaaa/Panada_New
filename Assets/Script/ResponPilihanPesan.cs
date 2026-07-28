@@ -173,10 +173,4 @@ public class ResponPilihanPesan : MonoBehaviour
         bubleNameObj.SetActive(true);
     }
 
-    public void KlikBalasSekarang()
-    {
-        Debug.Log("Balas Sekarang diklik");
-        if (panelPilihan != null) panelPilihan.SetActive(false);
-        // TODO: Lanjutin alur balas pesan
-    }
 }
