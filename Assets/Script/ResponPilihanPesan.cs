@@ -39,6 +39,9 @@ public class ResponPilihanPesan : MonoBehaviour
     public GameObject nathanObjLanjutan;
     [Tooltip("Objek Dialog (Buble Name) Lanjutan yang berisi teks baru")]
     public GameObject bubleNameObjLanjutan;
+    
+    [Tooltip("Isi dialog baru di sini! Ini akan otomatis menimpa dialog pada objek Buble Name di atas")]
+    public DataDialog[] percakapanLanjutan;
 
     // Variabel statis untuk merekam riwayat pilihan pemain di scene ini
     public static bool pernahPilihNantiSaja = false;
@@ -227,7 +230,20 @@ public class ResponPilihanPesan : MonoBehaviour
         // Munculin char
         if (targetNathan != null) targetNathan.SetActive(true);
 
-        if (targetBuble != null) StartCoroutine(ProsesMunculBuble(targetBuble));
+        if (targetBuble != null) 
+        {
+            // Jika ada percakapan lanjutan yang diatur di Inspector, timpa dialog yang ada di Buble Name
+            if (percakapanLanjutan != null && percakapanLanjutan.Length > 0)
+            {
+                SistemDialogKamar dialogSys = targetBuble.GetComponent<SistemDialogKamar>();
+                if (dialogSys != null)
+                {
+                    dialogSys.percakapan = percakapanLanjutan;
+                }
+            }
+
+            StartCoroutine(ProsesMunculBuble(targetBuble));
+        }
     }
 
     IEnumerator ProsesMunculBuble(GameObject targetBuble)
