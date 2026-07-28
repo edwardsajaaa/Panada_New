@@ -52,6 +52,8 @@ public class SistemDialogKamar : MonoBehaviour
     public GameObject[] objekYangDinyalakanLanjutan;
     [Tooltip("Pilih objek induk (misal: Story) untuk dimatikan di akhir dialog lanjutan")]
     public GameObject panelStoryUtama;
+    [Tooltip("Pilih objek Loading Screen (misal: PixelOverlay) yang akan dinyalakan saat layar sudah gelap sempurna")]
+    public GameObject panelLoadingScreen;
 
     [Header("Pengaturan Efek Zoom (Opsional)")]
     [Tooltip("Masukkan Panel Meja atau background yang ingin di-zoom")]
@@ -283,6 +285,18 @@ public class SistemDialogKamar : MonoBehaviour
                 panelLayarHitam.transform.SetParent(null);
                 
                 panelStoryUtama.SetActive(false);
+            }
+
+            // --- NYALAKAN LOADING SCREEN SAAT GELAP SEMPURNA ---
+            if (panelLoadingScreen != null)
+            {
+                // Lepas parent Loading Screen jika dia berada di dalam Story
+                panelLoadingScreen.transform.SetParent(null);
+                panelLoadingScreen.SetActive(true);
+
+                // Karena kita pindah scene/loading, layar harus TETAP HITAM.
+                // Hentikan coroutine agar Buka Mata tidak berjalan.
+                yield break;
             }
         }
         else
