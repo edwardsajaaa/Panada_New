@@ -155,6 +155,10 @@ public class ResponPilihanPesan : MonoBehaviour
 
         // JEDA GELAP & PERGANTIAN ADEGAN
         yield return new WaitForSecondsRealtime(jedaGelap);
+
+        // MATIKAN UI TANGAN/HP SAAT LAYAR SEDANG GELAP
+        if (panelPesan != null) panelPesan.SetActive(false);
+
         MunculkanNathan();
 
         // BUKA MATA
@@ -177,6 +181,9 @@ public class ResponPilihanPesan : MonoBehaviour
 
     void MunculkanNathan()
     {
+        // Matikan UI Tangan/HP
+        if (panelPesan != null) panelPesan.SetActive(false);
+
         // Matikan HP di meja jika ada
         if (handphoneMeja != null) handphoneMeja.SetActive(false);
 
