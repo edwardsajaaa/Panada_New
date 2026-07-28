@@ -236,7 +236,11 @@ public class SistemDialogKamar : MonoBehaviour
                 }
                 else if (transisiBuble == TransisiKeluar.LoadingScreenKhusus && panelLoadingScreen != null)
                 {
-                    StartCoroutine(LoadingScreenRoutine());
+                    // Jalankan coroutine dari objek sementara di ROOT hierarchy
+                    // agar coroutine tidak mati saat Buble Name / Story dinonaktifkan
+                    GameObject tempRunner = new GameObject("TempLoadingRunner");
+                    MonoBehaviour runner = tempRunner.AddComponent<AnimasiNotifikasiGanda>();
+                    runner.StartCoroutine(LoadingScreenRoutine(tempRunner));
                 }
                 else
                 {
@@ -584,8 +588,11 @@ public class SistemDialogKamar : MonoBehaviour
         if (tempRunnerObj != null) Destroy(tempRunnerObj);
     }
 
-    IEnumerator LoadingScreenRoutine()
+    IEnumerator LoadingScreenRoutine(GameObject tempRunner)
     {
+        // 0. Matikan Buble Name (dialog bubble) terlebih dahulu
+        if (panelBubleName != null) panelBubleName.SetActive(false);
+
         // 1. Nyalakan Loading Screen (PixelOverlay)
         if (panelLoadingScreen != null)
         {
@@ -613,5 +620,10 @@ public class SistemDialogKamar : MonoBehaviour
         {
             panelStoryUtama.SetActive(false);
         }
+
+        sedangDitutup = false;
+
+        // 5. Bersihkan objek sementara
+        if (tempRunner != null) Destroy(tempRunner);
     }
 }
