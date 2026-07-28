@@ -89,13 +89,13 @@ public class ResponPilihanPesan : MonoBehaviour
 
         if (panelLayarHitam != null)
         {
-            // Gunakan transisi blink
-            StartCoroutine(ProsesBlinkKeNathan(nathanObj, bubleNameObj));
+            // Gunakan transisi blink (bukan dialog lanjutan)
+            StartCoroutine(ProsesBlinkKeNathan(nathanObj, bubleNameObj, false));
         }
         else
         {
-            // Langsung ganti tanpa blink
-            MunculkanNathan(nathanObj, bubleNameObj);
+            // Langsung ganti tanpa blink (bukan dialog lanjutan)
+            MunculkanNathan(nathanObj, bubleNameObj, false);
         }
     }
 
@@ -135,18 +135,18 @@ public class ResponPilihanPesan : MonoBehaviour
             }
         }
 
-        // 3. Kembali ke Nathan jika diaktifkan
+        // 3. Kembali ke Nathan jika diaktifkan (DIALOG LANJUTAN)
         if (kembaliKeNathanSetelahBalas)
         {
             yield return new WaitForSeconds(jedaSebelumKembali);
             
             if (panelLayarHitam != null)
             {
-                StartCoroutine(ProsesBlinkKeNathan(nathanObjLanjutan, bubleNameObjLanjutan));
+                StartCoroutine(ProsesBlinkKeNathan(nathanObjLanjutan, bubleNameObjLanjutan, true));
             }
             else
             {
-                MunculkanNathan(nathanObjLanjutan, bubleNameObjLanjutan);
+                MunculkanNathan(nathanObjLanjutan, bubleNameObjLanjutan, true);
             }
         }
     }
@@ -163,7 +163,7 @@ public class ResponPilihanPesan : MonoBehaviour
         }
     }
 
-    IEnumerator ProsesBlinkKeNathan(GameObject targetNathan, GameObject targetBuble)
+    IEnumerator ProsesBlinkKeNathan(GameObject targetNathan, GameObject targetBuble, bool isLanjutan)
     {
         panelLayarHitam.SetActive(true);
         panelLayarHitam.transform.SetAsLastSibling();
@@ -196,7 +196,7 @@ public class ResponPilihanPesan : MonoBehaviour
         // MATIKAN UI TANGAN/HP SAAT LAYAR SEDANG GELAP
         if (panelPesan != null) panelPesan.SetActive(false);
 
-        MunculkanNathan(targetNathan, targetBuble);
+        MunculkanNathan(targetNathan, targetBuble, isLanjutan);
 
         // BUKA MATA
         waktu = 0f;
@@ -216,7 +216,7 @@ public class ResponPilihanPesan : MonoBehaviour
         if (blinkMat != null) Destroy(blinkMat);
     }
 
-    void MunculkanNathan(GameObject targetNathan, GameObject targetBuble)
+    void MunculkanNathan(GameObject targetNathan, GameObject targetBuble, bool isLanjutan)
     {
         // Matikan UI Tangan/HP
         if (panelPesan != null) panelPesan.SetActive(false);
@@ -229,11 +229,11 @@ public class ResponPilihanPesan : MonoBehaviour
 
         if (targetBuble != null) 
         {
-            // Set flag agar SistemDialogKamar menggunakan percakapan lanjutan
+            // Set flag agar SistemDialogKamar menggunakan percakapan yang tepat
             SistemDialogKamar dialogSys = targetBuble.GetComponent<SistemDialogKamar>();
             if (dialogSys != null)
             {
-                dialogSys.gunakanLanjutan = true;
+                dialogSys.gunakanLanjutan = isLanjutan;
             }
 
             StartCoroutine(ProsesMunculBuble(targetBuble));
