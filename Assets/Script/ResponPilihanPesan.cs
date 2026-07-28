@@ -24,10 +24,21 @@ public class ResponPilihanPesan : MonoBehaviour
     public float durasiBukaMata = 0.4f;
 
     [Header("Reaksi: Balas Sekarang")]
-    [Tooltip("Objek balasan Nathan (warna biru) yang akan dimunculkan")]
-    public GameObject pesanBalasanNathan;
+    [Tooltip("Pesan yang muncul jika pemain LANGSUNG membalas")]
+    public GameObject[] pesanBalasLangsung;
+    [Tooltip("Pesan yang muncul jika pemain membalas SETELAH menekan Nanti Saja")]
+    public GameObject[] pesanBalasSetelahNanti;
     [Tooltip("Scroll Rect HP agar bisa otomatis geser ke bawah")]
     public UnityEngine.UI.ScrollRect scrollRectPesan;
+
+    // Variabel statis untuk merekam riwayat pilihan pemain di scene ini
+    public static bool pernahPilihNantiSaja = false;
+
+    void Awake()
+    {
+        // Reset status setiap kali scene dimuat
+        pernahPilihNantiSaja = false;
+    }
 
     [Header("Perubahan HP (Disiapkan untuk dibuka lagi nanti)")]
     [Tooltip("Pesan baru yang akan langsung muncul saat HP dibuka lagi")]
@@ -40,6 +51,9 @@ public class ResponPilihanPesan : MonoBehaviour
 
     public void KlikNantiSaja()
     {
+        // Catat bahwa pemain pernah menekan Nanti Saja
+        pernahPilihNantiSaja = true;
+
         // Siapkan perubahan UI HP di belakang layar untuk nanti
         if (pesanBaru != null)
         {
@@ -81,16 +95,22 @@ public class ResponPilihanPesan : MonoBehaviour
         // 1. Matikan panel opsi agar tombol menghilang
         if (panelPilihan != null) panelPilihan.SetActive(false);
 
-        // 2. Munculkan pesan balasan Nathan
-        if (pesanBalasanNathan != null)
+        // 2. Tentukan daftar pesan mana yang akan dimunculkan
+        GameObject[] pesanYangDigunakan = pernahPilihNantiSaja ? pesanBalasSetelahNanti : pesanBalasLangsung;
+
+        // 3. Munculkan pesan-pesan tersebut
+        if (pesanYangDigunakan != null)
         {
-            pesanBalasanNathan.SetActive(true);
-            
-            // 3. Scroll ke bawah jika ScrollRect diisi
-            if (scrollRectPesan != null)
+            foreach (var pesan in pesanYangDigunakan)
             {
-                StartCoroutine(ScrollKeBawah());
+                if (pesan != null) pesan.SetActive(true);
             }
+        }
+            
+        // 4. Scroll ke bawah jika ScrollRect diisi
+        if (scrollRectPesan != null)
+        {
+            StartCoroutine(ScrollKeBawah());
         }
     }
 
