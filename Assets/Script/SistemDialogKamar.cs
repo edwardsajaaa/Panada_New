@@ -293,10 +293,8 @@ public class SistemDialogKamar : MonoBehaviour
                 // Lepas parent Loading Screen jika dia berada di dalam Story
                 panelLoadingScreen.transform.SetParent(null);
                 panelLoadingScreen.SetActive(true);
-
-                // Karena kita pindah scene/loading, layar harus TETAP HITAM.
-                // Hentikan coroutine agar Buka Mata tidak berjalan.
-                yield break;
+                
+                // Transisi tetap dilanjutkan ke Buka Mata agar tampilan 3D terlihat
             }
         }
         else
