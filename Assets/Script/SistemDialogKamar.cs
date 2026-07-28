@@ -27,7 +27,7 @@ public class SistemDialogKamar : MonoBehaviour
     [Tooltip("Waktu jeda (detik) per karakter saat mengetik")]
     public float kecepatanKetik = 0.03f; 
 
-    public enum TransisiKeluar { Fade, PopOut, HilangLangsung, Blink }
+    public enum TransisiKeluar { Fade, PopOut, HilangLangsung, Blink, LoadingScreenKhusus }
     
     [Header("Pengaturan Transisi Keluar")]
     public TransisiKeluar transisiBuble = TransisiKeluar.PopOut;
@@ -233,6 +233,10 @@ public class SistemDialogKamar : MonoBehaviour
                     if (runner == null) runner = this;
 
                     runner.StartCoroutine(BlinkOutRoutine(runner));
+                }
+                else if (transisiBuble == TransisiKeluar.LoadingScreenKhusus && panelLoadingScreen != null)
+                {
+                    StartCoroutine(LoadingScreenRoutine());
                 }
                 else
                 {
@@ -578,5 +582,37 @@ public class SistemDialogKamar : MonoBehaviour
         }
 
         if (tempRunnerObj != null) Destroy(tempRunnerObj);
+    }
+
+    IEnumerator LoadingScreenRoutine()
+    {
+        // 1. Amankan Loading Screen ke Canvas (agar tidak mati saat Story dimatikan)
+        Transform canvasUtama = null;
+        if (panelStoryUtama != null)
+        {
+            Canvas c = panelStoryUtama.GetComponentInParent<Canvas>();
+            if (c != null) canvasUtama = c.transform;
+            else canvasUtama = panelStoryUtama.transform.parent;
+        }
+
+        if (canvasUtama != null) 
+        {
+            panelLoadingScreen.transform.SetParent(canvasUtama, false);
+        }
+        
+        // 2. Nyalakan Loading Screen secara langsung (tanpa melalui BlackScreenPanel)
+        panelLoadingScreen.SetActive(true);
+        panelLoadingScreen.transform.SetAsLastSibling();
+
+        // 3. Matikan Story (Biarkan transisi fade in/out sepenuhnya diurus oleh PixelOverlay)
+        if (gunakanLanjutan && panelStoryUtama != null)
+        {
+            panelStoryUtama.SetActive(false);
+        }
+
+        if (objekYangIkutMatiLanjutan != null) foreach (var obj in objekYangIkutMatiLanjutan) if (obj != null) obj.SetActive(false);
+        if (objekYangDinyalakanLanjutan != null) foreach (var obj in objekYangDinyalakanLanjutan) if (obj != null) obj.SetActive(true);
+
+        yield break;
     }
 }
