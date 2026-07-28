@@ -90,27 +90,40 @@ public class ResponPilihanPesan : MonoBehaviour
         }
     }
 
+    [Tooltip("Jeda waktu (detik) antar kemunculan pesan balasan")]
+    public float jedaAntarPesanBalasan = 2f;
+
     public void KlikBalasSekarang()
     {
         // 1. Matikan panel opsi agar tombol menghilang
         if (panelPilihan != null) panelPilihan.SetActive(false);
 
-        // 2. Tentukan daftar pesan mana yang akan dimunculkan
+        // 2. Mulai coroutine untuk memunculkan pesan satu per satu
+        StartCoroutine(ProsesPesanSatuSatu());
+    }
+
+    private IEnumerator ProsesPesanSatuSatu()
+    {
         GameObject[] pesanYangDigunakan = pernahPilihNantiSaja ? pesanBalasSetelahNanti : pesanBalasLangsung;
 
-        // 3. Munculkan pesan-pesan tersebut
         if (pesanYangDigunakan != null)
         {
             foreach (var pesan in pesanYangDigunakan)
             {
-                if (pesan != null) pesan.SetActive(true);
+                if (pesan != null) 
+                {
+                    pesan.SetActive(true);
+                    
+                    // Otomatis scroll tiap kali ada pesan baru yang muncul
+                    if (scrollRectPesan != null)
+                    {
+                        StartCoroutine(ScrollKeBawah());
+                    }
+
+                    // Jeda sebelum pesan berikutnya muncul
+                    yield return new WaitForSeconds(jedaAntarPesanBalasan);
+                }
             }
-        }
-            
-        // 4. Scroll ke bawah jika ScrollRect diisi
-        if (scrollRectPesan != null)
-        {
-            StartCoroutine(ScrollKeBawah());
         }
     }
 
