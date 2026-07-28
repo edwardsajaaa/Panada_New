@@ -288,9 +288,9 @@ public class SistemDialogKamar : MonoBehaviour
                 if (c != null) canvasUtama = c.transform;
                 else canvasUtama = panelStoryUtama.transform.parent;
 
-                // Lepas layar hitam sementara ke Canvas (jangan null agar tetap terender)
+                // Lepas layar hitam sementara ke Canvas (false agar ukurannya tidak hancur)
                 oldLayarHitamParent = panelLayarHitam.transform.parent;
-                if (canvasUtama != null) panelLayarHitam.transform.SetParent(canvasUtama);
+                if (canvasUtama != null) panelLayarHitam.transform.SetParent(canvasUtama, false);
                 
                 panelStoryUtama.SetActive(false);
             }
@@ -298,8 +298,15 @@ public class SistemDialogKamar : MonoBehaviour
             // --- NYALAKAN LOADING SCREEN SAAT GELAP SEMPURNA ---
             if (panelLoadingScreen != null)
             {
-                // Lepas parent Loading Screen ke Canvas
-                if (canvasUtama != null) panelLoadingScreen.transform.SetParent(canvasUtama);
+                // Jangan dipindah jika Loading Screen sudah aman di dalam Layar Hitam
+                bool sudahAman = panelLoadingScreen.transform.IsChildOf(panelLayarHitam.transform);
+                
+                // Lepas parent Loading Screen ke Canvas jika belum aman
+                if (!sudahAman && canvasUtama != null) 
+                {
+                    panelLoadingScreen.transform.SetParent(canvasUtama, false);
+                }
+                
                 panelLoadingScreen.SetActive(true);
                 
                 if (tahanLayarHitamSetelahLoading)
