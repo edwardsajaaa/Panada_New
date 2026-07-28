@@ -308,6 +308,7 @@ public class SistemDialogKamar : MonoBehaviour
                 }
                 
                 panelLoadingScreen.SetActive(true);
+                panelLoadingScreen.transform.SetAsLastSibling();
                 
                 if (tahanLayarHitamSetelahLoading)
                 {
