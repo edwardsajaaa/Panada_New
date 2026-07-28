@@ -40,11 +40,17 @@ public class SistemDialogKamar : MonoBehaviour
     public float jedaGelap = 0.15f;
     public float durasiBukaMata = 0.4f;
 
-    [Header("Aksi Setelah Dialog Habis")]
+    [Header("Aksi Setelah Dialog Habis (Urutan Normal)")]
     public GameObject[] objekYangIkutMati;
     public GameObject[] objekYangDinyalakan;
     [Tooltip("Animasi keluar untuk objek yang ikut mati (otomatis dipasangi script AnimasiTombolMenu)")]
     public AnimasiTombolMenu.ModeAnimasiIn transisiObjekLain = AnimasiTombolMenu.ModeAnimasiIn.PopInBawah;
+
+    [Header("Aksi Setelah Dialog Lanjutan Habis (Balas Sekarang)")]
+    public GameObject[] objekYangIkutMatiLanjutan;
+    public GameObject[] objekYangDinyalakanLanjutan;
+    [Tooltip("Pilih objek induk (misal: Story) untuk dimatikan di akhir dialog lanjutan")]
+    public GameObject panelStoryUtama;
 
     [Header("Pengaturan Efek Zoom (Opsional)")]
     [Tooltip("Masukkan Panel Meja atau background yang ingin di-zoom")]
@@ -253,30 +259,49 @@ public class SistemDialogKamar : MonoBehaviour
         yield return new WaitForSecondsRealtime(jedaGelap);
         
         if (panelBubleName != null) panelBubleName.SetActive(false);
-        if (objekYangIkutMati != null) foreach (var obj in objekYangIkutMati) if (obj != null) obj.SetActive(false);
-        if (objekYangDinyalakan != null) foreach (var obj in objekYangDinyalakan) if (obj != null) obj.SetActive(true);
 
-        // Paksa matikan Handphone (atau objek trigger) agar tidak muncul selama Zoom Out
-        // Berjaga-jaga jika user memasukkannya ke objekYangDinyalakan atau lupa mematikannya
-        if (objekNyalaSaatZoomIn != null)
+        Transform oldLayarHitamParent = null;
+
+        if (gunakanLanjutan)
         {
-            objekNyalaSaatZoomIn.SetActive(false);
-        }
-
-        // SNAP INSTAN ZOOM OUT (Saat layar gelap)
-        if (panelUntukZoom != null)
-        {
-            savedZoomInScale = gunakanPosisiAwalSebagaiZoomIn ? panelUntukZoom.localScale : skalaZoomIn;
-            savedZoomInMin = gunakanPosisiAwalSebagaiZoomIn ? panelUntukZoom.offsetMin : offsetMinZoomIn;
-            savedZoomInMax = gunakanPosisiAwalSebagaiZoomIn ? panelUntukZoom.offsetMax : offsetMaxZoomIn;
-
-            if (zoomOutInstan)
+            if (objekYangIkutMatiLanjutan != null) foreach (var obj in objekYangIkutMatiLanjutan) if (obj != null) obj.SetActive(false);
+            if (objekYangDinyalakanLanjutan != null) foreach (var obj in objekYangDinyalakanLanjutan) if (obj != null) obj.SetActive(true);
+            
+            if (panelStoryUtama != null)
             {
-                panelUntukZoom.localScale = skalaZoomOut;
-                if (ubahPosisiJuga)
+                // Lepas layar hitam sementara agar tidak mati saat panel Story dimatikan
+                oldLayarHitamParent = panelLayarHitam.transform.parent;
+                panelLayarHitam.transform.SetParent(null);
+                
+                panelStoryUtama.SetActive(false);
+            }
+        }
+        else
+        {
+            if (objekYangIkutMati != null) foreach (var obj in objekYangIkutMati) if (obj != null) obj.SetActive(false);
+            if (objekYangDinyalakan != null) foreach (var obj in objekYangDinyalakan) if (obj != null) obj.SetActive(true);
+
+            // Paksa matikan Handphone (atau objek trigger) agar tidak muncul selama Zoom Out
+            if (objekNyalaSaatZoomIn != null)
+            {
+                objekNyalaSaatZoomIn.SetActive(false);
+            }
+
+            // SNAP INSTAN ZOOM OUT (Saat layar gelap)
+            if (panelUntukZoom != null)
+            {
+                savedZoomInScale = gunakanPosisiAwalSebagaiZoomIn ? panelUntukZoom.localScale : skalaZoomIn;
+                savedZoomInMin = gunakanPosisiAwalSebagaiZoomIn ? panelUntukZoom.offsetMin : offsetMinZoomIn;
+                savedZoomInMax = gunakanPosisiAwalSebagaiZoomIn ? panelUntukZoom.offsetMax : offsetMaxZoomIn;
+
+                if (zoomOutInstan)
                 {
-                    panelUntukZoom.offsetMin = offsetMinZoomOut;
-                    panelUntukZoom.offsetMax = offsetMaxZoomOut;
+                    panelUntukZoom.localScale = skalaZoomOut;
+                    if (ubahPosisiJuga)
+                    {
+                        panelUntukZoom.offsetMin = offsetMinZoomOut;
+                        panelUntukZoom.offsetMax = offsetMaxZoomOut;
+                    }
                 }
             }
         }
@@ -292,13 +317,20 @@ public class SistemDialogKamar : MonoBehaviour
         if (blinkMat != null) blinkMat.SetFloat("_Blink", 0f);
 
         panelLayarHitam.SetActive(false);
+        
+        if (gunakanLanjutan && oldLayarHitamParent != null)
+        {
+            // Kembalikan ke parent asalnya
+            panelLayarHitam.transform.SetParent(oldLayarHitamParent);
+        }
+
         if (bgImage != null && originalMat != null) bgImage.material = originalMat;
         if (blinkMat != null) Destroy(blinkMat);
         
         sedangDitutup = false;
 
-        // 4. JALANKAN ZOOM SETELAH MATA TERBUKA
-        if (panelUntukZoom != null)
+        // 4. JALANKAN ZOOM SETELAH MATA TERBUKA (Hanya jika bukan lanjutan)
+        if (!gunakanLanjutan && panelUntukZoom != null)
         {
             // Buat objek sementara sebagai runner agar coroutine tidak mati
             GameObject tempRunnerObj = new GameObject("TempZoomRunner");
@@ -309,35 +341,37 @@ public class SistemDialogKamar : MonoBehaviour
 
     IEnumerator FadeOutLaluTutup()
     {
-        // ================= JIKA BUKAN BLINK =================
-
-        // Paksa matikan Handphone agar tidak muncul selama Zoom Out
-        if (objekNyalaSaatZoomIn != null)
+        if (!gunakanLanjutan)
         {
-            objekNyalaSaatZoomIn.SetActive(false);
-        }
-
-        if (panelUntukZoom != null)
-        {
-            savedZoomInScale = gunakanPosisiAwalSebagaiZoomIn ? panelUntukZoom.localScale : skalaZoomIn;
-            savedZoomInMin = gunakanPosisiAwalSebagaiZoomIn ? panelUntukZoom.offsetMin : offsetMinZoomIn;
-            savedZoomInMax = gunakanPosisiAwalSebagaiZoomIn ? panelUntukZoom.offsetMax : offsetMaxZoomIn;
-
-            if (zoomOutInstan)
+            // Paksa matikan Handphone agar tidak muncul selama Zoom Out
+            if (objekNyalaSaatZoomIn != null)
             {
-                panelUntukZoom.localScale = skalaZoomOut;
-                if (ubahPosisiJuga)
+                objekNyalaSaatZoomIn.SetActive(false);
+            }
+
+            if (panelUntukZoom != null)
+            {
+                savedZoomInScale = gunakanPosisiAwalSebagaiZoomIn ? panelUntukZoom.localScale : skalaZoomIn;
+                savedZoomInMin = gunakanPosisiAwalSebagaiZoomIn ? panelUntukZoom.offsetMin : offsetMinZoomIn;
+                savedZoomInMax = gunakanPosisiAwalSebagaiZoomIn ? panelUntukZoom.offsetMax : offsetMaxZoomIn;
+
+                if (zoomOutInstan)
                 {
-                    panelUntukZoom.offsetMin = offsetMinZoomOut;
-                    panelUntukZoom.offsetMax = offsetMaxZoomOut;
+                    panelUntukZoom.localScale = skalaZoomOut;
+                    if (ubahPosisiJuga)
+                    {
+                        panelUntukZoom.offsetMin = offsetMinZoomOut;
+                        panelUntukZoom.offsetMax = offsetMaxZoomOut;
+                    }
                 }
             }
         }
 
         // 1. Jalankan animasi keluar untuk semua objek yang ikut mati
-        if (objekYangIkutMati != null)
+        GameObject[] matiTarget = gunakanLanjutan ? objekYangIkutMatiLanjutan : objekYangIkutMati;
+        if (matiTarget != null)
         {
-            foreach (var obj in objekYangIkutMati)
+            foreach (var obj in matiTarget)
             {
                 if (obj == null) continue;
                 
@@ -391,18 +425,24 @@ public class SistemDialogKamar : MonoBehaviour
         }
 
         // 3. Nyalakan objek yang harus hidup lagi (misal HP meja)
-        if (objekYangDinyalakan != null)
+        GameObject[] nyalaTarget = gunakanLanjutan ? objekYangDinyalakanLanjutan : objekYangDinyalakan;
+        if (nyalaTarget != null)
         {
-            foreach (var obj in objekYangDinyalakan)
+            foreach (var obj in nyalaTarget)
             {
                 if (obj != null) obj.SetActive(true);
             }
         }
 
+        if (gunakanLanjutan && panelStoryUtama != null)
+        {
+            panelStoryUtama.SetActive(false);
+        }
+
         sedangDitutup = false;
 
         // 4. JALANKAN ZOOM SETELAH TRANSISI SELESAI
-        if (panelUntukZoom != null)
+        if (!gunakanLanjutan && panelUntukZoom != null)
         {
             GameObject tempRunnerObj = new GameObject("TempZoomRunner");
             MonoBehaviour zoomRunner = tempRunnerObj.AddComponent<AnimasiNotifikasiGanda>();
