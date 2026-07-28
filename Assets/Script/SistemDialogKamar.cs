@@ -23,8 +23,9 @@ public class SistemDialogKamar : MonoBehaviour
         get { return (gunakanLanjutan && percakapanLanjutan != null && percakapanLanjutan.Length > 0) ? percakapanLanjutan : percakapan; } 
     }
 
-    [Header("Pengaturan Transisi Masuk")]
-    public float durasiTransisiTeks = 0.3f; 
+    [Header("Pengaturan Transisi Masuk (Ketik)")]
+    [Tooltip("Waktu jeda (detik) per karakter saat mengetik")]
+    public float kecepatanKetik = 0.03f; 
 
     public enum TransisiKeluar { Fade, PopOut, HilangLangsung, Blink }
     
@@ -102,7 +103,8 @@ public class SistemDialogKamar : MonoBehaviour
         
         if (panelBubleName != null)
         {
-            StartCoroutine(PopupAwalObjek(panelBubleName.transform, durasiTransisiTeks));
+            // Set durasi standar untuk popup awal
+            StartCoroutine(PopupAwalObjek(panelBubleName.transform, 0.3f));
         }
 
         if (DialogAktif != null && DialogAktif.Length > 0)
@@ -120,7 +122,12 @@ public class SistemDialogKamar : MonoBehaviour
             if (sedangTransisi)
             {
                 if (transisiCoroutine != null) StopCoroutine(transisiCoroutine);
-                SetTeksAlpha(1f);
+                
+                // Langsung tampilkan semua karakter
+                if (teksIsiDialog != null)
+                {
+                    teksIsiDialog.maxVisibleCharacters = teksIsiDialog.text.Length;
+                }
                 sedangTransisi = false;
             }
             else
@@ -137,27 +144,29 @@ public class SistemDialogKamar : MonoBehaviour
             if (teksNamaKarakter != null)
                 teksNamaKarakter.text = DialogAktif[indeksDialog].namaKarakter;
 
-            teksIsiDialog.text = DialogAktif[indeksDialog].teksDialog;
-
             if (transisiCoroutine != null) StopCoroutine(transisiCoroutine);
-            transisiCoroutine = StartCoroutine(FadeTeks(0f, 1f, durasiTransisiTeks));
+            transisiCoroutine = StartCoroutine(KetikTeks(DialogAktif[indeksDialog].teksDialog));
         }
     }
 
-    IEnumerator FadeTeks(float alphaAwal, float alphaAkhir, float durasi)
+    IEnumerator KetikTeks(string teks)
     {
         sedangTransisi = true;
-        SetTeksAlpha(alphaAwal);
+        SetTeksAlpha(1f); // Pastikan alpha tidak tembus pandang
         
-        float waktuMulai = Time.time;
-        while (Time.time < waktuMulai + durasi)
+        teksIsiDialog.text = teks;
+        // Hitung total karakter bersih yang dimiliki oleh TextMeshPro
+        teksIsiDialog.ForceMeshUpdate();
+        int totalKarakter = teksIsiDialog.textInfo.characterCount;
+        
+        teksIsiDialog.maxVisibleCharacters = 0;
+
+        for (int i = 0; i <= totalKarakter; i++)
         {
-            float progress = (Time.time - waktuMulai) / durasi;
-            SetTeksAlpha(Mathf.Lerp(alphaAwal, alphaAkhir, progress));
-            yield return null;
+            teksIsiDialog.maxVisibleCharacters = i;
+            yield return new WaitForSecondsRealtime(kecepatanKetik);
         }
-        
-        SetTeksAlpha(alphaAkhir);
+
         sedangTransisi = false;
     }
 
