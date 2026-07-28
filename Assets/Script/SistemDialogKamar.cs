@@ -610,8 +610,35 @@ public class SistemDialogKamar : MonoBehaviour
 
         Material matTransisi = (lsc != null) ? lsc.materialTransisiPixel : null;
         float durasiTransisi = (lsc != null) ? lsc.durasiTransisiPixel : 0.5f;
+        GameObject panelLSC = (lsc != null) ? lsc.panelLoading : panelLoadingScreen;
 
-        // 2. TRANSISI IN (Layar tertutup pixel) — menggunakan pixeltransitionmat
+        // 2. AKTIFKAN PixelOverlay TERLEBIH DAHULU (agar materialnya terender di layar!)
+        if (panelLoadingScreen != null)
+        {
+            panelLoadingScreen.SetActive(true);
+            panelLoadingScreen.transform.SetAsLastSibling();
+        }
+
+        // 3. Aktifkan panelLoading & pastikan CanvasGroup TERLIHAT (alpha=1)
+        //    (LoadingScreenController.Awake() mengeset alpha=0, kita timpa di sini)
+        if (panelLSC != null)
+        {
+            panelLSC.SetActive(true);
+            panelLSC.transform.SetAsLastSibling();
+            CanvasGroup cg = panelLSC.GetComponent<CanvasGroup>();
+            if (cg != null) { cg.alpha = 1f; cg.blocksRaycasts = true; }
+        }
+
+        // 4. Sembunyikan RawImage sementara (agar hanya overlay pixel yang terlihat, bukan video)
+        RawImage[] semuaRawImg = panelLoadingScreen != null 
+            ? panelLoadingScreen.GetComponentsInChildren<RawImage>(true) 
+            : new RawImage[0];
+        foreach (var img in semuaRawImg) if (img != null) img.enabled = false;
+
+        // 5. Set material ke posisi awal (layar terlihat / overlay belum menutupi)
+        if (matTransisi != null) matTransisi.SetFloat("_Progress", 1f);
+
+        // 6. TRANSISI IN (Overlay pixel menutup layar: _Progress 1 → 0)
         if (matTransisi != null)
         {
             matTransisi.SetFloat("_Invert", 0f);
@@ -626,7 +653,7 @@ public class SistemDialogKamar : MonoBehaviour
             matTransisi.SetFloat("_Progress", 0f);
         }
 
-        // 3. Saat layar sudah tertutup sepenuhnya:
+        // 7. Layar sudah tertutup sepenuhnya!
         //    Matikan SEMUA child dari Story KECUALI PixelOverlay
         if (panelStoryUtama != null)
         {
@@ -641,27 +668,17 @@ public class SistemDialogKamar : MonoBehaviour
         if (objekYangIkutMatiLanjutan != null) foreach (var obj in objekYangIkutMatiLanjutan) if (obj != null) obj.SetActive(false);
         if (objekYangDinyalakanLanjutan != null) foreach (var obj in objekYangDinyalakanLanjutan) if (obj != null) obj.SetActive(true);
 
-        // 4. Tampilkan logo / video loading
-        //    Nyalakan RawImage di dalam PixelOverlay
-        if (panelLoadingScreen != null)
-        {
-            panelLoadingScreen.SetActive(true);
-            RawImage[] rawImgs = panelLoadingScreen.GetComponentsInChildren<RawImage>(true);
-            foreach (var img in rawImgs) if (img != null) img.enabled = true;
-        }
+        // 8. Tampilkan logo / video (nyalakan RawImage)
+        foreach (var img in semuaRawImg) if (img != null) img.enabled = true;
 
-        // 5. Tunggu sebentar agar logo/video terlihat (minimal 1.5 detik)
+        // 9. Tunggu agar logo/video terlihat
         float minWaktu = (lsc != null) ? lsc.minimalWaktuLoading : 1.5f;
         yield return new WaitForSeconds(minWaktu);
 
-        // 6. Sembunyikan video sebelum transisi keluar
-        if (panelLoadingScreen != null)
-        {
-            RawImage[] rawImgs = panelLoadingScreen.GetComponentsInChildren<RawImage>(true);
-            foreach (var img in rawImgs) if (img != null) img.enabled = false;
-        }
+        // 10. Sembunyikan video sebelum transisi keluar
+        foreach (var img in semuaRawImg) if (img != null) img.enabled = false;
 
-        // 7. TRANSISI OUT (Layar terbuka ke 3D) — menggunakan pixeltransitionmat
+        // 11. TRANSISI OUT (Overlay pixel membuka layar ke 3D: _Progress 0 → 1)
         if (matTransisi != null)
         {
             float timer = 0f;
@@ -675,21 +692,13 @@ public class SistemDialogKamar : MonoBehaviour
             matTransisi.SetFloat("_Progress", 1f);
         }
 
-        // 8. Matikan keseluruhan panel Story (Canvas)
-        if (panelStoryUtama != null)
-        {
-            panelStoryUtama.SetActive(false);
-        }
-
-        // 9. Matikan PixelOverlay juga
-        if (panelLoadingScreen != null)
-        {
-            panelLoadingScreen.SetActive(false);
-        }
+        // 12. Matikan keseluruhan panel Story (Canvas) dan PixelOverlay
+        if (panelStoryUtama != null) panelStoryUtama.SetActive(false);
+        if (panelLoadingScreen != null) panelLoadingScreen.SetActive(false);
 
         sedangDitutup = false;
 
-        // 10. Bersihkan objek sementara
+        // 13. Bersihkan objek sementara
         if (tempRunner != null) Destroy(tempRunner);
     }
 }
