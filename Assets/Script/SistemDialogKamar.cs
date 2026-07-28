@@ -280,11 +280,17 @@ public class SistemDialogKamar : MonoBehaviour
             if (objekYangIkutMatiLanjutan != null) foreach (var obj in objekYangIkutMatiLanjutan) if (obj != null) obj.SetActive(false);
             if (objekYangDinyalakanLanjutan != null) foreach (var obj in objekYangDinyalakanLanjutan) if (obj != null) obj.SetActive(true);
             
+            Transform canvasUtama = null;
             if (panelStoryUtama != null)
             {
-                // Lepas layar hitam sementara agar tidak mati saat panel Story dimatikan
+                // Cari Canvas agar UI tidak menghilang saat di-SetParent
+                Canvas c = panelStoryUtama.GetComponentInParent<Canvas>();
+                if (c != null) canvasUtama = c.transform;
+                else canvasUtama = panelStoryUtama.transform.parent;
+
+                // Lepas layar hitam sementara ke Canvas (jangan null agar tetap terender)
                 oldLayarHitamParent = panelLayarHitam.transform.parent;
-                panelLayarHitam.transform.SetParent(null);
+                if (canvasUtama != null) panelLayarHitam.transform.SetParent(canvasUtama);
                 
                 panelStoryUtama.SetActive(false);
             }
@@ -292,8 +298,8 @@ public class SistemDialogKamar : MonoBehaviour
             // --- NYALAKAN LOADING SCREEN SAAT GELAP SEMPURNA ---
             if (panelLoadingScreen != null)
             {
-                // Lepas parent Loading Screen jika dia berada di dalam Story
-                panelLoadingScreen.transform.SetParent(null);
+                // Lepas parent Loading Screen ke Canvas
+                if (canvasUtama != null) panelLoadingScreen.transform.SetParent(canvasUtama);
                 panelLoadingScreen.SetActive(true);
                 
                 if (tahanLayarHitamSetelahLoading)
