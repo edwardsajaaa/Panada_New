@@ -23,6 +23,12 @@ public class ResponPilihanPesan : MonoBehaviour
     public float jedaGelap = 0.15f;
     public float durasiBukaMata = 0.4f;
 
+    [Header("Reaksi: Balas Sekarang")]
+    [Tooltip("Objek balasan Nathan (warna biru) yang akan dimunculkan")]
+    public GameObject pesanBalasanNathan;
+    [Tooltip("Scroll Rect HP agar bisa otomatis geser ke bawah")]
+    public UnityEngine.UI.ScrollRect scrollRectPesan;
+
     [Header("Perubahan HP (Disiapkan untuk dibuka lagi nanti)")]
     [Tooltip("Pesan baru yang akan langsung muncul saat HP dibuka lagi")]
     public GameObject[] pesanBaru;
@@ -67,6 +73,36 @@ public class ResponPilihanPesan : MonoBehaviour
         {
             // Langsung ganti tanpa blink
             MunculkanNathan();
+        }
+    }
+
+    public void KlikBalasSekarang()
+    {
+        // 1. Matikan panel opsi agar tombol menghilang
+        if (panelPilihan != null) panelPilihan.SetActive(false);
+
+        // 2. Munculkan pesan balasan Nathan
+        if (pesanBalasanNathan != null)
+        {
+            pesanBalasanNathan.SetActive(true);
+            
+            // 3. Scroll ke bawah jika ScrollRect diisi
+            if (scrollRectPesan != null)
+            {
+                StartCoroutine(ScrollKeBawah());
+            }
+        }
+    }
+
+    private IEnumerator ScrollKeBawah()
+    {
+        // Tunggu 1 frame agar Layout Group dan Content Size Fitter merefresh ukurannya
+        yield return new WaitForEndOfFrame();
+        
+        // Paksa scroll menempel di paling bawah (0)
+        if (scrollRectPesan != null)
+        {
+            scrollRectPesan.verticalNormalizedPosition = 0f;
         }
     }
 
