@@ -224,20 +224,26 @@ public class SistemDialogKamar : MonoBehaviour
             {
                 sedangDitutup = true;
 
-                if (transisiBuble == TransisiKeluar.Blink && panelLayarHitam != null)
+                // PRIORITAS 1: Jika ini dialog lanjutan DAN ada Loading Screen, SELALU gunakan PixelOverlay
+                if (gunakanLanjutan && panelLoadingScreen != null)
                 {
-                    // Aktifkan layar hitam lebih dulu agar bisa menjalankan coroutine
+                    GameObject tempRunner = new GameObject("TempLoadingRunner");
+                    MonoBehaviour runner = tempRunner.AddComponent<AnimasiNotifikasiGanda>();
+                    runner.StartCoroutine(LoadingScreenRoutine(tempRunner));
+                }
+                // PRIORITAS 2: Blink (untuk urutan normal)
+                else if (transisiBuble == TransisiKeluar.Blink && panelLayarHitam != null)
+                {
                     panelLayarHitam.SetActive(true);
                     
-                    MonoBehaviour runner = panelLayarHitam.GetComponent<UnityEngine.UI.Image>();
-                    if (runner == null) runner = this;
+                    MonoBehaviour blinkRunner = panelLayarHitam.GetComponent<UnityEngine.UI.Image>();
+                    if (blinkRunner == null) blinkRunner = this;
 
-                    runner.StartCoroutine(BlinkOutRoutine(runner));
+                    blinkRunner.StartCoroutine(BlinkOutRoutine(blinkRunner));
                 }
+                // PRIORITAS 3: LoadingScreenKhusus manual (untuk urutan normal)
                 else if (transisiBuble == TransisiKeluar.LoadingScreenKhusus && panelLoadingScreen != null)
                 {
-                    // Jalankan coroutine dari objek sementara di ROOT hierarchy
-                    // agar coroutine tidak mati saat Buble Name / Story dinonaktifkan
                     GameObject tempRunner = new GameObject("TempLoadingRunner");
                     MonoBehaviour runner = tempRunner.AddComponent<AnimasiNotifikasiGanda>();
                     runner.StartCoroutine(LoadingScreenRoutine(tempRunner));
@@ -593,19 +599,29 @@ public class SistemDialogKamar : MonoBehaviour
         // 0. Matikan Buble Name (dialog bubble) terlebih dahulu
         if (panelBubleName != null) panelBubleName.SetActive(false);
 
-        // 1. Nyalakan Loading Screen (PixelOverlay)
+        // 1. Nyalakan Loading Screen (PixelOverlay) & letakkan paling depan
         if (panelLoadingScreen != null)
         {
             panelLoadingScreen.SetActive(true);
             panelLoadingScreen.transform.SetAsLastSibling();
         }
 
-        // 2. Matikan isi UI (Meja, dsb) secara manual melalui array
-        // agar 3D mulai terlihat di belakang Loading Screen (jika ada transparansi)
+        // 2. Matikan SEMUA child dari Story KECUALI PixelOverlay (Loading Screen)
+        //    Ini otomatis mematikan Meja, Panel Pesan, Nathan, dll tanpa perlu isi array manual
+        if (panelStoryUtama != null)
+        {
+            foreach (Transform child in panelStoryUtama.transform)
+            {
+                if (child.gameObject == panelLoadingScreen) continue; // Jangan matikan Loading Screen!
+                child.gameObject.SetActive(false);
+            }
+        }
+
+        // 3. Matikan/nyalakan objek tambahan dari array (jika ada yg di luar Story)
         if (objekYangIkutMatiLanjutan != null) foreach (var obj in objekYangIkutMatiLanjutan) if (obj != null) obj.SetActive(false);
         if (objekYangDinyalakanLanjutan != null) foreach (var obj in objekYangDinyalakanLanjutan) if (obj != null) obj.SetActive(true);
 
-        // 3. Tunggu sampai video Loading Screen selesai (PixelOverlay mati sendiri)
+        // 4. Tunggu sampai video Loading Screen selesai (PixelOverlay mati sendiri)
         if (panelLoadingScreen != null)
         {
             while (panelLoadingScreen.activeInHierarchy)
@@ -614,16 +630,15 @@ public class SistemDialogKamar : MonoBehaviour
             }
         }
 
-        // 4. Setelah loading selesai, BARU matikan keseluruhan panel Story (Canvas)
-        // Ini menghindari masalah "PixelOverlay ikut mati" jika Canvas-nya yang dimatikan duluan.
-        if (gunakanLanjutan && panelStoryUtama != null)
+        // 5. Setelah loading selesai, matikan keseluruhan panel Story (Canvas)
+        if (panelStoryUtama != null)
         {
             panelStoryUtama.SetActive(false);
         }
 
         sedangDitutup = false;
 
-        // 5. Bersihkan objek sementara
+        // 6. Bersihkan objek sementara
         if (tempRunner != null) Destroy(tempRunner);
     }
 }
