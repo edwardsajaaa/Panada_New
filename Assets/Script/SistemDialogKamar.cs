@@ -586,33 +586,32 @@ public class SistemDialogKamar : MonoBehaviour
 
     IEnumerator LoadingScreenRoutine()
     {
-        // 1. Amankan Loading Screen ke Canvas (agar tidak mati saat Story dimatikan)
-        Transform canvasUtama = null;
-        if (panelStoryUtama != null)
+        // 1. Nyalakan Loading Screen (PixelOverlay)
+        if (panelLoadingScreen != null)
         {
-            Canvas c = panelStoryUtama.GetComponentInParent<Canvas>();
-            if (c != null) canvasUtama = c.transform;
-            else canvasUtama = panelStoryUtama.transform.parent;
+            panelLoadingScreen.SetActive(true);
+            panelLoadingScreen.transform.SetAsLastSibling();
         }
 
-        if (canvasUtama != null) 
-        {
-            panelLoadingScreen.transform.SetParent(canvasUtama, false);
-        }
-        
-        // 2. Nyalakan Loading Screen secara langsung (tanpa melalui BlackScreenPanel)
-        panelLoadingScreen.SetActive(true);
-        panelLoadingScreen.transform.SetAsLastSibling();
+        // 2. Matikan isi UI (Meja, dsb) secara manual melalui array
+        // agar 3D mulai terlihat di belakang Loading Screen (jika ada transparansi)
+        if (objekYangIkutMatiLanjutan != null) foreach (var obj in objekYangIkutMatiLanjutan) if (obj != null) obj.SetActive(false);
+        if (objekYangDinyalakanLanjutan != null) foreach (var obj in objekYangDinyalakanLanjutan) if (obj != null) obj.SetActive(true);
 
-        // 3. Matikan Story (Biarkan transisi fade in/out sepenuhnya diurus oleh PixelOverlay)
+        // 3. Tunggu sampai video Loading Screen selesai (PixelOverlay mati sendiri)
+        if (panelLoadingScreen != null)
+        {
+            while (panelLoadingScreen.activeInHierarchy)
+            {
+                yield return null;
+            }
+        }
+
+        // 4. Setelah loading selesai, BARU matikan keseluruhan panel Story (Canvas)
+        // Ini menghindari masalah "PixelOverlay ikut mati" jika Canvas-nya yang dimatikan duluan.
         if (gunakanLanjutan && panelStoryUtama != null)
         {
             panelStoryUtama.SetActive(false);
         }
-
-        if (objekYangIkutMatiLanjutan != null) foreach (var obj in objekYangIkutMatiLanjutan) if (obj != null) obj.SetActive(false);
-        if (objekYangDinyalakanLanjutan != null) foreach (var obj in objekYangDinyalakanLanjutan) if (obj != null) obj.SetActive(true);
-
-        yield break;
     }
 }
