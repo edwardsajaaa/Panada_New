@@ -599,46 +599,96 @@ public class SistemDialogKamar : MonoBehaviour
         // 0. Matikan Buble Name (dialog bubble) terlebih dahulu
         if (panelBubleName != null) panelBubleName.SetActive(false);
 
-        // 1. Nyalakan Loading Screen (PixelOverlay) & letakkan paling depan
+        // 1. Ambil referensi LoadingScreenController dari PixelOverlay
+        LoadingScreenController lsc = null;
         if (panelLoadingScreen != null)
         {
-            panelLoadingScreen.SetActive(true);
-            panelLoadingScreen.transform.SetAsLastSibling();
+            lsc = panelLoadingScreen.GetComponent<LoadingScreenController>();
+            if (lsc == null) lsc = panelLoadingScreen.GetComponentInChildren<LoadingScreenController>(true);
         }
 
-        // 2. Matikan SEMUA child dari Story KECUALI PixelOverlay (Loading Screen)
-        //    Ini otomatis mematikan Meja, Panel Pesan, Nathan, dll tanpa perlu isi array manual
+        Material matTransisi = (lsc != null) ? lsc.materialTransisiPixel : null;
+        float durasiTransisi = (lsc != null) ? lsc.durasiTransisiPixel : 0.5f;
+
+        // 2. TRANSISI IN (Layar tertutup pixel) — menggunakan pixeltransitionmat
+        if (matTransisi != null)
+        {
+            matTransisi.SetFloat("_Invert", 0f);
+            float timer = 0f;
+            while (timer < durasiTransisi)
+            {
+                timer += Time.deltaTime;
+                float p = Mathf.Lerp(1f, 0f, timer / durasiTransisi);
+                matTransisi.SetFloat("_Progress", p);
+                yield return null;
+            }
+            matTransisi.SetFloat("_Progress", 0f);
+        }
+
+        // 3. Saat layar sudah tertutup sepenuhnya:
+        //    Matikan SEMUA child dari Story KECUALI PixelOverlay
         if (panelStoryUtama != null)
         {
             foreach (Transform child in panelStoryUtama.transform)
             {
-                if (child.gameObject == panelLoadingScreen) continue; // Jangan matikan Loading Screen!
+                if (child.gameObject == panelLoadingScreen) continue;
                 child.gameObject.SetActive(false);
             }
         }
 
-        // 3. Matikan/nyalakan objek tambahan dari array (jika ada yg di luar Story)
+        // Matikan/nyalakan objek tambahan dari array
         if (objekYangIkutMatiLanjutan != null) foreach (var obj in objekYangIkutMatiLanjutan) if (obj != null) obj.SetActive(false);
         if (objekYangDinyalakanLanjutan != null) foreach (var obj in objekYangDinyalakanLanjutan) if (obj != null) obj.SetActive(true);
 
-        // 4. Tunggu sampai video Loading Screen selesai (PixelOverlay mati sendiri)
+        // 4. Tampilkan logo / video loading
+        //    Nyalakan RawImage di dalam PixelOverlay
         if (panelLoadingScreen != null)
         {
-            while (panelLoadingScreen.activeInHierarchy)
-            {
-                yield return null;
-            }
+            panelLoadingScreen.SetActive(true);
+            RawImage[] rawImgs = panelLoadingScreen.GetComponentsInChildren<RawImage>(true);
+            foreach (var img in rawImgs) if (img != null) img.enabled = true;
         }
 
-        // 5. Setelah loading selesai, matikan keseluruhan panel Story (Canvas)
+        // 5. Tunggu sebentar agar logo/video terlihat (minimal 1.5 detik)
+        float minWaktu = (lsc != null) ? lsc.minimalWaktuLoading : 1.5f;
+        yield return new WaitForSeconds(minWaktu);
+
+        // 6. Sembunyikan video sebelum transisi keluar
+        if (panelLoadingScreen != null)
+        {
+            RawImage[] rawImgs = panelLoadingScreen.GetComponentsInChildren<RawImage>(true);
+            foreach (var img in rawImgs) if (img != null) img.enabled = false;
+        }
+
+        // 7. TRANSISI OUT (Layar terbuka ke 3D) — menggunakan pixeltransitionmat
+        if (matTransisi != null)
+        {
+            float timer = 0f;
+            while (timer < durasiTransisi)
+            {
+                timer += Time.deltaTime;
+                float p = Mathf.Lerp(0f, 1f, timer / durasiTransisi);
+                matTransisi.SetFloat("_Progress", p);
+                yield return null;
+            }
+            matTransisi.SetFloat("_Progress", 1f);
+        }
+
+        // 8. Matikan keseluruhan panel Story (Canvas)
         if (panelStoryUtama != null)
         {
             panelStoryUtama.SetActive(false);
         }
 
+        // 9. Matikan PixelOverlay juga
+        if (panelLoadingScreen != null)
+        {
+            panelLoadingScreen.SetActive(false);
+        }
+
         sedangDitutup = false;
 
-        // 6. Bersihkan objek sementara
+        // 10. Bersihkan objek sementara
         if (tempRunner != null) Destroy(tempRunner);
     }
 }
