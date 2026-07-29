@@ -9,17 +9,17 @@ Shader "Custom/Sprite25D_Lighting"
     {
         Tags 
         { 
-            "RenderType"="Transparent" 
-            "Queue"="Transparent" 
+            "RenderType"="TransparentCutout" 
+            "Queue"="AlphaTest" 
             "RenderPipeline" = "UniversalPipeline" 
             "PreviewType"="Plane"
             "CanUseSpriteAtlas"="True"
         }
         
         LOD 100
-        Blend SrcAlpha OneMinusSrcAlpha
+        Blend One Zero
         Cull Off
-        ZWrite Off
+        ZWrite On
 
         Pass
         {
@@ -76,8 +76,8 @@ Shader "Custom/Sprite25D_Lighting"
             {
                 half4 texColor = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, IN.uv);
                 
-                // Jangan render pixel transparan
-                if (texColor.a < 0.01) discard;
+                // Alpha Clipping (Hapus pixel transparan)
+                if (texColor.a < 0.5) discard;
 
                 half3 finalColor = half3(0,0,0);
 
@@ -87,7 +87,6 @@ Shader "Custom/Sprite25D_Lighting"
 
                 // 2. Ambil Main Light (Directional Light jika ada)
                 Light mainLight = GetMainLight();
-                // Sengaja MENGABAIKAN sudut cahaya (dot normal), hanya peduli pada warna dan intensitas
                 finalColor += mainLight.color * mainLight.distanceAttenuation; 
 
                 // 3. Ambil semua Point Light / Spot Light di ruangan
@@ -96,20 +95,17 @@ Shader "Custom/Sprite25D_Lighting"
                 for (uint lightIndex = 0u; lightIndex < pixelLightCount; ++lightIndex)
                 {
                     Light light = GetAdditionalLight(lightIndex, IN.positionWS);
-                    
-                    // RAHASIA UNTUK 2.5D: 
-                    // Kita MENGABAIKAN dari arah mana cahaya datang (mengabaikan kemiringan).
-                    // Kita HANYA peduli seberapa JAUH karakter dari lampu (distanceAttenuation).
-                    // Jadi karakter akan terang di bawah lampu, dan menggelap saat menjauh, 
-                    // tapi tidak akan pernah hitam legam hanya karena disorot dari samping!
                     finalColor += light.color * light.distanceAttenuation;
                 }
                 #endif
 
+                // 4. Pastikan warna dasar tidak pernah 100% hitam legam
+                finalColor = max(finalColor, half3(0.2, 0.2, 0.2));
+
                 // Kalikan tekstur asli dengan warna cahaya yang dihitung
                 half3 resultRGB = texColor.rgb * IN.color.rgb * finalColor;
                 
-                return half4(resultRGB, texColor.a * IN.color.a);
+                return half4(resultRGB, 1.0);
             }
             ENDHLSL
         }
