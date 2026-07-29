@@ -13,6 +13,7 @@ public class PlayerMovement25D : MonoBehaviour
 
     private Rigidbody rb;
     private Vector3 arahGerak;
+    private bool menghadapKanan = true; // Asumsi default karakter menghadap kanan
     private Transform camTransform;
 
     void Start()
