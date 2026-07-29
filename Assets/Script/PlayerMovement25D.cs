@@ -10,6 +10,8 @@ public class PlayerMovement25D : MonoBehaviour
     [Header("Referensi")]
     [Tooltip("Kosongkan jika komponen SpriteRenderer ada di objek ini langsung")]
     public SpriteRenderer spriteRendererKarakter;
+    [Tooltip("Otomatis dicari jika dikosongkan")]
+    public Animator animatorKarakter;
 
     private Rigidbody rb;
     private Vector3 arahGerak;
@@ -20,11 +22,9 @@ public class PlayerMovement25D : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         
-        // Coba cari SpriteRenderer secara otomatis jika belum diisi
-        if (spriteRendererKarakter == null)
-        {
-            spriteRendererKarakter = GetComponentInChildren<SpriteRenderer>();
-        }
+        // Coba cari komponen secara otomatis jika belum diisi
+        if (spriteRendererKarakter == null) spriteRendererKarakter = GetComponentInChildren<SpriteRenderer>();
+        if (animatorKarakter == null) animatorKarakter = GetComponentInChildren<Animator>();
 
         // Pastikan rigidbody disetel dengan benar untuk game 2.5D
         rb.freezeRotation = true; // Mencegah karakter jatuh terguling
@@ -66,6 +66,14 @@ public class PlayerMovement25D : MonoBehaviour
 
         // Hitung arah gerakan sesungguhnya relatif terhadap layar
         arahGerak = (right * inputX + forward * inputZ).normalized;
+
+        // --- MENGATUR ANIMASI ---
+        if (animatorKarakter != null)
+        {
+            // Jika ada arah gerak, berarti sedang berjalan (isWalking = true)
+            bool sedangBerjalan = arahGerak.sqrMagnitude > 0.01f;
+            animatorKarakter.SetBool("isWalking", sedangBerjalan);
+        }
 
         // Logika membalik arah (menghadap kiri/kanan) berdasarkan tombol yang ditekan
         if (inputX > 0 && !menghadapKanan)
