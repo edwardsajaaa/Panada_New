@@ -35,10 +35,21 @@ public class PlayerMovement25D : MonoBehaviour
         float inputX = Input.GetAxisRaw("Horizontal");
         float inputZ = Input.GetAxisRaw("Vertical");
 
-        // Normalisasi agar kecepatan diagonal tidak lebih cepat
-        arahGerak = new Vector3(inputX, 0f, inputZ).normalized;
+        // --- SOLUSI: Gerakan mengikuti arah Kamera Utama ---
+        Transform camTransform = Camera.main.transform;
+        Vector3 forward = camTransform.forward;
+        Vector3 right = camTransform.right;
 
-        // Logika membalik arah karakter
+        // Kita hanya butuh gerakan di bidang datar (X dan Z), hilangkan sumbu Y
+        forward.y = 0f;
+        right.y = 0f;
+        forward.Normalize();
+        right.Normalize();
+
+        // Hitung arah gerakan sesungguhnya relatif terhadap layar
+        arahGerak = (right * inputX + forward * inputZ).normalized;
+
+        // Logika membalik arah (menghadap kiri/kanan) berdasarkan tombol yang ditekan
         if (inputX > 0 && !menghadapKanan)
         {
             BalikArah();
