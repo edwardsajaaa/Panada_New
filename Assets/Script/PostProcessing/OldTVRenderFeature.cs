@@ -82,8 +82,9 @@ public class OldTVRenderFeature : ScriptableRendererFeature
     {
         if (material == null) return;
         
-        // Hanya render di layar utama
-        if (renderingData.cameraData.cameraType == CameraType.Game)
+        // Render di Game View DAN Scene View agar tampilannya sama
+        if (renderingData.cameraData.cameraType == CameraType.Game ||
+            renderingData.cameraData.cameraType == CameraType.SceneView)
         {
             renderer.EnqueuePass(pass);
         }
