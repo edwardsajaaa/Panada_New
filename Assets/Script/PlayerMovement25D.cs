@@ -13,7 +13,7 @@ public class PlayerMovement25D : MonoBehaviour
 
     private Rigidbody rb;
     private Vector3 arahGerak;
-    private bool menghadapKanan = true; // Asumsi default karakter menghadap kanan
+    private Transform camTransform;
 
     void Start()
     {
@@ -27,6 +27,18 @@ public class PlayerMovement25D : MonoBehaviour
 
         // Pastikan rigidbody disetel dengan benar untuk game 2.5D
         rb.freezeRotation = true; // Mencegah karakter jatuh terguling
+
+        // Cari referensi kamera agar pergerakan sesuai dengan sudut pandang
+        if (Camera.main != null)
+        {
+            camTransform = Camera.main.transform;
+        }
+        else
+        {
+            // Jika tidak ada kamera dengan tag "MainCamera", cari sembarang kamera
+            Camera sembarangKamera = FindAnyObjectByType<Camera>();
+            if (sembarangKamera != null) camTransform = sembarangKamera.transform;
+        }
     }
 
     void Update()
@@ -36,9 +48,14 @@ public class PlayerMovement25D : MonoBehaviour
         float inputZ = Input.GetAxisRaw("Vertical");
 
         // --- SOLUSI: Gerakan mengikuti arah Kamera Utama ---
-        Transform camTransform = Camera.main.transform;
-        Vector3 forward = camTransform.forward;
-        Vector3 right = camTransform.right;
+        Vector3 forward = Vector3.forward;
+        Vector3 right = Vector3.right;
+
+        if (camTransform != null)
+        {
+            forward = camTransform.forward;
+            right = camTransform.right;
+        }
 
         // Kita hanya butuh gerakan di bidang datar (X dan Z), hilangkan sumbu Y
         forward.y = 0f;
