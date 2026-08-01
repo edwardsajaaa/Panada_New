@@ -81,7 +81,16 @@ public class AnimasiTombolMenu : MonoBehaviour, IPointerEnterHandler, IPointerEx
 
         // Matikan transisi warna/alpha bawaan Unity pada komponen Selectable di objek ini saja (bukan anak-anaknya)
         UnityEngine.UI.Selectable s = GetComponent<UnityEngine.UI.Selectable>();
-        if (s != null) s.transition = UnityEngine.UI.Selectable.Transition.None;
+        if (s != null)
+        {
+            s.transition = UnityEngine.UI.Selectable.Transition.None;
+        }
+        else
+        {
+            // PENGAMANAN PENTING: Jika objek ini BUKAN sebuah tombol (misal: background, teks, sprite 2D),
+            // maka otomatis matikan efek hover mouse agar animasinya tidak terganggu/meloncat saat tersentuh kursor.
+            gunakanHoverDanClick = false;
+        }
     }
 
     void InisialisasiAwal()
