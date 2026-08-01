@@ -9,6 +9,10 @@ public class AnimasiLogoPanada : MonoBehaviour, IPointerDownHandler, IPointerUpH
     public float kecepatanPutar = -28f;
     public float jedaSebelumPutar = 0.55f;
 
+    [Header("Pengaturan Interaksi")]
+    [Tooltip("Matikan jika logo ini hanya sebagai dekorasi (misalnya di dalam panel credit)")]
+    public bool bisaDiklik = true;
+
     [Header("Efek Kecelup Saat Klik")]
     public float skalaKecelup = 0.72f;
     public float durasiCelup = 0.10f;
@@ -87,6 +91,7 @@ public class AnimasiLogoPanada : MonoBehaviour, IPointerDownHandler, IPointerUpH
     // ─────────────────────────────────────────────
     public void OnPointerDown(PointerEventData eventData)
     {
+        if (!bisaDiklik) return;
         sedangDitekan = true;
         if (coroutineKecelup != null) StopCoroutine(coroutineKecelup);
         coroutineKecelup = StartCoroutine(AnimasiCelup());
@@ -94,6 +99,7 @@ public class AnimasiLogoPanada : MonoBehaviour, IPointerDownHandler, IPointerUpH
 
     public void OnPointerUp(PointerEventData eventData)
     {
+        if (!bisaDiklik) return;
         sedangDitekan = false;
         if (coroutineKecelup != null) StopCoroutine(coroutineKecelup);
         coroutineKecelup = StartCoroutine(AnimasiKembali(true));
@@ -101,6 +107,7 @@ public class AnimasiLogoPanada : MonoBehaviour, IPointerDownHandler, IPointerUpH
 
     public void OnPointerClick(PointerEventData eventData)
     {
+        if (!bisaDiklik) return;
         // Cadangan jaminan jika klik cepat terinterupsi/terlepas
         if (!sedangDitekan && coroutineKecelup == null)
         {
