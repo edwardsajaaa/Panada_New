@@ -87,9 +87,9 @@ public class AnimasiTombolMenu : MonoBehaviour, IPointerEnterHandler, IPointerEx
         }
         else
         {
-            // PENGAMANAN PENTING: Jika objek ini BUKAN sebuah tombol (misal: background, teks, sprite 2D),
-            // maka otomatis matikan efek hover mouse agar animasinya tidak terganggu/meloncat saat tersentuh kursor.
-            gunakanHoverDanClick = false;
+            // Atas permintaan Anda: Interaksi (seperti membesar/mengecil) TETAP dibiarkan menyala,
+            // NAMUN fitur lompat lapisan kita matikan paksa agar urutannya tetap utuh dan tidak menimpa UI lainnya!
+            bawaKeDepanSaatHover = false;
         }
     }
 
