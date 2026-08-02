@@ -16,8 +16,11 @@ public class PengaturanAudioUI : MonoBehaviour
         [Header("Pengaturan UI (Dari bawah ke atas)")]
         [Tooltip("Masukkan ke-5 image kotak dari bawah ke atas")]
         public Image[] blokVolume; 
-        public Color warnaAktif = Color.white;
-        public Color warnaMati = new Color(0.15f, 0.15f, 0.15f, 1f); // Hitam keabu-abuan
+        
+        [Tooltip("Gambar kotak saat menyala (misal: kotak warna Pink)")]
+        public Sprite spriteAktif;
+        [Tooltip("Gambar kotak saat mati (misal: kotak warna Hitam)")]
+        public Sprite spriteMati;
         
         [HideInInspector]
         public int levelSaatIni = 5;
@@ -64,15 +67,20 @@ public class PengaturanAudioUI : MonoBehaviour
         {
             if (kategori.blokVolume[i] != null)
             {
-                // Jika urutan kotak (mulai dari 0) di bawah level saat ini, warnai aktif!
+                // Kembalikan warna ke putih murni agar gambar asli tidak terlihat kusam
+                kategori.blokVolume[i].color = Color.white;
+
+                // Jika urutan kotak (mulai dari 0) di bawah level saat ini, pakai gambar aktif!
                 if (i < kategori.levelSaatIni)
                 {
-                    kategori.blokVolume[i].color = kategori.warnaAktif;
+                    if (kategori.spriteAktif != null) 
+                        kategori.blokVolume[i].sprite = kategori.spriteAktif;
                 }
                 else
                 {
-                    // Jika di atas level, matikan (warna hitam)
-                    kategori.blokVolume[i].color = kategori.warnaMati;
+                    // Jika di atas level, pakai gambar mati (hitam)
+                    if (kategori.spriteMati != null) 
+                        kategori.blokVolume[i].sprite = kategori.spriteMati;
                 }
             }
         }
