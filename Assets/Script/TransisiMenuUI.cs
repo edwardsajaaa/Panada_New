@@ -290,6 +290,15 @@ public class TransisiMenuUI : MonoBehaviour
 
         yield return new WaitForSeconds(jedaTransisi);
 
+        // PAKSA matikan semua objek yang harus disembunyikan, tidak peduli animasinya berhasil atau tidak!
+        if (objekYangDisembunyikan != null)
+        {
+            foreach (GameObject obj in objekYangDisembunyikan)
+            {
+                if (obj != null) obj.SetActive(false);
+            }
+        }
+
         // munculin sub-panel target
         targetSubPanel.SetActive(true);
         AnimasiTombolMenu[] animAnak = targetSubPanel.GetComponentsInChildren<AnimasiTombolMenu>(true);
