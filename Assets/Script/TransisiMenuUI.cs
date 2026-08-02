@@ -15,6 +15,9 @@ public class TransisiMenuUI : MonoBehaviour
     public GameObject panelCredit;
     public GameObject[] objekPanelCredit;
 
+    [Header("Sub-Panel (Di Dalam Setting)")]
+    public GameObject panelAudio;
+
     [Header("Transisi")]
     public float jedaTransisi = 0.35f;
 
@@ -25,11 +28,18 @@ public class TransisiMenuUI : MonoBehaviour
         StartCoroutine(ProsesBukaPanel(panelSetting));
     }
 
-    // dipanggil pas Logo Panada diklik
+    // dipanggil pas tombol Logo Panada diklik
     public void BukaPanelCredit()
     {
         StopAllCoroutines();
         StartCoroutine(ProsesBukaPanel(panelCredit));
+    }
+
+    // dipanggil pas tombol Audio di dalam Setting diklik
+    public void BukaPanelAudio()
+    {
+        StopAllCoroutines();
+        StartCoroutine(ProsesBukaSubPanel(panelAudio, objekPanelSetting));
     }
 
     // buat pindah scene pakai loading screen
@@ -87,12 +97,21 @@ public class TransisiMenuUI : MonoBehaviour
     public void KembaliKeMainMenu()
     {
         StopAllCoroutines();
-        if (panelSetting != null && panelSetting.activeInHierarchy)
+        
+        // Cek apakah kita sedang berada di dalam Sub-Panel (misal: Audio)
+        if (panelAudio != null && panelAudio.activeInHierarchy)
         {
+            // Tutup Audio, kembali ke Setting
+            StartCoroutine(ProsesTutupSubPanel(panelAudio, objekPanelSetting));
+        }
+        else if (panelSetting != null && panelSetting.activeInHierarchy)
+        {
+            // Tutup Setting, kembali ke Main Menu
             StartCoroutine(ProsesKembaliKeMainMenu(panelSetting, objekPanelSetting));
         }
         else if (panelCredit != null && panelCredit.activeInHierarchy)
         {
+            // Tutup Credit, kembali ke Main Menu
             StartCoroutine(ProsesKembaliKeMainMenu(panelCredit, objekPanelCredit));
         }
         else
@@ -246,4 +265,60 @@ public class TransisiMenuUI : MonoBehaviour
             if (anim != null) anim.JalankanUlangAnimasiIn();
         }
     }
+
+    IEnumerator ProsesBukaSubPanel(GameObject targetSubPanel, GameObject[] objekYangDisembunyikan)
+    {
+        if (targetSubPanel == null) yield break;
+
+        // play animasi keluar untuk objek utama setting
+        if (objekYangDisembunyikan != null)
+        {
+            foreach (GameObject obj in objekYangDisembunyikan)
+            {
+                if (obj == null || !obj.activeInHierarchy) continue;
+                AnimasiTombolMenu anim = obj.GetComponent<AnimasiTombolMenu>();
+                if (anim != null) anim.JalankanAnimasiOut(null, true);
+            }
+        }
+
+        yield return new WaitForSeconds(jedaTransisi);
+
+        // munculin sub-panel target
+        targetSubPanel.SetActive(true);
+        AnimasiTombolMenu[] animAnak = targetSubPanel.GetComponentsInChildren<AnimasiTombolMenu>(true);
+        foreach (var a in animAnak)
+        {
+            if (!a.gameObject.activeInHierarchy) a.gameObject.SetActive(true);
+            a.JalankanUlangAnimasiIn();
+        }
+    }
+
+    IEnumerator ProsesTutupSubPanel(GameObject targetSubPanel, GameObject[] objekYangDimunculkan)
+    {
+        // play animasi keluar untuk isi sub-panel
+        if (targetSubPanel != null)
+        {
+            AnimasiTombolMenu[] animAnak = targetSubPanel.GetComponentsInChildren<AnimasiTombolMenu>(true);
+            foreach (var a in animAnak)
+            {
+                if (a.gameObject.activeInHierarchy) a.JalankanAnimasiOut(null, true);
+            }
+        }
+
+        yield return new WaitForSeconds(jedaTransisi);
+        if (targetSubPanel != null) targetSubPanel.SetActive(false);
+
+        // munculin kembali objek utama setting
+        if (objekYangDimunculkan != null)
+        {
+            foreach (GameObject obj in objekYangDimunculkan)
+            {
+                if (obj == null) continue;
+                obj.SetActive(true);
+                AnimasiTombolMenu anim = obj.GetComponent<AnimasiTombolMenu>();
+                if (anim != null) anim.JalankanUlangAnimasiIn();
+            }
+        }
+    }
 }
+
