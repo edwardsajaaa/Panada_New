@@ -294,6 +294,10 @@ public class AnimasiTombolMenu : MonoBehaviour, IPointerEnterHandler, IPointerEx
         transform.localRotation = rotasiAwal;
         if (canvasGroup != null) canvasGroup.alpha = 1f;
 
+        // Hidupkan kembali AnimasiHoverUI jika ada, agar tombol bisa di-hover lagi
+        AnimasiHoverUI hov = GetComponent<AnimasiHoverUI>();
+        if (hov != null) hov.enabled = true;
+
         // Tunggu jeda setelah animasi muncul selesai agar tombol benar-benar aktif & siap sebelum merespon hover
         StartCoroutine(TungguJedaSiapHover(jedaSebelumHover));
 
@@ -542,6 +546,14 @@ public class AnimasiTombolMenu : MonoBehaviour, IPointerEnterHandler, IPointerEx
         if (!sudahInisialisasi)
         {
             InisialisasiAwal();
+        }
+
+        // Matikan paksa AnimasiHoverUI jika ada, agar tidak melawan (memaksa tetap menyala) saat sedang dianimasikan keluar!
+        AnimasiHoverUI hov = GetComponent<AnimasiHoverUI>();
+        if (hov != null) 
+        {
+            hov.StopAllCoroutines();
+            hov.enabled = false;
         }
 
         StopAllCoroutines();
