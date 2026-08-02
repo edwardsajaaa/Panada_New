@@ -17,11 +17,6 @@ public class PengaturanAudioUI : MonoBehaviour
         [Tooltip("Masukkan ke-5 image kotak dari bawah ke atas")]
         public Image[] blokVolume; 
         
-        [Tooltip("Gambar kotak saat menyala (misal: kotak warna Pink)")]
-        public Sprite spriteAktif;
-        [Tooltip("Gambar kotak saat mati (misal: kotak warna Hitam)")]
-        public Sprite spriteMati;
-        
         [HideInInspector]
         public int levelSaatIni = 5;
     }
@@ -67,20 +62,15 @@ public class PengaturanAudioUI : MonoBehaviour
         {
             if (kategori.blokVolume[i] != null)
             {
-                // Kembalikan warna ke putih murni agar gambar asli tidak terlihat kusam
-                kategori.blokVolume[i].color = Color.white;
-
-                // Jika urutan kotak (mulai dari 0) di bawah level saat ini, pakai gambar aktif!
+                // Jika urutan kotak di bawah level saat ini, NYALAKAN kotaknya!
                 if (i < kategori.levelSaatIni)
                 {
-                    if (kategori.spriteAktif != null) 
-                        kategori.blokVolume[i].sprite = kategori.spriteAktif;
+                    kategori.blokVolume[i].gameObject.SetActive(true);
                 }
                 else
                 {
-                    // Jika di atas level, pakai gambar mati (hitam)
-                    if (kategori.spriteMati != null) 
-                        kategori.blokVolume[i].sprite = kategori.spriteMati;
+                    // Jika di atas level, MATIKAN kotaknya (sehingga lubang hitam background terlihat)
+                    kategori.blokVolume[i].gameObject.SetActive(false);
                 }
             }
         }
