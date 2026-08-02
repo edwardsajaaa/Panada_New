@@ -277,7 +277,14 @@ public class TransisiMenuUI : MonoBehaviour
             {
                 if (obj == null || !obj.activeInHierarchy) continue;
                 AnimasiTombolMenu anim = obj.GetComponent<AnimasiTombolMenu>();
-                if (anim != null) anim.JalankanAnimasiOut(null, true);
+                if (anim == null)
+                {
+                    anim = obj.AddComponent<AnimasiTombolMenu>();
+                    anim.modeAnimasiOut = AnimasiTombolMenu.ModeAnimasiIn.PopInBawah;
+                    anim.durasiAnimasiOut = jedaTransisi;
+                    anim.gunakanAnimasiOut = true;
+                }
+                anim.JalankanAnimasiOut(null, true);
             }
         }
 
