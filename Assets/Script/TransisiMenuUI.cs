@@ -164,33 +164,51 @@ public class TransisiMenuUI : MonoBehaviour
 
     IEnumerator ProsesKembaliKeMainMenu(GameObject targetPanel, GameObject[] objekTargetPanel)
     {
-        // play animasi keluar panel target
+        System.Collections.Generic.List<GameObject> daftarKeluar = new System.Collections.Generic.List<GameObject>();
+        
+        // 1. Ambil dari array (jika ada yang manual dimasukkan)
         if (objekTargetPanel != null && objekTargetPanel.Length > 0)
         {
             foreach (GameObject obj in objekTargetPanel)
             {
-                if (obj == null || !obj.activeInHierarchy) continue;
-                AnimasiTombolMenu anim = obj.GetComponent<AnimasiTombolMenu>();
-                if (anim == null)
-                {
-                    anim = obj.AddComponent<AnimasiTombolMenu>();
-                    anim.modeAnimasiOut = AnimasiTombolMenu.ModeAnimasiIn.PopInBawah;
-                    anim.durasiAnimasiOut = jedaTransisi;
-                    anim.gunakanAnimasiOut = true;
-                }
-                anim.JalankanAnimasiOut(null, true);
+                if (obj != null && obj.activeInHierarchy && !daftarKeluar.Contains(obj))
+                    daftarKeluar.Add(obj);
             }
         }
-        else if (targetPanel != null)
+
+        // 2. Ambil otomatis dari seluruh anak panel target (ini yang membuat dekorasi baru otomatis tertutup!)
+        if (targetPanel != null)
         {
             AnimasiTombolMenu[] animAnak = targetPanel.GetComponentsInChildren<AnimasiTombolMenu>(true);
             foreach (var a in animAnak)
             {
-                if (a.gameObject.activeInHierarchy) a.JalankanAnimasiOut(null, true);
+                if (a.gameObject.activeInHierarchy && !daftarKeluar.Contains(a.gameObject))
+                    daftarKeluar.Add(a.gameObject);
             }
+        }
+
+        // 3. Mainkan animasi keluar untuk semua yang terdaftar
+        foreach (GameObject obj in daftarKeluar)
+        {
+            AnimasiTombolMenu anim = obj.GetComponent<AnimasiTombolMenu>();
+            if (anim == null)
+            {
+                anim = obj.AddComponent<AnimasiTombolMenu>();
+                anim.modeAnimasiOut = AnimasiTombolMenu.ModeAnimasiIn.PopInBawah;
+                anim.durasiAnimasiOut = jedaTransisi;
+                anim.gunakanAnimasiOut = true;
+            }
+            anim.JalankanAnimasiOut(null, true);
+        }
+
+        // Mainkan animasi untuk parent panel itu sendiri (jika ada)
+        if (targetPanel != null)
+        {
             AnimasiTombolMenu animPanel = targetPanel.GetComponent<AnimasiTombolMenu>();
-            if (animPanel != null) animPanel.JalankanAnimasiOut(() => targetPanel.SetActive(false), true);
-            else targetPanel.SetActive(false);
+            if (animPanel != null && !daftarKeluar.Contains(targetPanel)) 
+            {
+                animPanel.JalankanAnimasiOut(() => targetPanel.SetActive(false), true);
+            }
         }
 
         // tunggu beres
