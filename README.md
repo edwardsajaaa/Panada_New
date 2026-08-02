@@ -19,7 +19,9 @@ Pemain akan dibawa ke dalam kisah karakter-karakter (salah satunya bernama Natha
 - **Sistem Pergerakan 2.5D (PlayerMovement25D.cs)**: Sistem kontrol karakter yang *Camera-Relative* (bergerak menyesuaikan sudut pandang kamera, sehingga tombol Kiri/Kanan selalu akurat di layar terlepas dari rotasi ruangan). Sudah terintegrasi langsung dengan Unity Animator untuk memicu animasi berjalan.
 - **Custom Shader 2.5D (Sprite25D.shader)**: Shader *Alpha Cutout* buatan khusus untuk Sprite 2D di dunia 3D (URP). Shader ini mengabaikan arah kemiringan cahaya (Normal) dan hanya menggunakan jarak (*Distance Attenuation*) sehingga karakter tidak akan pernah menjadi siluet hitam pekat saat berada di sudut ruangan.
 - **Pencahayaan & Visual Sinematik Kamar**: Menerapkan standar pencahayaan game *Indie Profesional* menggunakan perpaduan material *Emission*, *Point Light*, dan URP Post-Processing (*Bloom* & *ACES Tonemapping*) untuk menghasilkan ruangan yang hangat dan dramatis.
-- **Deteksi UI Debugging (CekKlikUI.cs)**: Alat bantu *debugging* sederhana untuk memastikan jangkauan *Raycast* dan responsivitas klik pada elemen UI.
+- **Sistem Transisi Main Menu & Sub-Panel (TransisiMenuUI.cs)**: Logika navigasi UI yang mulus dengan efek transisi antar panel. Dilengkapi fitur *Smart Back Button* dan hierarki bersarang (seperti *Setting Panel* -> *Audio Panel*) yang otomatis menjaga sisa objek (seperti dekorasi meja) tetap utuh.
+- **Visualisasi Volume Audio & Save Data (PengaturanAudioUI.cs)**: Sistem interaktif untuk pengaturan volume (BGM, Main, Voice, SFX) dengan indikator balok (0-5) yang menyala secara dinamis lewat penggantian Sprite (*Sprite Swapping*). Didukung sistem *PlayerPrefs* otomatis agar pengaturan pemain tidak riset saat *game* ditutup.
+- **Sistem Loading Screen Asinkron (LoadingScreenController.cs)**: Memuat *scene* secara mulus di latar belakang (*AsyncOperation*) dengan ditemani panel layar pudar (*Fade Out / Fade In*) agar tidak terjadi *freeze* saat perpindahan tempat.
 
 ## Setup Project
 Game ini dikembangkan menggunakan **Unity Engine**.
