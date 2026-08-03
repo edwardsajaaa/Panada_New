@@ -419,8 +419,12 @@ public class TransisiMenuUI : MonoBehaviour
                 else
                 {
                     anak.gameObject.SetActive(true);
-                    AnimasiTombolMenu anim = anak.GetComponent<AnimasiTombolMenu>();
-                    if (anim != null) anim.JalankanUlangAnimasiIn();
+                    AnimasiTombolMenu[] anims = anak.GetComponentsInChildren<AnimasiTombolMenu>(true);
+                    foreach (var anim in anims)
+                    {
+                        if (!anim.gameObject.activeInHierarchy) anim.gameObject.SetActive(true);
+                        anim.JalankanUlangAnimasiIn();
+                    }
                 }
             }
         }
