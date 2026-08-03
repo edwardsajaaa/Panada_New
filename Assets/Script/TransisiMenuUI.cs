@@ -203,6 +203,15 @@ public class TransisiMenuUI : MonoBehaviour
             if (obj != null) obj.SetActive(false);
         }
 
+        // PAKSA sub-panel mati jika yang mau dibuka adalah Setting Panel
+        // Ini untuk mencegah bug di mana sub-panel diam-diam masih menyala di belakang layar
+        if (targetPanel == panelSetting)
+        {
+            if (panelAudio != null) panelAudio.SetActive(false);
+            if (panelKontrol != null) panelKontrol.SetActive(false);
+            if (panelCredit != null) panelCredit.SetActive(false);
+        }
+
         // munculin panel target
         targetPanel.SetActive(true);
         AnimasiTombolMenu[] animAnak = targetPanel.GetComponentsInChildren<AnimasiTombolMenu>(true);
@@ -487,6 +496,7 @@ public class TransisiMenuUI : MonoBehaviour
             if (obj != null) obj.SetActive(false);
         }
         if (panelSetting != null) panelSetting.SetActive(false);
+        if (panelCredit != null) panelCredit.SetActive(false); // pastikan credit panel juga ikut mati
 
         // 2. Munculkan Main Menu lagi
         if (objekMainMenu != null)
