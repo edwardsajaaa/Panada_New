@@ -189,7 +189,7 @@ public class AnimasiLogoPanada : MonoBehaviour, IPointerDownHandler, IPointerUpH
             TransisiMenuUI transisi = GetComponentInParent<TransisiMenuUI>();
             if (transisi != null && transisi.panelCredit != null)
             {
-                transisi.BukaPanelCredit();
+                transisi.BukaPanelCreditDariMainMenu();
             }
             saatLogoDiklik?.Invoke();
         }
