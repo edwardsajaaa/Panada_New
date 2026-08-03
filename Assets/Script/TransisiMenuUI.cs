@@ -17,6 +17,7 @@ public class TransisiMenuUI : MonoBehaviour
 
     [Header("Sub-Panel (Di Dalam Setting)")]
     public GameObject panelAudio;
+    public GameObject panelKontrol;
 
     [Header("Transisi")]
     public float jedaTransisi = 0.35f;
@@ -40,6 +41,13 @@ public class TransisiMenuUI : MonoBehaviour
     {
         StopAllCoroutines();
         StartCoroutine(ProsesBukaSubPanel(panelAudio, objekPanelSetting));
+    }
+
+    // dipanggil pas tombol Kontrol di dalam Setting diklik
+    public void BukaPanelKontrol()
+    {
+        StopAllCoroutines();
+        StartCoroutine(ProsesBukaSubPanel(panelKontrol, objekPanelSetting));
     }
 
     // buat pindah scene pakai loading screen
@@ -98,11 +106,16 @@ public class TransisiMenuUI : MonoBehaviour
     {
         StopAllCoroutines();
         
-        // Cek apakah kita sedang berada di dalam Sub-Panel (misal: Audio)
+        // Cek apakah kita sedang berada di dalam Sub-Panel (misal: Audio atau Kontrol)
         if (panelAudio != null && panelAudio.activeInHierarchy)
         {
             // Tutup Audio, kembali ke Setting
             StartCoroutine(ProsesTutupSubPanel(panelAudio, objekPanelSetting));
+        }
+        else if (panelKontrol != null && panelKontrol.activeInHierarchy)
+        {
+            // Tutup Kontrol, kembali ke Setting
+            StartCoroutine(ProsesTutupSubPanel(panelKontrol, objekPanelSetting));
         }
         else if (panelSetting != null && panelSetting.activeInHierarchy)
         {
