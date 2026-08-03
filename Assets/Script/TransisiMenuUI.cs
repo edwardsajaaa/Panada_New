@@ -29,11 +29,11 @@ public class TransisiMenuUI : MonoBehaviour
         StartCoroutine(ProsesBukaPanel(panelSetting));
     }
 
-    // dipanggil pas tombol Logo Panada diklik
+    // dipanggil pas tombol Kredit di dalam Setting diklik
     public void BukaPanelCredit()
     {
         StopAllCoroutines();
-        StartCoroutine(ProsesBukaPanel(panelCredit));
+        StartCoroutine(ProsesBukaSubPanel(panelCredit, objekPanelSetting));
     }
 
     // dipanggil pas tombol Audio di dalam Setting diklik
@@ -124,8 +124,8 @@ public class TransisiMenuUI : MonoBehaviour
         }
         else if (panelCredit != null && panelCredit.activeInHierarchy)
         {
-            // Tutup Credit, kembali ke Main Menu
-            StartCoroutine(ProsesKembaliKeMainMenu(panelCredit, objekPanelCredit));
+            // Tutup Credit, kembali ke Setting (karena sekarang Kredit adalah bagian dari Setting)
+            StartCoroutine(ProsesTutupSubPanel(panelCredit, objekPanelSetting));
         }
         else
         {
