@@ -208,6 +208,11 @@ public class TransisiMenuUI : MonoBehaviour
         AnimasiTombolMenu[] animAnak = targetPanel.GetComponentsInChildren<AnimasiTombolMenu>(true);
         foreach (var a in animAnak)
         {
+            // Jangan hidupkan sub-panel dan anak-anaknya secara tidak sengaja jika targetnya bukan mereka
+            if (panelAudio != null && targetPanel != panelAudio && a.transform.IsChildOf(panelAudio.transform)) continue;
+            if (panelKontrol != null && targetPanel != panelKontrol && a.transform.IsChildOf(panelKontrol.transform)) continue;
+            if (panelCredit != null && targetPanel != panelCredit && a.transform.IsChildOf(panelCredit.transform)) continue;
+
             if (!a.gameObject.activeInHierarchy) a.gameObject.SetActive(true);
             a.JalankanUlangAnimasiIn();
         }
