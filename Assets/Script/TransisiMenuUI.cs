@@ -36,7 +36,7 @@ public class TransisiMenuUI : MonoBehaviour
     {
         creditDibukaDariSetting = false;
         StopAllCoroutines();
-        StartCoroutine(ProsesBukaPanel(panelCredit));
+        StartCoroutine(ProsesBukaCreditDariMainMenuLuar());
     }
 
     // dipanggil pas tombol Kredit di dalam Setting diklik
@@ -44,7 +44,7 @@ public class TransisiMenuUI : MonoBehaviour
     {
         creditDibukaDariSetting = true;
         StopAllCoroutines();
-        StartCoroutine(ProsesBukaCreditDariSetting());
+        StartCoroutine(ProsesBukaSubPanel(panelCredit, objekPanelSetting));
     }
 
     // dipanggil pas tombol Audio di dalam Setting diklik
@@ -128,23 +128,23 @@ public class TransisiMenuUI : MonoBehaviour
             // Tutup Kontrol, kembali ke Setting
             StartCoroutine(ProsesTutupSubPanel(panelKontrol, objekPanelSetting));
         }
-        else if (panelSetting != null && panelSetting.activeInHierarchy)
-        {
-            // Tutup Setting, kembali ke Main Menu
-            StartCoroutine(ProsesKembaliKeMainMenu(panelSetting, objekPanelSetting));
-        }
         else if (panelCredit != null && panelCredit.activeInHierarchy)
         {
             if (creditDibukaDariSetting)
             {
                 // Tutup Credit, kembali ke Setting (karena dibuka dari Setting)
-                StartCoroutine(ProsesTutupCreditKeSetting());
+                StartCoroutine(ProsesTutupSubPanel(panelCredit, objekPanelSetting));
             }
             else
             {
                 // Tutup Credit, kembali ke Main Menu (karena dibuka dari Logo Panada)
-                StartCoroutine(ProsesKembaliKeMainMenu(panelCredit, objekPanelCredit));
+                StartCoroutine(ProsesTutupCreditKeMainMenuLuar());
             }
+        }
+        else if (panelSetting != null && panelSetting.activeInHierarchy)
+        {
+            // Tutup Setting, kembali ke Main Menu
+            StartCoroutine(ProsesKembaliKeMainMenu(panelSetting, objekPanelSetting));
         }
         else
         {
@@ -369,15 +369,97 @@ public class TransisiMenuUI : MonoBehaviour
         }
     }
 
-    IEnumerator ProsesBukaCreditDariSetting()
+    IEnumerator ProsesBukaCreditDariMainMenuLuar()
     {
-        // 1. Animasikan keluar SEMUA anak dari panel setting yang sedang menyala (termasuk Dekor dan Kembali)
+        // 1. Hilangkan objek Main Menu
         System.Collections.Generic.List<GameObject> daftarKeluar = new System.Collections.Generic.List<GameObject>();
+        if (objekMainMenu != null)
+        {
+            foreach (var o in objekMainMenu) if (o != null && !daftarKeluar.Contains(o)) daftarKeluar.Add(o);
+        }
+
+        foreach (GameObject obj in daftarKeluar)
+        {
+            if (obj == null || !obj.activeInHierarchy) continue;
+            AnimasiTombolMenu anim = obj.GetComponent<AnimasiTombolMenu>();
+            if (anim != null) anim.JalankanAnimasiOut(null, true);
+        }
+
+        yield return new WaitForSeconds(jedaTransisi);
+
+        foreach (GameObject obj in daftarKeluar)
+        {
+            if (obj != null) obj.SetActive(false);
+        }
+
+        // 2. Munculkan Setting Panel, TAPI sembunyikan sticky notes (objekPanelSetting)
+        if (panelSetting != null)
+        {
+            panelSetting.SetActive(true);
+            
+            foreach (Transform anak in panelSetting.transform)
+            {
+                if (anak.gameObject == panelAudio || anak.gameObject == panelKontrol || anak.gameObject == panelCredit) 
+                    continue;
+
+                // Cek apakah anak ini bagian dari objekPanelSetting
+                bool harusDisembunyikan = false;
+                if (objekPanelSetting != null)
+                {
+                    foreach (var obs in objekPanelSetting)
+                    {
+                        if (obs == anak.gameObject) { harusDisembunyikan = true; break; }
+                    }
+                }
+
+                if (harusDisembunyikan)
+                {
+                    anak.gameObject.SetActive(false);
+                }
+                else
+                {
+                    anak.gameObject.SetActive(true);
+                    AnimasiTombolMenu anim = anak.GetComponent<AnimasiTombolMenu>();
+                    if (anim != null) anim.JalankanUlangAnimasiIn();
+                }
+            }
+        }
+
+        // 3. Munculkan Credit Panel
+        if (panelCredit != null)
+        {
+            panelCredit.SetActive(true);
+            AnimasiTombolMenu[] animCredit = panelCredit.GetComponentsInChildren<AnimasiTombolMenu>(true);
+            foreach (var a in animCredit)
+            {
+                if (!a.gameObject.activeInHierarchy) a.gameObject.SetActive(true);
+                a.JalankanUlangAnimasiIn();
+            }
+        }
+    }
+
+    IEnumerator ProsesTutupCreditKeMainMenuLuar()
+    {
+        // 1. Animasikan keluar Credit Panel dan sisa elemen Setting Panel
+        System.Collections.Generic.List<GameObject> daftarKeluar = new System.Collections.Generic.List<GameObject>();
+        
+        if (panelCredit != null)
+        {
+            AnimasiTombolMenu[] animCredit = panelCredit.GetComponentsInChildren<AnimasiTombolMenu>(true);
+            foreach (var a in animCredit)
+            {
+                if (a.gameObject.activeInHierarchy && !daftarKeluar.Contains(a.gameObject))
+                    daftarKeluar.Add(a.gameObject);
+            }
+        }
+
         if (panelSetting != null)
         {
             AnimasiTombolMenu[] animAnak = panelSetting.GetComponentsInChildren<AnimasiTombolMenu>(true);
             foreach (var a in animAnak)
             {
+                if (panelCredit != null && a.transform.IsChildOf(panelCredit.transform)) continue;
+                
                 if (a.gameObject.activeInHierarchy && !daftarKeluar.Contains(a.gameObject))
                     daftarKeluar.Add(a.gameObject);
             }
@@ -391,53 +473,23 @@ public class TransisiMenuUI : MonoBehaviour
 
         yield return new WaitForSeconds(jedaTransisi);
 
-        // Paksa mati
         foreach (GameObject obj in daftarKeluar)
         {
             if (obj != null) obj.SetActive(false);
         }
         if (panelSetting != null) panelSetting.SetActive(false);
 
-        // 2. Buka Credit Panel
-        if (panelCredit != null)
+        // 2. Munculkan Main Menu lagi
+        if (objekMainMenu != null)
         {
-            panelCredit.SetActive(true);
-            AnimasiTombolMenu[] animCredit = panelCredit.GetComponentsInChildren<AnimasiTombolMenu>(true);
-            foreach (var a in animCredit)
+            foreach (var o in objekMainMenu)
             {
-                if (!a.gameObject.activeInHierarchy) a.gameObject.SetActive(true);
-                a.JalankanUlangAnimasiIn();
-            }
-        }
-    }
-
-    IEnumerator ProsesTutupCreditKeSetting()
-    {
-        // 1. Animasikan keluar seluruh isi Credit Panel
-        if (panelCredit != null)
-        {
-            AnimasiTombolMenu[] animAnak = panelCredit.GetComponentsInChildren<AnimasiTombolMenu>(true);
-            foreach (var a in animAnak)
-            {
-                if (a.gameObject.activeInHierarchy) a.JalankanAnimasiOut(null, true);
-            }
-        }
-
-        yield return new WaitForSeconds(jedaTransisi);
-        if (panelCredit != null) panelCredit.SetActive(false);
-
-        // 2. Munculkan kembali Setting Panel secara utuh (kecuali sub-panel di dalamnya)
-        if (panelSetting != null)
-        {
-            panelSetting.SetActive(true);
-            foreach (Transform anak in panelSetting.transform)
-            {
-                // Jangan nyalakan panel Audio & Kontrol (mereka secara default harus mati)
-                if (anak.gameObject == panelAudio || anak.gameObject == panelKontrol) continue;
-                
-                anak.gameObject.SetActive(true);
-                AnimasiTombolMenu anim = anak.GetComponent<AnimasiTombolMenu>();
-                if (anim != null) anim.JalankanUlangAnimasiIn();
+                if (o != null)
+                {
+                    o.SetActive(true);
+                    AnimasiTombolMenu anim = o.GetComponent<AnimasiTombolMenu>();
+                    if (anim != null) anim.JalankanUlangAnimasiIn();
+                }
             }
         }
     }
