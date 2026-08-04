@@ -14,6 +14,9 @@ public class PlayerMovementUI : MonoBehaviour
     [Header("Pengaturan Visual")]
     [Tooltip("Centang jika gambar asli karakter (saat baru dimasukkan) menghadap ke Kiri. Biarkan kosong jika menghadap Kanan.")]
     public bool gambarBawaanHadapKiri = false;
+    
+    [Tooltip("Centang agar proporsi (lebar/tinggi) gambar tidak gepeng saat animasi berjalan. (PENTING: Gunakan 'Scale' untuk membesarkan karakter, bukan mengubah Width/Height)")]
+    public bool pertahankanProporsiAsli = true;
 
     [Header("Referensi")]
     [Tooltip("Otomatis dicari jika dikosongkan")]
@@ -74,7 +77,17 @@ public class PlayerMovementUI : MonoBehaviour
         // Trik Ajaib: Salin animasi dari SpriteRenderer (milik 3D) ke Image (milik UI)
         if (dummySpriteRenderer != null && uiImage != null && dummySpriteRenderer.sprite != null)
         {
-            uiImage.sprite = dummySpriteRenderer.sprite;
+            // Hanya update jika frame benar-benar berubah, agar lebih ringan
+            if (uiImage.sprite != dummySpriteRenderer.sprite)
+            {
+                uiImage.sprite = dummySpriteRenderer.sprite;
+                
+                // SetNativeSize mengembalikan proporsi asli gambar (tidak gepeng)
+                if (pertahankanProporsiAsli)
+                {
+                    uiImage.SetNativeSize();
+                }
+            }
         }
     }
 
