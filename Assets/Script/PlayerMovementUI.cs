@@ -22,6 +22,10 @@ public class PlayerMovementUI : MonoBehaviour
     private RectTransform rectTransform;
     private bool menghadapKanan; // Akan diatur di Start
 
+    // Komponen untuk trik sinkronisasi animasi 2D ke UI
+    private SpriteRenderer dummySpriteRenderer;
+    private UnityEngine.UI.Image uiImage;
+
     void Start()
     {
         // Atur arah hadap awal berdasarkan centang di Inspector
@@ -29,6 +33,8 @@ public class PlayerMovementUI : MonoBehaviour
 
         // Komponen wajib untuk objek UI
         rectTransform = GetComponent<RectTransform>();
+        uiImage = GetComponent<UnityEngine.UI.Image>();
+        dummySpriteRenderer = GetComponent<SpriteRenderer>();
         
         if (animatorKarakter == null) animatorKarakter = GetComponentInChildren<Animator>();
     }
@@ -63,6 +69,12 @@ public class PlayerMovementUI : MonoBehaviour
         else if (inputX < 0 && menghadapKanan)
         {
             BalikArah();
+        }
+
+        // Trik Ajaib: Salin animasi dari SpriteRenderer (milik 3D) ke Image (milik UI)
+        if (dummySpriteRenderer != null && uiImage != null && dummySpriteRenderer.sprite != null)
+        {
+            uiImage.sprite = dummySpriteRenderer.sprite;
         }
     }
 
