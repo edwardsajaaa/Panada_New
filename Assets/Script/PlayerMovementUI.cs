@@ -11,15 +11,22 @@ public class PlayerMovementUI : MonoBehaviour
     [Tooltip("Centang jika saat tekan Kiri malah ke Kanan")]
     public bool balikArahKiriKanan = false;
 
+    [Header("Pengaturan Visual")]
+    [Tooltip("Centang jika gambar asli karakter (saat baru dimasukkan) menghadap ke Kiri. Biarkan kosong jika menghadap Kanan.")]
+    public bool gambarBawaanHadapKiri = false;
+
     [Header("Referensi")]
     [Tooltip("Otomatis dicari jika dikosongkan")]
     public Animator animatorKarakter;
 
     private RectTransform rectTransform;
-    private bool menghadapKanan = true; // Asumsi karakter awalnya menghadap kanan
+    private bool menghadapKanan; // Akan diatur di Start
 
     void Start()
     {
+        // Atur arah hadap awal berdasarkan centang di Inspector
+        menghadapKanan = !gambarBawaanHadapKiri;
+
         // Komponen wajib untuk objek UI
         rectTransform = GetComponent<RectTransform>();
         
