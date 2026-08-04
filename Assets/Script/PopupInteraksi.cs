@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 public class PopupInteraksi : MonoBehaviour
 {
@@ -8,6 +9,13 @@ public class PopupInteraksi : MonoBehaviour
 
     [Tooltip("Pusat area interaksi. Jika titik kuning tidak pas di tengah objek, buat GameObject kosong di tengah objek, lalu masukkan ke sini. (Boleh dikosongkan)")]
     public Transform pusatInteraksi;
+
+    [Header("Interaksi Tombol (Opsional)")]
+    [Tooltip("Tombol yang harus ditekan pemain untuk berinteraksi saat berada di dekat objek (misal: F)")]
+    public KeyCode tombolInteraksi = KeyCode.F;
+    
+    [Tooltip("Event/Fungsi yang akan dijalankan ketika pemain menekan tombol interaksi di atas")]
+    public UnityEvent saatDiinteraksi;
 
     [Header("Referensi")]
     [Tooltip("Objek visual Popup (misalnya sprite '?' atau Canvas UI) yang akan dimunculkan/disembunyikan")]
@@ -90,6 +98,12 @@ public class PopupInteraksi : MonoBehaviour
                 sedangAktif = true;
                 break; // Cukup satu yang ketemu, langsung keluar loop
             }
+        }
+
+        // Jika pemain berada di area dan menekan tombol interaksi, jalankan event-nya!
+        if (sedangAktif && Input.GetKeyDown(tombolInteraksi))
+        {
+            saatDiinteraksi?.Invoke();
         }
 
         // Terapkan animasi skala atau langsung aktif/nonaktif
