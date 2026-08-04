@@ -64,17 +64,21 @@ public class PopupInteraksi : MonoBehaviour
     {
         if (playerTransform == null || popupVisual == null) return;
 
-        // Mengecek jarak antara posisi pusat benda dengan posisi pemain
+        // Mengecek apakah ADA collider pemain di dalam area bola kuning
         Vector3 titikPusat = pusatInteraksi != null ? pusatInteraksi.position : transform.position;
-        float jarak = Vector3.Distance(titikPusat, playerTransform.position);
-
-        if (jarak <= jarakInteraksi)
+        
+        // Dapatkan semua collider yang menyentuh area bola kuning
+        Collider[] hitColliders = Physics.OverlapSphere(titikPusat, jarakInteraksi);
+        
+        sedangAktif = false;
+        foreach (var hitCol in hitColliders)
         {
-            sedangAktif = true;
-        }
-        else
-        {
-            sedangAktif = false;
+            // Jika yang menyentuh adalah pemain (berdasarkan tag atau transform)
+            if (hitCol.CompareTag("Player") || hitCol.transform == playerTransform)
+            {
+                sedangAktif = true;
+                break; // Cukup satu yang ketemu, langsung keluar loop
+            }
         }
 
         // Terapkan animasi skala atau langsung aktif/nonaktif
