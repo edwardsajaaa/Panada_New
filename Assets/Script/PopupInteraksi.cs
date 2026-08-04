@@ -1,0 +1,115 @@
+using UnityEngine;
+
+public class PopupInteraksi : MonoBehaviour
+{
+    [Header("Pengaturan Jarak")]
+    [Tooltip("Jarak maksimal pemain dari objek ini agar popup muncul")]
+    public float jarakInteraksi = 3f;
+
+    [Header("Referensi")]
+    [Tooltip("Objek visual Popup (misalnya sprite '?' atau Canvas UI) yang akan dimunculkan/disembunyikan")]
+    public GameObject popupVisual;
+
+    [Tooltip("Otomatis mencari karakter pemain dengan script PlayerMovement25D jika dikosongkan")]
+    public Transform playerTransform;
+
+    [Header("Pengaturan Visual")]
+    [Tooltip("Centang agar popup selalu menghadap ke arah kamera (sangat berguna untuk game 2.5D/3D)")]
+    public bool hadapKamera = true;
+    [Tooltip("Gunakan animasi membesar/mengecil (skala) saat popup muncul dan hilang")]
+    public bool gunakanAnimasiSkala = true;
+    public float kecepatanAnimasi = 10f;
+
+    private bool sedangAktif = false;
+    private Vector3 skalaAsli;
+
+    void Start()
+    {
+        // Mencari karakter pemain secara otomatis jika belum diisi
+        if (playerTransform == null)
+        {
+            PlayerMovement25D player = FindAnyObjectByType<PlayerMovement25D>();
+            if (player != null)
+            {
+                playerTransform = player.transform;
+            }
+            else
+            {
+                GameObject playerTag = GameObject.FindGameObjectWithTag("Player");
+                if (playerTag != null) playerTransform = playerTag.transform;
+            }
+        }
+
+        // Menyimpan ukuran asli popup dan menyembunyikannya di awal
+        if (popupVisual != null)
+        {
+            skalaAsli = popupVisual.transform.localScale;
+            
+            if (gunakanAnimasiSkala)
+            {
+                popupVisual.transform.localScale = Vector3.zero;
+                popupVisual.SetActive(false); 
+            }
+            else
+            {
+                popupVisual.SetActive(false);
+            }
+        }
+    }
+
+    void Update()
+    {
+        if (playerTransform == null || popupVisual == null) return;
+
+        // Mengecek jarak antara posisi benda ini dengan posisi pemain
+        float jarak = Vector3.Distance(transform.position, playerTransform.position);
+
+        if (jarak <= jarakInteraksi)
+        {
+            sedangAktif = true;
+        }
+        else
+        {
+            sedangAktif = false;
+        }
+
+        // Terapkan animasi skala atau langsung aktif/nonaktif
+        if (gunakanAnimasiSkala)
+        {
+            if (sedangAktif && !popupVisual.activeSelf)
+            {
+                popupVisual.SetActive(true); // Nyalakan objek sebelum animasinya mulai membesar
+            }
+
+            Vector3 targetSkala = sedangAktif ? skalaAsli : Vector3.zero;
+            popupVisual.transform.localScale = Vector3.Lerp(popupVisual.transform.localScale, targetSkala, Time.deltaTime * kecepatanAnimasi);
+            
+            // Matikan objek jika skala sudah benar-benar mengecil habis untuk menghemat performa
+            if (!sedangAktif && popupVisual.transform.localScale.sqrMagnitude < 0.001f)
+            {
+                if (popupVisual.activeSelf) popupVisual.SetActive(false);
+            }
+        }
+        else
+        {
+            // Jika tidak pakai animasi, langsung matikan/nyalakan
+            if (popupVisual.activeSelf != sedangAktif)
+            {
+                popupVisual.SetActive(sedangAktif);
+            }
+        }
+
+        // Membuat popup selalu menghadap kamera (Billboarding) agar tidak miring di 2.5D
+        if (sedangAktif && hadapKamera && Camera.main != null && popupVisual.activeSelf)
+        {
+            popupVisual.transform.rotation = Camera.main.transform.rotation;
+        }
+    }
+    
+    // Fitur tambahan: Bantuan garis visual (bola kuning) di Editor Unity untuk memudahkan mengatur jarak
+    void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, jarakInteraksi);
+    }
+}
