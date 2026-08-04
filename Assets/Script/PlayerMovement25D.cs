@@ -6,6 +6,8 @@ public class PlayerMovement25D : MonoBehaviour
     [Header("Pengaturan Pergerakan")]
     [Tooltip("Kecepatan jalan karakter")]
     public float kecepatanJalan = 5f;
+    [Tooltip("Centang ini untuk area Outdoor (2D Side-scrolling) agar karakter HANYA bisa bergerak ke kiri dan kanan.")]
+    public bool hanyaKiriKanan = false;
 
     [Header("Referensi")]
     [Tooltip("Kosongkan jika komponen SpriteRenderer ada di objek ini langsung")]
@@ -46,7 +48,9 @@ public class PlayerMovement25D : MonoBehaviour
     {
         // Ambil input dari keyboard (W/A/S/D atau Panah)
         float inputX = Input.GetAxisRaw("Horizontal");
-        float inputZ = Input.GetAxisRaw("Vertical");
+        
+        // Jika mode outdoor (hanyaKiriKanan), abaikan tombol atas/bawah
+        float inputZ = hanyaKiriKanan ? 0f : Input.GetAxisRaw("Vertical");
 
         // --- SOLUSI: Gerakan mengikuti arah Kamera Utama ---
         Vector3 forward = Vector3.forward;
