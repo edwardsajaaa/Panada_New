@@ -8,6 +8,8 @@ public class PlayerMovement25D : MonoBehaviour
     public float kecepatanJalan = 5f;
     [Tooltip("Centang ini untuk area Outdoor (2D Side-scrolling) agar karakter HANYA bisa bergerak ke kiri dan kanan.")]
     public bool hanyaKiriKanan = false;
+    [Tooltip("Centang jika saat tekan Kiri malah ke Kanan, atau sebaliknya (Berguna jika posisi kamera membelakangi map)")]
+    public bool balikArahKiriKanan = false;
 
     [Header("Referensi")]
     [Tooltip("Kosongkan jika komponen SpriteRenderer ada di objek ini langsung")]
@@ -48,28 +50,39 @@ public class PlayerMovement25D : MonoBehaviour
     {
         // Ambil input dari keyboard (W/A/S/D atau Panah)
         float inputX = Input.GetAxisRaw("Horizontal");
-        
-        // Jika mode outdoor (hanyaKiriKanan), abaikan tombol atas/bawah
-        float inputZ = hanyaKiriKanan ? 0f : Input.GetAxisRaw("Vertical");
 
-        // --- SOLUSI: Gerakan mengikuti arah Kamera Utama ---
-        Vector3 forward = Vector3.forward;
-        Vector3 right = Vector3.right;
-
-        if (camTransform != null)
+        if (hanyaKiriKanan)
         {
-            forward = camTransform.forward;
-            right = camTransform.right;
+            // Jika arah kontrol kebalik di layar, balikkan nilai input-nya
+            if (balikArahKiriKanan) inputX = -inputX;
+            
+            // Untuk 2D murni, lupakan arah kamera. Paksa jalan HANYA di sumbu X dunia.
+            // Ini mengatasi masalah "jalan berat/seret" akibat karakter terdorong menabrak tembok (sumbu Z).
+            arahGerak = new Vector3(inputX, 0f, 0f);
         }
+        else
+        {
+            float inputZ = Input.GetAxisRaw("Vertical");
 
-        // Kita hanya butuh gerakan di bidang datar (X dan Z), hilangkan sumbu Y
-        forward.y = 0f;
-        right.y = 0f;
-        forward.Normalize();
-        right.Normalize();
+            // --- SOLUSI: Gerakan mengikuti arah Kamera Utama ---
+            Vector3 forward = Vector3.forward;
+            Vector3 right = Vector3.right;
 
-        // Hitung arah gerakan sesungguhnya relatif terhadap layar
-        arahGerak = (right * inputX + forward * inputZ).normalized;
+            if (camTransform != null)
+            {
+                forward = camTransform.forward;
+                right = camTransform.right;
+            }
+
+            // Kita hanya butuh gerakan di bidang datar (X dan Z), hilangkan sumbu Y
+            forward.y = 0f;
+            right.y = 0f;
+            forward.Normalize();
+            right.Normalize();
+
+            // Hitung arah gerakan sesungguhnya relatif terhadap layar
+            arahGerak = (right * inputX + forward * inputZ).normalized;
+        }
 
         // --- MENGATUR ANIMASI ---
         if (animatorKarakter != null)
