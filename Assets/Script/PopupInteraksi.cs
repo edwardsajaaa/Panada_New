@@ -6,6 +6,9 @@ public class PopupInteraksi : MonoBehaviour
     [Tooltip("Jarak maksimal pemain dari objek ini agar popup muncul")]
     public float jarakInteraksi = 3f;
 
+    [Tooltip("Pusat area interaksi. Jika titik kuning tidak pas di tengah objek, buat GameObject kosong di tengah objek, lalu masukkan ke sini. (Boleh dikosongkan)")]
+    public Transform pusatInteraksi;
+
     [Header("Referensi")]
     [Tooltip("Objek visual Popup (misalnya sprite '?' atau Canvas UI) yang akan dimunculkan/disembunyikan")]
     public GameObject popupVisual;
@@ -61,8 +64,9 @@ public class PopupInteraksi : MonoBehaviour
     {
         if (playerTransform == null || popupVisual == null) return;
 
-        // Mengecek jarak antara posisi benda ini dengan posisi pemain
-        float jarak = Vector3.Distance(transform.position, playerTransform.position);
+        // Mengecek jarak antara posisi pusat benda dengan posisi pemain
+        Vector3 titikPusat = pusatInteraksi != null ? pusatInteraksi.position : transform.position;
+        float jarak = Vector3.Distance(titikPusat, playerTransform.position);
 
         if (jarak <= jarakInteraksi)
         {
@@ -110,6 +114,7 @@ public class PopupInteraksi : MonoBehaviour
     void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, jarakInteraksi);
+        Vector3 titikPusat = pusatInteraksi != null ? pusatInteraksi.position : transform.position;
+        Gizmos.DrawWireSphere(titikPusat, jarakInteraksi);
     }
 }
