@@ -18,6 +18,14 @@ public class PlayerMovementUI : MonoBehaviour
     [Tooltip("Centang agar proporsi (lebar/tinggi) gambar tidak gepeng saat animasi berjalan. (PENTING: Gunakan 'Scale' untuk membesarkan karakter, bukan mengubah Width/Height)")]
     public bool pertahankanProporsiAsli = true;
 
+    [Header("Batas Layar")]
+    [Tooltip("Centang agar karakter tidak bisa berjalan keluar dari batas yang ditentukan")]
+    public bool gunakanBatas = false;
+    [Tooltip("Batas mentok sebelah kiri (lihat posisi X di RectTransform saat karakter digeser mentok ke kiri)")]
+    public float batasKiri = -900f;
+    [Tooltip("Batas mentok sebelah kanan (lihat posisi X di RectTransform saat karakter digeser mentok ke kanan)")]
+    public float batasKanan = 900f;
+
     [Header("Referensi")]
     [Tooltip("Otomatis dicari jika dikosongkan")]
     public Animator animatorKarakter;
@@ -54,7 +62,15 @@ public class PlayerMovementUI : MonoBehaviour
         // Gerakkan posisi UI secara langsung berdasarkan Pixel per detik
         if (Mathf.Abs(inputX) > 0.01f)
         {
-            rectTransform.anchoredPosition += new Vector2(inputX * kecepatanJalan * Time.deltaTime, 0f);
+            Vector2 posBaru = rectTransform.anchoredPosition + new Vector2(inputX * kecepatanJalan * Time.deltaTime, 0f);
+            
+            // Batasi pergerakan agar tidak keluar layar
+            if (gunakanBatas)
+            {
+                posBaru.x = Mathf.Clamp(posBaru.x, batasKiri, batasKanan);
+            }
+            
+            rectTransform.anchoredPosition = posBaru;
         }
 
         // --- MENGATUR ANIMASI ---
