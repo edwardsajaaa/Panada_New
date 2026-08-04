@@ -25,9 +25,20 @@ public class PopupInteraksi : MonoBehaviour
 
     private bool sedangAktif = false;
     private Vector3 skalaAsli;
+    private Camera cam;
 
     void Start()
     {
+        // Cari kamera aktif di scene
+        if (Camera.main != null)
+        {
+            cam = Camera.main;
+        }
+        else
+        {
+            cam = FindAnyObjectByType<Camera>();
+        }
+
         // Mencari karakter pemain secara otomatis jika belum diisi
         if (playerTransform == null)
         {
@@ -108,9 +119,9 @@ public class PopupInteraksi : MonoBehaviour
         }
 
         // Membuat popup selalu menghadap kamera (Billboarding) agar tidak miring di 2.5D
-        if (sedangAktif && hadapKamera && Camera.main != null && popupVisual.activeSelf)
+        if (hadapKamera && cam != null && popupVisual.activeSelf)
         {
-            popupVisual.transform.rotation = Camera.main.transform.rotation;
+            popupVisual.transform.rotation = cam.transform.rotation;
         }
     }
     
