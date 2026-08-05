@@ -9,6 +9,9 @@ public class PopupInteraksi : MonoBehaviour
 
     [Tooltip("Pusat area interaksi. Jika titik kuning tidak pas di tengah objek, buat GameObject kosong di tengah objek, lalu masukkan ke sini. (Boleh dikosongkan)")]
     public Transform pusatInteraksi;
+    
+    [Tooltip("CENTANG INI jika karakter dan objek berada di dalam Canvas (seperti level Outdoor Anda) karena UI Canvas tidak menggunakan sistem Collider 3D")]
+    public bool modeUICanvas = false;
 
     [Header("Interaksi Tombol (Opsional)")]
     [Tooltip("Tombol yang harus ditekan pemain untuk berinteraksi saat berada di dekat objek (misal: F)")]
@@ -21,7 +24,7 @@ public class PopupInteraksi : MonoBehaviour
     [Tooltip("Objek visual Popup (misalnya sprite '?' atau Canvas UI) yang akan dimunculkan/disembunyikan")]
     public GameObject popupVisual;
 
-    [Tooltip("Otomatis mencari karakter pemain dengan script PlayerMovement25D jika dikosongkan")]
+    [Tooltip("Otomatis mencari karakter pemain dengan script PlayerMovement25D atau UI jika dikosongkan")]
     public Transform playerTransform;
 
     [Header("Pengaturan Visual")]
@@ -50,10 +53,20 @@ public class PopupInteraksi : MonoBehaviour
         // Mencari karakter pemain secara otomatis jika belum diisi
         if (playerTransform == null)
         {
-            PlayerMovement25D player = FindAnyObjectByType<PlayerMovement25D>();
-            if (player != null)
+            PlayerMovementUI playerUI = FindAnyObjectByType<PlayerMovementUI>();
+            PlayerMovement25D player25D = FindAnyObjectByType<PlayerMovement25D>();
+            
+            if (modeUICanvas && playerUI != null)
             {
-                playerTransform = player.transform;
+                playerTransform = playerUI.transform;
+            }
+            else if (playerUI != null && playerUI.gameObject.activeInHierarchy)
+            {
+                playerTransform = playerUI.transform;
+            }
+            else if (player25D != null && player25D.gameObject.activeInHierarchy)
+            {
+                playerTransform = player25D.transform;
             }
             else
             {
@@ -83,20 +96,29 @@ public class PopupInteraksi : MonoBehaviour
     {
         if (playerTransform == null || popupVisual == null) return;
 
-        // Mengecek apakah ADA collider pemain di dalam area bola kuning
         Vector3 titikPusat = pusatInteraksi != null ? pusatInteraksi.position : transform.position;
-        
-        // Dapatkan semua collider yang menyentuh area bola kuning
-        Collider[] hitColliders = Physics.OverlapSphere(titikPusat, jarakInteraksi);
-        
         sedangAktif = false;
-        foreach (var hitCol in hitColliders)
+        
+        if (modeUICanvas)
         {
-            // Jika yang menyentuh adalah pemain (berdasarkan tag atau transform)
-            if (hitCol.CompareTag("Player") || hitCol.transform == playerTransform)
+            // Untuk UI Canvas, kita gunakan jarak murni karena objek UI biasanya tidak pakai Collider Fisika 3D
+            float jarak = Vector3.Distance(titikPusat, playerTransform.position);
+            if (jarak <= jarakInteraksi)
             {
                 sedangAktif = true;
-                break; // Cukup satu yang ketemu, langsung keluar loop
+            }
+        }
+        else
+        {
+            // Untuk 3D, kita gunakan OverlapSphere agar mendeteksi ujung collider
+            Collider[] hitColliders = Physics.OverlapSphere(titikPusat, jarakInteraksi);
+            foreach (var hitCol in hitColliders)
+            {
+                if (hitCol.CompareTag("Player") || hitCol.transform == playerTransform)
+                {
+                    sedangAktif = true;
+                    break;
+                }
             }
         }
 
