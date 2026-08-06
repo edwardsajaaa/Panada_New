@@ -1,9 +1,8 @@
 using UnityEngine;
-using UnityEngine.UI;
 using System.Collections;
 
-// Script ini wajib ditempel di objek yang memiliki komponen visual (Text, Image, dll)
-[RequireComponent(typeof(Graphic))]
+// Memastikan objek ini memiliki CanvasGroup agar bisa mengatur transparansi seluruh isinya sekaligus
+[RequireComponent(typeof(CanvasGroup))]
 public class EfekMunculTertunda : MonoBehaviour
 {
     [Header("Pengaturan Waktu")]
@@ -13,23 +12,21 @@ public class EfekMunculTertunda : MonoBehaviour
     [Tooltip("Berapa lama durasi transisi fade-in nya? (0 = langsung muncul tanpa animasi)")]
     public float durasiFade = 0.5f;
 
-    private Graphic objekVisual;
+    private CanvasGroup grupVisual;
 
     void Awake()
     {
-        // Mengambil komponen Text/Image dari objek ini
-        objekVisual = GetComponent<Graphic>();
+        // Mengambil komponen CanvasGroup
+        grupVisual = GetComponent<CanvasGroup>();
     }
 
     // Dipanggil setiap kali panel induknya dinyalakan
     void OnEnable()
     {
-        if (objekVisual != null)
+        if (grupVisual != null)
         {
             // Jadikan transparan sepenuhnya di awal
-            Color c = objekVisual.color;
-            c.a = 0f;
-            objekVisual.color = c;
+            grupVisual.alpha = 0f;
             
             // Mulai penghitung waktu mundur
             StartCoroutine(ProsesMuncul());
@@ -48,16 +45,12 @@ public class EfekMunculTertunda : MonoBehaviour
             while (timer < durasiFade)
             {
                 timer += Time.deltaTime;
-                Color c = objekVisual.color;
-                c.a = Mathf.Lerp(0f, 1f, timer / durasiFade);
-                objekVisual.color = c;
+                grupVisual.alpha = Mathf.Lerp(0f, 1f, timer / durasiFade);
                 yield return null;
             }
         }
         
         // 3. Pastikan opasitas mentok 100% di akhir
-        Color final = objekVisual.color;
-        final.a = 1f;
-        objekVisual.color = final;
+        grupVisual.alpha = 1f;
     }
 }
