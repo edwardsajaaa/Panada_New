@@ -10,8 +10,12 @@ public class AnimasiPanelFoto : MonoBehaviour
     [Tooltip("Masukkan objek 'Foto' ke sini")]
     public RectTransform fotoObjek;
     
-    [Tooltip("Masukkan objek 'Text (TMP)' ke sini")]
-    public Graphic textObjek; 
+    [Header("Referensi Teks/Dialog Tertunda")]
+    [Tooltip("Gunakan ini jika teksnya hanya 1 objek (seperti Text TMP biasa)")]
+    public Graphic teksTertunda; 
+    
+    [Tooltip("Gunakan ini jika teksnya berupa Grup/Gelembung (seperti Buble Name) yang berisi banyak objek. (Pastikan objek tersebut dipasangi CanvasGroup)")]
+    public CanvasGroup grupTertunda; 
 
     [Header("Pengaturan Animasi")]
     [Tooltip("Jarak foto saat mulai muncul (dari bawah)")]
@@ -20,10 +24,10 @@ public class AnimasiPanelFoto : MonoBehaviour
     [Tooltip("Berapa lama waktu panel dan foto muncul penuh (detik)")]
     public float durasiMunculPanel = 0.5f;
     
-    [Tooltip("Waktu tunggu sebelum teks mulai muncul (detik)")]
+    [Tooltip("Waktu tunggu sebelum teks/dialog mulai muncul (detik)")]
     public float jedaSebelumText = 0.5f;
     
-    [Tooltip("Berapa lama waktu teks memudar hingga muncul penuh (detik)")]
+    [Tooltip("Berapa lama waktu teks/dialog memudar hingga muncul penuh (detik)")]
     public float durasiFadeText = 0.5f;
 
     private CanvasGroup panelGroup;
@@ -55,12 +59,16 @@ public class AnimasiPanelFoto : MonoBehaviour
             fotoObjek.anchoredPosition = posisiAsliFoto - new Vector2(0, jarakMunculDariBawah);
         }
 
-        if (textObjek != null)
+        if (teksTertunda != null)
         {
-            // Buat teks transparan
-            Color c = textObjek.color;
+            Color c = teksTertunda.color;
             c.a = 0f;
-            textObjek.color = c;
+            teksTertunda.color = c;
+        }
+        
+        if (grupTertunda != null)
+        {
+            grupTertunda.alpha = 0f;
         }
 
         // --- 2. ANIMASI PANEL FADE & FOTO NAIK BERSAMAAN ---
@@ -92,8 +100,8 @@ public class AnimasiPanelFoto : MonoBehaviour
         // --- 3. JEDA TUNGGU ---
         yield return new WaitForSeconds(jedaSebelumText);
 
-        // --- 4. ANIMASI FADE TEXT ---
-        if (textObjek != null)
+        // --- 4. ANIMASI FADE TEXT / GRUP TERTUNDA ---
+        if (teksTertunda != null || grupTertunda != null)
         {
             timer = 0;
             while (timer < durasiFadeText)
@@ -101,17 +109,32 @@ public class AnimasiPanelFoto : MonoBehaviour
                 timer += Time.deltaTime;
                 float persentase = timer / durasiFadeText;
                 
-                Color c = textObjek.color;
-                c.a = Mathf.Lerp(0f, 1f, persentase);
-                textObjek.color = c;
+                if (teksTertunda != null)
+                {
+                    Color c = teksTertunda.color;
+                    c.a = Mathf.Lerp(0f, 1f, persentase);
+                    teksTertunda.color = c;
+                }
+                
+                if (grupTertunda != null)
+                {
+                    grupTertunda.alpha = Mathf.Lerp(0f, 1f, persentase);
+                }
                 
                 yield return null;
             }
             
-            // Pastikan teks 100% muncul
-            Color finalColor = textObjek.color;
-            finalColor.a = 1f;
-            textObjek.color = finalColor;
+            // Pastikan 100% muncul
+            if (teksTertunda != null)
+            {
+                Color finalColor = teksTertunda.color;
+                finalColor.a = 1f;
+                teksTertunda.color = finalColor;
+            }
+            if (grupTertunda != null)
+            {
+                grupTertunda.alpha = 1f;
+            }
         }
     }
 
@@ -131,7 +154,8 @@ public class AnimasiPanelFoto : MonoBehaviour
         Vector2 posisiSekarang = fotoObjek != null ? fotoObjek.anchoredPosition : posisiAsliFoto;
         Vector2 posisiBawah = posisiAsliFoto - new Vector2(0, jarakMunculDariBawah);
         
-        float alphaTeksSekarang = textObjek != null ? textObjek.color.a : 0f;
+        float alphaTeksSekarang = teksTertunda != null ? teksTertunda.color.a : 0f;
+        float alphaGrupSekarang = grupTertunda != null ? grupTertunda.alpha : 0f;
 
         while (timer < durasiTutup)
         {
@@ -144,17 +168,21 @@ public class AnimasiPanelFoto : MonoBehaviour
             // Foto bergerak turun
             if (fotoObjek != null)
             {
-                // Ease In agar makin lama makin cepat turun
                 float easeIn = persentase * persentase;
                 fotoObjek.anchoredPosition = Vector2.Lerp(posisiSekarang, posisiBawah, easeIn);
             }
 
-            // Teks memudar
-            if (textObjek != null)
+            // Teks / Grup memudar
+            if (teksTertunda != null)
             {
-                Color c = textObjek.color;
+                Color c = teksTertunda.color;
                 c.a = Mathf.Lerp(alphaTeksSekarang, 0f, persentase);
-                textObjek.color = c;
+                teksTertunda.color = c;
+            }
+            
+            if (grupTertunda != null)
+            {
+                grupTertunda.alpha = Mathf.Lerp(alphaGrupSekarang, 0f, persentase);
             }
             
             yield return null;
