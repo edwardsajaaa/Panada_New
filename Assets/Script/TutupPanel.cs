@@ -31,7 +31,19 @@ public class TutupPanel : MonoBehaviour
     {
         if (panelYangDitutup != null)
         {
-            panelYangDitutup.SetActive(false);
+            // Mengecek apakah panel ini punya efek animasi khusus
+            AnimasiPanelFoto efekAnimasi = panelYangDitutup.GetComponent<AnimasiPanelFoto>();
+            
+            if (efekAnimasi != null)
+            {
+                // Putar animasi tutup (Fade Out & Turun)
+                efekAnimasi.TutupDenganAnimasi();
+            }
+            else
+            {
+                // Jika tidak ada animasi, langsung matikan seperti biasa
+                panelYangDitutup.SetActive(false);
+            }
         }
     }
 }

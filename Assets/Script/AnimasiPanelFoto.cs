@@ -114,4 +114,53 @@ public class AnimasiPanelFoto : MonoBehaviour
             textObjek.color = finalColor;
         }
     }
+
+    // Fungsi ini dipanggil dari luar (misalnya dari script TutupPanel) untuk menutup dengan elegan
+    public void TutupDenganAnimasi()
+    {
+        // Hentikan animasi muncul jika masih berjalan
+        StopAllCoroutines();
+        StartCoroutine(AnimasiTutup());
+    }
+
+    IEnumerator AnimasiTutup()
+    {
+        float timer = 0;
+        float durasiTutup = durasiMunculPanel / 1.5f; // Animasi tutup dibuat sedikit lebih cepat
+        
+        Vector2 posisiSekarang = fotoObjek != null ? fotoObjek.anchoredPosition : posisiAsliFoto;
+        Vector2 posisiBawah = posisiAsliFoto - new Vector2(0, jarakMunculDariBawah);
+        
+        float alphaTeksSekarang = textObjek != null ? textObjek.color.a : 0f;
+
+        while (timer < durasiTutup)
+        {
+            timer += Time.deltaTime;
+            float persentase = timer / durasiTutup;
+            
+            // Fade Out Panel
+            panelGroup.alpha = Mathf.Lerp(1f, 0f, persentase);
+            
+            // Foto bergerak turun
+            if (fotoObjek != null)
+            {
+                // Ease In agar makin lama makin cepat turun
+                float easeIn = persentase * persentase;
+                fotoObjek.anchoredPosition = Vector2.Lerp(posisiSekarang, posisiBawah, easeIn);
+            }
+
+            // Teks memudar
+            if (textObjek != null)
+            {
+                Color c = textObjek.color;
+                c.a = Mathf.Lerp(alphaTeksSekarang, 0f, persentase);
+                textObjek.color = c;
+            }
+            
+            yield return null;
+        }
+        
+        // Setelah animasi selesai, baru matikan objeknya
+        gameObject.SetActive(false);
+    }
 }
