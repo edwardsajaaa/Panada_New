@@ -54,6 +54,13 @@ public class PlayerMovementUI : MonoBehaviour
     {
         if (rectTransform == null) return;
 
+        // --- SISTEM BLOKIR: Hentikan karakter saat UI Panel sedang terbuka ---
+        if (SistemBlokirGerak.SedangBukaUI())
+        {
+            if (animatorKarakter != null) animatorKarakter.SetBool("isWalking", false);
+            return; // Berhenti memproses input di bawah
+        }
+
         // Ambil input A/D atau Panah Kiri/Kanan
         float inputX = Input.GetAxisRaw("Horizontal");
         

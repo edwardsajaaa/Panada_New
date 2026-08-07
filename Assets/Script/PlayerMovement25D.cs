@@ -48,6 +48,14 @@ public class PlayerMovement25D : MonoBehaviour
 
     void Update()
     {
+        // --- SISTEM BLOKIR: Hentikan karakter saat UI Panel sedang terbuka ---
+        if (SistemBlokirGerak.SedangBukaUI())
+        {
+            arahGerak = Vector3.zero;
+            if (animatorKarakter != null) animatorKarakter.SetBool("isWalking", false);
+            return; // Berhenti memproses input
+        }
+
         // Ambil input dari keyboard (W/A/S/D atau Panah)
         float inputX = Input.GetAxisRaw("Horizontal");
 
