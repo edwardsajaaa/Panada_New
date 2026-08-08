@@ -31,6 +31,7 @@ public class ItemBaju : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
 
     private int faseSaatIni = 0;
     private bool sedangDiArea = false;
+    private bool sudahDisimpanSelesai = false;
     private RectTransform rectTransform;
     private CanvasGroup canvasGroup;
     private Vector2 posisiAwal;
@@ -51,8 +52,8 @@ public class ItemBaju : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     // Dipanggil saat baju pertama kali ditarik (Drag)
     public void OnBeginDrag(PointerEventData eventData)
     {
-        // Jika sudah rapi (hijau), baju tidak bisa ditarik lagi
-        if (faseSaatIni >= warnaFase.Length - 1) return;
+        // Jika sudah ditaruh di area kanan (selesai), kunci mati tidak bisa ditarik
+        if (sudahDisimpanSelesai) return;
 
         // Tembus raycast agar saat di-drop bisa mendeteksi area di belakangnya
         canvasGroup.blocksRaycasts = false; 
@@ -62,7 +63,7 @@ public class ItemBaju : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     // Dipanggil terus-menerus saat mouse bergerak membawa baju
     public void OnDrag(PointerEventData eventData)
     {
-        if (faseSaatIni >= warnaFase.Length - 1) return;
+        if (sudahDisimpanSelesai) return;
 
         // Menggerakkan UI mengikuti mouse
         rectTransform.anchoredPosition += eventData.delta / GetComponentInParent<Canvas>().scaleFactor;
@@ -71,52 +72,61 @@ public class ItemBaju : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     // Dipanggil saat klik/drag dilepas
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (faseSaatIni >= warnaFase.Length - 1) return;
+        if (sudahDisimpanSelesai) return;
 
         canvasGroup.blocksRaycasts = true;
         canvasGroup.alpha = 1f;
 
-        // Cek apakah mouse dilepas di atas kotak "Area ngerapihin baju"
-        if (areaLipat != null && RectTransformUtility.RectangleContainsScreenPoint(areaLipat, Input.mousePosition, eventData.pressEventCamera))
+        // Jika baju SUDAH HIJAU (sudah rapi), target drop-nya adalah areaSelesai (kanan)
+        if (faseSaatIni >= warnaFase.Length - 1)
         {
-            // Sukses masuk area, posisikan ke tengah area
-            sedangDiArea = true;
-            rectTransform.position = areaLipat.position;
+            if (areaSelesai != null && RectTransformUtility.RectangleContainsScreenPoint(areaSelesai, Input.mousePosition, eventData.pressEventCamera))
+            {
+                // Sukses ditaruh di area kanan!
+                sudahDisimpanSelesai = true;
+                rectTransform.position = areaSelesai.position;
+                
+                // Memicu event selesai HANYA saat sudah berhasil ditaruh di kanan
+                saatBajuSelesaiDirapikan?.Invoke();
+            }
+            else
+            {
+                // Jika salah taruh (tidak kena area kanan), kembalikan ke tengah
+                if (areaLipat != null) rectTransform.position = areaLipat.position;
+            }
         }
         else
         {
-            // Dilepas di luar area, kembalikan ke posisi awal
-            sedangDiArea = false;
-            rectTransform.anchoredPosition = posisiAwal;
-            
-            // Reset kembali jadi berantakan (merah) jika ditarik keluar
-            faseSaatIni = 0; 
-            UpdateVisual();
+            // Jika baju BELUM HIJAU (merah/kuning), target drop-nya adalah areaLipat (tengah)
+            if (areaLipat != null && RectTransformUtility.RectangleContainsScreenPoint(areaLipat, Input.mousePosition, eventData.pressEventCamera))
+            {
+                // Sukses masuk area tengah
+                sedangDiArea = true;
+                rectTransform.position = areaLipat.position;
+            }
+            else
+            {
+                // Dilepas di luar area tengah, kembalikan ke posisi awal di tumpukan
+                sedangDiArea = false;
+                rectTransform.anchoredPosition = posisiAwal;
+                
+                // Reset kembali jadi berantakan (merah)
+                faseSaatIni = 0; 
+                UpdateVisual();
+            }
         }
     }
 
     // Dipanggil saat baju DIKLIK
     public void OnPointerClick(PointerEventData eventData)
     {
+        if (sudahDisimpanSelesai) return; // Kalau sudah dikunci di kanan, ga bisa diklik
+
         // Baju hanya bisa dilipat (diklik) jika sudah ditaruh di dalam area lipat
         if (sedangDiArea && faseSaatIni < warnaFase.Length - 1)
         {
             faseSaatIni++; // Naik ke fase berikutnya (Merah -> Kuning -> Hijau)
             UpdateVisual();
-
-            // Jika sudah mencapai fase terakhir (Hijau)
-            if (faseSaatIni >= warnaFase.Length - 1)
-            {
-                // Pindahkan ke area selesai (jika ada)
-                if (areaSelesai != null)
-                {
-                    rectTransform.position = areaSelesai.position;
-                    // Bikin baju tidak bisa didrag atau diklik lagi
-                    canvasGroup.blocksRaycasts = false;
-                }
-                
-                saatBajuSelesaiDirapikan?.Invoke();
-            }
         }
     }
 
