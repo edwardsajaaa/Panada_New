@@ -128,10 +128,10 @@ public class PopupInteraksi : MonoBehaviour
         // Jika pemain berada di area dan menekan tombol interaksi, jalankan event-nya!
         if (sedangAktif && Input.GetKeyDown(tombolInteraksi))
         {
-            if (gunakanTransisiPindahRuang && LoadingScreenController.Instance != null)
+            if (gunakanTransisiPindahRuang && TransisiRuangan.Instance != null)
             {
-                // Gunakan animasi transisi pixel dari LoadingScreenController
-                LoadingScreenController.Instance.TransisiLokalEvent(saatDiinteraksi);
+                // Gunakan animasi transisi pixel dari TransisiRuangan
+                TransisiRuangan.Instance.Jalankan(saatDiinteraksi);
             }
             else
             {
