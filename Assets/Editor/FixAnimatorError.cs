@@ -14,18 +14,28 @@ public class FixAnimatorError
     [MenuItem("Tools/Fix Error Animator")]
     public static void TutupJendelaAnimator()
     {
-        // Mencari semua jendela editor yang terbuka
+        // 1. Bersihkan Console secara otomatis
+        var logEntries = System.Type.GetType("UnityEditor.LogEntries, UnityEditor.dll");
+        if (logEntries != null)
+        {
+            var clearMethod = logEntries.GetMethod("Clear", System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Public);
+            if (clearMethod != null) clearMethod.Invoke(null, null);
+        }
+
+        // 2. Mencari semua jendela editor yang terbuka
         EditorWindow[] semuaJendela = Resources.FindObjectsOfTypeAll<EditorWindow>();
         
         foreach (EditorWindow jendela in semuaJendela)
         {
-            // Jika ada jendela Animator atau Graph yang terbuka di background (penyebab utama error Edge.WakeUp)
-            if (jendela.GetType().Name.Contains("AnimatorControllerTool") || 
-                jendela.GetType().Name.Contains("Graph") || 
-                jendela.GetType().Name.Contains("Animator"))
+            string namaJendela = jendela.GetType().Name;
+            // Tutup jendela Animator dan Animation yang sering memicu error Edge.WakeUp
+            if (namaJendela.Contains("AnimatorControllerTool") || 
+                namaJendela.Contains("Graph") || 
+                namaJendela.Contains("Animator") ||
+                namaJendela.Contains("AnimationWindow"))
             {
                 jendela.Close();
-                Debug.Log("<color=green><b>[Auto-Fix]</b></color> Jendela Animator yang menyebabkan error Edge.WakeUp telah ditutup secara otomatis oleh sistem.");
+                Debug.Log("<color=green><b>[Auto-Fix]</b></color> Jendela penyebab error telah ditutup dan Console dibersihkan.");
             }
         }
     }
