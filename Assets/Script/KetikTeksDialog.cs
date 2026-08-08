@@ -2,7 +2,6 @@ using UnityEngine;
 using TMPro;
 using System.Collections;
 
-// Membuat format data baru agar setiap kalimat bisa memiliki namanya sendiri-sendiri
 [System.Serializable]
 public class BarisCeritaDialog
 {
@@ -14,6 +13,8 @@ public class BarisCeritaDialog
     public string kalimat;
 }
 
+// Memastikan objek ini punya CanvasGroup agar bisa disembunyikan dan dimunculkan (Fade)
+[RequireComponent(typeof(CanvasGroup))]
 public class KetikTeksDialog : MonoBehaviour
 {
     [Header("Referensi UI")]
@@ -23,42 +24,80 @@ public class KetikTeksDialog : MonoBehaviour
     [Tooltip("Masukkan Text (TMP) untuk nama karakter (Opsional)")]
     public TextMeshProUGUI teksNama;
 
-    [Header("Pengaturan Animasi")]
-    [Tooltip("Samakan dengan angka Jeda Sebelum Text agar teks mulai mengetik tepat saat gelembung muncul")]
-    public float waktuTungguMulai = 3.5f;
+    [Header("Pengaturan Gelembung & Waktu")]
+    [Tooltip("Berapa detik gelembung ini harus menunggu sebelum muncul di layar?")]
+    public float waktuTungguGelembung = 3f;
+    
+    [Tooltip("Durasi animasi memudar (fade-in) gelembungnya")]
+    public float durasiFadeGelembung = 0.5f;
+
+    [Tooltip("Berapa lama teks diam sebentar setelah gelembung muncul sebelum mulai mengetik?")]
+    public float jedaSebelumMengetik = 0.3f;
     
     [Tooltip("Kecepatan mesin tik (semakin kecil semakin cepat)")]
     public float kecepatanKetik = 0.04f;
 
     [Header("Isi Cerita")]
-    [Tooltip("Daftar percakapan Anda. Tekan tombol + untuk menambah dialog, dan Anda bisa mengganti nama karakter di tiap baris!")]
+    [Tooltip("Daftar percakapan Anda. Tekan tombol + untuk menambah dialog!")]
     public BarisCeritaDialog[] percakapan;
 
     private int indeksKalimat = 0;
     private bool sedangNgetik = false;
     private bool sudahMulai = false;
+    private CanvasGroup grupGelembung;
+
+    void Awake()
+    {
+        grupGelembung = GetComponent<CanvasGroup>();
+    }
 
     void OnEnable()
     {
         if (percakapan.Length > 0 && teksDialog != null)
         {
-            teksDialog.text = ""; // Kosongkan teks di awal
-            if (teksNama != null) teksNama.text = ""; // Kosongkan nama di awal
+            // Kosongkan teks di awal
+            teksDialog.text = ""; 
+            if (teksNama != null) teksNama.text = ""; 
+            
             sudahMulai = false;
-            StartCoroutine(TungguDanMulai());
+
+            // Sembunyikan gelembung sepenuhnya di detik ke-0
+            if (grupGelembung != null) grupGelembung.alpha = 0f;
+
+            // Mulai proses alur animasi yang mulus
+            StartCoroutine(AlurDialogMengalir());
         }
     }
 
-    IEnumerator TungguDanMulai()
+    IEnumerator AlurDialogMengalir()
     {
-        yield return new WaitForSeconds(waktuTungguMulai);
+        // 1. Tunggu 3 detik (waktu agar pemain fokus ke berita TV dulu)
+        yield return new WaitForSeconds(waktuTungguGelembung);
+
+        // 2. Memunculkan Gelembung perlahan (Fade In)
+        if (grupGelembung != null && durasiFadeGelembung > 0)
+        {
+            float timer = 0;
+            while (timer < durasiFadeGelembung)
+            {
+                timer += Time.deltaTime;
+                grupGelembung.alpha = Mathf.Lerp(0f, 1f, timer / durasiFadeGelembung);
+                yield return null;
+            }
+            grupGelembung.alpha = 1f; // Pastikan mentok 100%
+        }
+
+        // 3. Jeda sedikit agar tidak terkesan terburu-buru
+        yield return new WaitForSeconds(jedaSebelumMengetik);
+
+        // 4. Barulah mulai mengetik ceritanya
         sudahMulai = true;
         MulaiDialog(0);
     }
 
     void Update()
     {
-        // Hanya bisa lanjut atau skip jika dialog sudah mulai muncul
+        // Hanya bisa lanjut atau skip jika animasi gelembung sudah selesai dan dialog mulai
         if (!sudahMulai) return;
 
         // Jika pemain mengeklik kiri (mouse) atau menekan Spasi
@@ -66,7 +105,7 @@ public class KetikTeksDialog : MonoBehaviour
         {
             if (sedangNgetik)
             {
-                // Skip animasi ketik
+                // Skip animasi ketik dan langsung munculkan semua teks
                 StopAllCoroutines();
                 teksDialog.text = percakapan[indeksKalimat].kalimat;
                 sedangNgetik = false;
@@ -94,7 +133,7 @@ public class KetikTeksDialog : MonoBehaviour
         }
         else
         {
-            Debug.Log("Dialog sudah habis. Pemain bisa menutup panel menggunakan tombol kembali/ESC.");
+            Debug.Log("Dialog sudah habis.");
         }
     }
 
@@ -103,16 +142,15 @@ public class KetikTeksDialog : MonoBehaviour
         sedangNgetik = true;
         teksDialog.text = "";
         
-        // Ambil data (nama & kalimat) dari baris saat ini
         BarisCeritaDialog dataSaatIni = percakapan[indeksKalimat];
         
-        // Perbarui nama karakter di UI jika ada
+        // Perbarui nama karakter
         if (teksNama != null)
         {
             teksNama.text = dataSaatIni.namaKarakter;
         }
         
-        // Memunculkan teks huruf demi huruf (Efek Mesin Tik)
+        // Memunculkan teks huruf demi huruf
         foreach (char huruf in dataSaatIni.kalimat.ToCharArray())
         {
             teksDialog.text += huruf;
