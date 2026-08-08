@@ -44,6 +44,7 @@ public class InteraksiNPC : MonoBehaviour, IPointerClickHandler
     private RectTransform dialogRect;
     private Vector2 posisiAsliDialog;
     private PopupInteraksi popup;
+    private Coroutine animasiAktif;
 
     void Start()
     {
