@@ -85,16 +85,7 @@ public class TransisiRuangan : MonoBehaviour
         {
             rawImageLoading = GetComponentInChildren<RawImage>(true);
         }
-
-        // Pastikan RawImage juga menutupi seluruh layar (bukan nongkrong di pojok)
-        if (rawImageLoading != null)
-        {
-            RectTransform rtRaw = rawImageLoading.GetComponent<RectTransform>();
-            rtRaw.anchorMin = Vector2.zero;
-            rtRaw.anchorMax = Vector2.one;
-            rtRaw.offsetMin = Vector2.zero;
-            rtRaw.offsetMax = Vector2.zero;
-        }
+        // Ukuran dan posisi RawImage menggunakan pengaturan asli dari Inspector Anda
 
         // Sembunyikan semuanya
         SembunyikanSemua();
