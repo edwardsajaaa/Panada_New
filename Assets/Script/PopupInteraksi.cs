@@ -17,6 +17,9 @@ public class PopupInteraksi : MonoBehaviour
     [Tooltip("Tombol yang harus ditekan pemain untuk berinteraksi saat berada di dekat objek (misal: F)")]
     public KeyCode tombolInteraksi = KeyCode.F;
     
+    [Tooltip("Pilih ini jika interaksi ini berfungsi untuk Pindah Ruangan. Layar akan tertutup efek transisi pixel sejenak.")]
+    public bool gunakanTransisiPindahRuang = false;
+
     [Tooltip("Event/Fungsi yang akan dijalankan ketika pemain menekan tombol interaksi di atas")]
     public UnityEvent saatDiinteraksi;
 
@@ -125,7 +128,16 @@ public class PopupInteraksi : MonoBehaviour
         // Jika pemain berada di area dan menekan tombol interaksi, jalankan event-nya!
         if (sedangAktif && Input.GetKeyDown(tombolInteraksi))
         {
-            saatDiinteraksi?.Invoke();
+            if (gunakanTransisiPindahRuang && LoadingScreenController.Instance != null)
+            {
+                // Gunakan animasi transisi pixel dari LoadingScreenController
+                LoadingScreenController.Instance.TransisiLokalEvent(saatDiinteraksi);
+            }
+            else
+            {
+                // Jalankan instan tanpa animasi
+                saatDiinteraksi?.Invoke();
+            }
         }
 
         // Terapkan animasi skala atau langsung aktif/nonaktif

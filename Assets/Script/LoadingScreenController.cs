@@ -68,6 +68,52 @@ public class LoadingScreenController : MonoBehaviour
         MuatScene("Kamar");
     }
 
+    // --- TRANSISI LOKAL (PINDAH RUANGAN TANPA PINDAH SCENE) ---
+    public void TransisiLokalEvent(UnityEngine.Events.UnityEvent eventDitengahTransisi)
+    {
+        if (!gameObject.activeInHierarchy) gameObject.SetActive(true);
+        StopAllCoroutines();
+        StartCoroutine(ProsesTransisiLokal(eventDitengahTransisi));
+    }
+
+    IEnumerator ProsesTransisiLokal(UnityEngine.Events.UnityEvent eventTengah)
+    {
+        if (panelLoading != null)
+        {
+            panelLoading.SetActive(true);
+            panelLoading.transform.SetAsLastSibling();
+            CanvasGroup cgPanel = panelLoading.GetComponent<CanvasGroup>();
+            if (cgPanel != null) { cgPanel.alpha = 1f; cgPanel.blocksRaycasts = true; }
+            
+            // Untuk transisi antar ruangan sekejap, kita sembunyikan video loadingnya
+            AturVisibilitasVideo(false);
+        }
+
+        // 1. Transisi masuk (layar menjadi pixelated / hitam)
+        if (materialTransisiPixel != null)
+        {
+            yield return StartCoroutine(JalankanTransisiPixel(true));
+        }
+
+        // 2. Jalankan Event (Misalnya SetActive mematikan Kamar dan menyalakan Outdoor)
+        eventTengah?.Invoke();
+
+        // Jeda sejenak agar pemain tidak pusing
+        yield return new WaitForSeconds(0.2f);
+
+        // 3. Transisi keluar (layar kembali jernih)
+        if (materialTransisiPixel != null)
+        {
+            yield return StartCoroutine(JalankanTransisiPixel(false));
+        }
+
+        // 4. Selesai, matikan panel loading
+        if (panelLoading != null)
+        {
+            panelLoading.SetActive(false);
+        }
+    }
+
     IEnumerator ProsesLoading(string namaScene)
     {
         // 1. Jalankan animasi keluar pada semua tombol di Main Menu terlebih dahulu
