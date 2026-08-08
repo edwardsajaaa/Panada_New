@@ -4,7 +4,7 @@ using System.Collections;
 
 // Membuat format data baru agar setiap kalimat bisa memiliki namanya sendiri-sendiri
 [System.Serializable]
-public class DataDialog
+public class BarisCeritaDialog
 {
     [Tooltip("Nama karakter yang sedang berbicara")]
     public string namaKarakter = "Penyiar TV";
@@ -32,7 +32,7 @@ public class KetikTeksDialog : MonoBehaviour
 
     [Header("Isi Cerita")]
     [Tooltip("Daftar percakapan Anda. Tekan tombol + untuk menambah dialog, dan Anda bisa mengganti nama karakter di tiap baris!")]
-    public DataDialog[] percakapan;
+    public BarisCeritaDialog[] percakapan;
 
     private int indeksKalimat = 0;
     private bool sedangNgetik = false;
@@ -104,7 +104,7 @@ public class KetikTeksDialog : MonoBehaviour
         teksDialog.text = "";
         
         // Ambil data (nama & kalimat) dari baris saat ini
-        DataDialog dataSaatIni = percakapan[indeksKalimat];
+        BarisCeritaDialog dataSaatIni = percakapan[indeksKalimat];
         
         // Perbarui nama karakter di UI jika ada
         if (teksNama != null)
