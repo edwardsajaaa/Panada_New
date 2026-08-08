@@ -5,22 +5,15 @@ using System.Collections;
 
 /// <summary>
 /// Script mandiri untuk transisi pixel antar ruangan (tanpa pindah Scene).
-/// Tempel script ini langsung di objek PixelOverlay Anda.
-/// 
-/// Alur transisi:
-/// 1. Layar tertutup efek pixel (Transisi IN) - RawImage loading masih tersembunyi
-/// 2. Setelah benar-benar gelap, RawImage loading muncul + video mulai diputar
-/// 3. Jeda sejenak
-/// 4. RawImage loading menghilang + video berhenti
-/// 5. Event dijalankan (pindah ruangan)
-/// 6. Layar terbuka efek pixel (Transisi OUT)
+/// Tempel script ini langsung di objek PixelOverlay/Panel Anda.
+/// RawImage anak akan dicari secara OTOMATIS jika tidak diisi manual.
 /// </summary>
 public class TransisiRuangan : MonoBehaviour
 {
     public static TransisiRuangan Instance;
 
     [Header("Referensi")]
-    [Tooltip("Drag RawImage anak dari PixelOverlay ke sini (untuk menampilkan gambar/video loading)")]
+    [Tooltip("RawImage untuk loading (OTOMATIS dicari dari anak jika dikosongkan)")]
     public RawImage rawImageLoading;
 
     [Tooltip("Drag material PixelTransitionMaterial ke sini")]
@@ -35,17 +28,26 @@ public class TransisiRuangan : MonoBehaviour
 
     // Image hitam yang dibuat otomatis untuk efek transisi pixel
     private Image layarTransisi;
+    private bool sedangTransisi = false;
 
     void Awake()
     {
         Instance = this;
+        SiapkanKomponen();
+    }
 
-        // GARANSI: Objek ini PASTI punya Canvas sendiri agar selalu terlihat di layar
+    void Start()
+    {
+        // Failsafe: sembunyikan lagi di Start untuk jaga-jaga
+        SembunyikanSemua();
+    }
+
+    void SiapkanKomponen()
+    {
+        // GARANSI: Objek ini PASTI punya Canvas sendiri
         Canvas c = GetComponent<Canvas>();
         if (c == null)
-        {
             c = gameObject.AddComponent<Canvas>();
-        }
         c.renderMode = RenderMode.ScreenSpaceOverlay;
         c.sortingOrder = 9999;
 
@@ -61,33 +63,49 @@ public class TransisiRuangan : MonoBehaviour
         // --- BUAT LAYAR HITAM OTOMATIS UNTUK EFEK TRANSISI ---
         layarTransisi = GetComponent<Image>();
         if (layarTransisi == null)
-        {
             layarTransisi = gameObject.AddComponent<Image>();
-        }
         layarTransisi.color = Color.black;
         layarTransisi.raycastTarget = true;
 
-        // Pasang material transisi ke layar hitam ini
         if (materialTransisi != null)
         {
             layarTransisi.material = materialTransisi;
             materialTransisi.SetFloat("_Progress", 1f);
         }
 
-        // Pastikan layar hitam menutupi seluruh layar
+        // Pastikan layar menutupi seluruh layar
         RectTransform rt = GetComponent<RectTransform>();
         rt.anchorMin = Vector2.zero;
         rt.anchorMax = Vector2.one;
         rt.offsetMin = Vector2.zero;
         rt.offsetMax = Vector2.zero;
 
-        // === SEMBUNYIKAN SEMUANYA DI AWAL ===
-        layarTransisi.enabled = false;
+        // --- OTOMATIS CARI RAWIMAGE ANAK JIKA BELUM DIISI ---
+        if (rawImageLoading == null)
+        {
+            rawImageLoading = GetComponentInChildren<RawImage>(true);
+        }
 
-        // Matikan SELURUH GameObject RawImage (bukan hanya komponen-nya) agar video tidak muncul
+        // Pastikan RawImage juga menutupi seluruh layar (bukan nongkrong di pojok)
         if (rawImageLoading != null)
         {
-            rawImageLoading.gameObject.SetActive(false);
+            RectTransform rtRaw = rawImageLoading.GetComponent<RectTransform>();
+            rtRaw.anchorMin = Vector2.zero;
+            rtRaw.anchorMax = Vector2.one;
+            rtRaw.offsetMin = Vector2.zero;
+            rtRaw.offsetMax = Vector2.zero;
+        }
+
+        // Sembunyikan semuanya
+        SembunyikanSemua();
+    }
+
+    void SembunyikanSemua()
+    {
+        if (!sedangTransisi)
+        {
+            if (layarTransisi != null) layarTransisi.enabled = false;
+            if (rawImageLoading != null) rawImageLoading.gameObject.SetActive(false);
         }
     }
 
@@ -108,6 +126,8 @@ public class TransisiRuangan : MonoBehaviour
             yield break;
         }
 
+        sedangTransisi = true;
+
         // ====== TAHAP 1: TRANSISI IN (Layar perlahan tertutup pixel hitam) ======
         layarTransisi.enabled = true;
         // RawImage loading masih MATI TOTAL di tahap ini!
@@ -125,10 +145,9 @@ public class TransisiRuangan : MonoBehaviour
         // ====== TAHAP 2: LAYAR SUDAH GELAP TOTAL, MUNCULKAN RAW IMAGE LOADING ======
         if (rawImageLoading != null)
         {
-            // Nyalakan GameObject RawImage
             rawImageLoading.gameObject.SetActive(true);
 
-            // Cari VideoPlayer pada RawImage dan mulai putar dari awal
+            // Restart video dari awal agar tidak stuck
             UnityEngine.Video.VideoPlayer vp = rawImageLoading.GetComponent<UnityEngine.Video.VideoPlayer>();
             if (vp != null)
             {
@@ -147,15 +166,11 @@ public class TransisiRuangan : MonoBehaviour
         // ====== TAHAP 4: SEMBUNYIKAN RAW IMAGE LOADING DULU ======
         if (rawImageLoading != null)
         {
-            // Hentikan video terlebih dahulu
             UnityEngine.Video.VideoPlayer vp = rawImageLoading.GetComponent<UnityEngine.Video.VideoPlayer>();
             if (vp != null) vp.Stop();
-
-            // Matikan TOTAL GameObject-nya agar benar-benar hilang
             rawImageLoading.gameObject.SetActive(false);
         }
 
-        // Tunggu sebentar agar perpindahan bersih
         yield return new WaitForSeconds(0.1f);
 
         // ====== TAHAP 5: TRANSISI OUT (Layar perlahan terbuka menampilkan ruangan baru) ======
@@ -171,5 +186,6 @@ public class TransisiRuangan : MonoBehaviour
 
         // ====== TAHAP 6: SELESAI, SEMBUNYIKAN SEMUANYA ======
         layarTransisi.enabled = false;
+        sedangTransisi = false;
     }
 }
