@@ -2,28 +2,37 @@ using UnityEngine;
 using TMPro;
 using System.Collections;
 
+// Membuat format data baru agar setiap kalimat bisa memiliki namanya sendiri-sendiri
+[System.Serializable]
+public class DataDialog
+{
+    [Tooltip("Nama karakter yang sedang berbicara")]
+    public string namaKarakter = "Penyiar TV";
+    
+    [TextArea(2, 4)]
+    [Tooltip("Kalimat yang diucapkan oleh karakter tersebut")]
+    public string kalimat;
+}
+
 public class KetikTeksDialog : MonoBehaviour
 {
-    [Header("Referensi")]
+    [Header("Referensi UI")]
     [Tooltip("Masukkan Text (TMP) yang akan dijadikan tempat teks dialog berjalan")]
     public TextMeshProUGUI teksDialog;
     
-    [Tooltip("Masukkan Text (TMP) untuk nama karakter (Opsional, biarkan kosong jika tidak ada)")]
+    [Tooltip("Masukkan Text (TMP) untuk nama karakter (Opsional)")]
     public TextMeshProUGUI teksNama;
 
-    [Header("Pengaturan Dialog")]
-    [Tooltip("Nama karakter yang sedang berbicara")]
-    public string namaKarakter = "Nama Karakter";
-
-    [Tooltip("Samakan dengan angka Jeda Sebelum Text di AnimasiPanelFoto agar teks mulai mengetik tepat saat gelembung muncul")]
+    [Header("Pengaturan Animasi")]
+    [Tooltip("Samakan dengan angka Jeda Sebelum Text agar teks mulai mengetik tepat saat gelembung muncul")]
     public float waktuTungguMulai = 3.5f;
     
     [Tooltip("Kecepatan mesin tik (semakin kecil semakin cepat)")]
     public float kecepatanKetik = 0.04f;
 
-    [TextArea(2, 5)]
-    [Tooltip("Tuliskan dialog-dialog Anda di sini. Tekan tombol + untuk menambah kalimat baru.")]
-    public string[] daftarKalimat;
+    [Header("Isi Cerita")]
+    [Tooltip("Daftar percakapan Anda. Tekan tombol + untuk menambah dialog, dan Anda bisa mengganti nama karakter di tiap baris!")]
+    public DataDialog[] percakapan;
 
     private int indeksKalimat = 0;
     private bool sedangNgetik = false;
@@ -31,15 +40,10 @@ public class KetikTeksDialog : MonoBehaviour
 
     void OnEnable()
     {
-        // Tampilkan nama karakter di awal jika ada
-        if (teksNama != null)
-        {
-            teksNama.text = namaKarakter;
-        }
-
-        if (daftarKalimat.Length > 0 && teksDialog != null)
+        if (percakapan.Length > 0 && teksDialog != null)
         {
             teksDialog.text = ""; // Kosongkan teks di awal
+            if (teksNama != null) teksNama.text = ""; // Kosongkan nama di awal
             sudahMulai = false;
             StartCoroutine(TungguDanMulai());
         }
@@ -62,14 +66,14 @@ public class KetikTeksDialog : MonoBehaviour
         {
             if (sedangNgetik)
             {
-                // Jika masih ngetik, langsung tampilkan semua teks secara utuh (Skip animasi ketik)
+                // Skip animasi ketik
                 StopAllCoroutines();
-                teksDialog.text = daftarKalimat[indeksKalimat];
+                teksDialog.text = percakapan[indeksKalimat].kalimat;
                 sedangNgetik = false;
             }
             else
             {
-                // Jika sudah selesai ngetik, lanjut ke kalimat/halaman berikutnya
+                // Lanjut ke kalimat berikutnya
                 LanjutDialog();
             }
         }
@@ -83,14 +87,13 @@ public class KetikTeksDialog : MonoBehaviour
 
     void LanjutDialog()
     {
-        if (indeksKalimat < daftarKalimat.Length - 1)
+        if (indeksKalimat < percakapan.Length - 1)
         {
             indeksKalimat++;
             StartCoroutine(KetikKalimat());
         }
         else
         {
-            // Jika dialog sudah habis, opsional: Anda bisa menutup panel atau membiarkan pemain membaca
             Debug.Log("Dialog sudah habis. Pemain bisa menutup panel menggunakan tombol kembali/ESC.");
         }
     }
@@ -100,10 +103,17 @@ public class KetikTeksDialog : MonoBehaviour
         sedangNgetik = true;
         teksDialog.text = "";
         
-        string kalimatTarget = daftarKalimat[indeksKalimat];
+        // Ambil data (nama & kalimat) dari baris saat ini
+        DataDialog dataSaatIni = percakapan[indeksKalimat];
+        
+        // Perbarui nama karakter di UI jika ada
+        if (teksNama != null)
+        {
+            teksNama.text = dataSaatIni.namaKarakter;
+        }
         
         // Memunculkan teks huruf demi huruf (Efek Mesin Tik)
-        foreach (char huruf in kalimatTarget.ToCharArray())
+        foreach (char huruf in dataSaatIni.kalimat.ToCharArray())
         {
             teksDialog.text += huruf;
             yield return new WaitForSeconds(kecepatanKetik);
