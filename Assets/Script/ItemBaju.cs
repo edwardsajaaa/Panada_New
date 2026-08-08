@@ -14,6 +14,9 @@ public class ItemBaju : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     [Header("Referensi Area")]
     [Tooltip("Masukkan objek 'Area ngerapihin baju' (warna Cyan) ke sini")]
     public RectTransform areaLipat;
+    
+    [Tooltip("Opsional: Masukkan objek area di kanan (tempat baju rapi) ke sini. Baju otomatis pindah ke sini saat selesai.")]
+    public RectTransform areaSelesai;
 
     [Header("Pengaturan Fase (Warna / Gambar)")]
     [Tooltip("Urutan warna: 0 = Merah (Berantakan), 1 = Kuning (Setengah Rapih), 2 = Hijau (Rapih)")]
@@ -104,6 +107,14 @@ public class ItemBaju : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
             // Jika sudah mencapai fase terakhir (Hijau)
             if (faseSaatIni >= warnaFase.Length - 1)
             {
+                // Pindahkan ke area selesai (jika ada)
+                if (areaSelesai != null)
+                {
+                    rectTransform.position = areaSelesai.position;
+                    // Bikin baju tidak bisa didrag atau diklik lagi
+                    canvasGroup.blocksRaycasts = false;
+                }
+                
                 saatBajuSelesaiDirapikan?.Invoke();
             }
         }
