@@ -83,6 +83,19 @@ public class InteraksiNPC : MonoBehaviour, IPointerClickHandler
         }
     }
 
+    void Update()
+    {
+        // Jika dialog sedang aktif, dan fitur cek jarak dinyalakan, tutup dialog otomatis jika pemain menjauh
+        if (dialogSedangAktif && perlucCekJarak && playerTransform != null)
+        {
+            float jarak = Vector3.Distance(transform.position, playerTransform.position);
+            if (jarak > jarakInteraksi)
+            {
+                TutupDialog();
+            }
+        }
+    }
+
     // Dipanggil saat pemain mengklik area Interact ini
     public void OnPointerClick(PointerEventData eventData)
     {
@@ -95,17 +108,19 @@ public class InteraksiNPC : MonoBehaviour, IPointerClickHandler
             if (jarak > jarakInteraksi) return; // Terlalu jauh, abaikan klik
         }
 
-        if (dialogSedangAktif)
-        {
-            TutupDialog();
-        }
-        else
-        {
-            BukaDialog();
-        }
+        ToggleDialog();
     }
 
-    void BukaDialog()
+    /// <summary>
+    /// Buka/Tutup dialog secara otomatis (Sangat berguna untuk dipanggil lewat Event Tombol F)
+    /// </summary>
+    public void ToggleDialog()
+    {
+        if (dialogSedangAktif) TutupDialog();
+        else BukaDialog();
+    }
+
+    public void BukaDialog()
     {
         if (animasiAktif != null) StopCoroutine(animasiAktif);
 
@@ -114,7 +129,7 @@ public class InteraksiNPC : MonoBehaviour, IPointerClickHandler
         animasiAktif = StartCoroutine(AnimasiBuka());
     }
 
-    void TutupDialog()
+    public void TutupDialog()
     {
         if (animasiAktif != null) StopCoroutine(animasiAktif);
 
