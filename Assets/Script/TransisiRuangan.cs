@@ -8,10 +8,10 @@ using System.Collections;
 /// Tempel script ini langsung di objek PixelOverlay Anda.
 /// 
 /// Alur transisi:
-/// 1. Layar tertutup efek pixel (Transisi IN)
-/// 2. Setelah benar-benar gelap, RawImage loading muncul
+/// 1. Layar tertutup efek pixel (Transisi IN) - RawImage loading masih tersembunyi
+/// 2. Setelah benar-benar gelap, RawImage loading muncul + video mulai diputar
 /// 3. Jeda sejenak
-/// 4. RawImage loading menghilang
+/// 4. RawImage loading menghilang + video berhenti
 /// 5. Event dijalankan (pindah ruangan)
 /// 6. Layar terbuka efek pixel (Transisi OUT)
 /// </summary>
@@ -59,8 +59,6 @@ public class TransisiRuangan : MonoBehaviour
         scaler.referenceResolution = new Vector2(1920, 1080);
 
         // --- BUAT LAYAR HITAM OTOMATIS UNTUK EFEK TRANSISI ---
-        // Ini adalah lapisan hitam di belakang RawImage loading.
-        // Material pixel ditempel di sini, bukan di RawImage loading.
         layarTransisi = GetComponent<Image>();
         if (layarTransisi == null)
         {
@@ -73,7 +71,7 @@ public class TransisiRuangan : MonoBehaviour
         if (materialTransisi != null)
         {
             layarTransisi.material = materialTransisi;
-            materialTransisi.SetFloat("_Progress", 1f); // Mulai transparan (tak terlihat)
+            materialTransisi.SetFloat("_Progress", 1f);
         }
 
         // Pastikan layar hitam menutupi seluruh layar
@@ -83,9 +81,14 @@ public class TransisiRuangan : MonoBehaviour
         rt.offsetMin = Vector2.zero;
         rt.offsetMax = Vector2.zero;
 
-        // Sembunyikan layar transisi dan RawImage loading di awal
+        // === SEMBUNYIKAN SEMUANYA DI AWAL ===
         layarTransisi.enabled = false;
-        if (rawImageLoading != null) rawImageLoading.enabled = false;
+
+        // Matikan SELURUH GameObject RawImage (bukan hanya komponen-nya) agar video tidak muncul
+        if (rawImageLoading != null)
+        {
+            rawImageLoading.gameObject.SetActive(false);
+        }
     }
 
     /// <summary>
@@ -106,8 +109,8 @@ public class TransisiRuangan : MonoBehaviour
         }
 
         // ====== TAHAP 1: TRANSISI IN (Layar perlahan tertutup pixel hitam) ======
-        layarTransisi.enabled = true;          // Tampilkan layar transisi
-        // RawImage loading masih TERSEMBUNYI di tahap ini!
+        layarTransisi.enabled = true;
+        // RawImage loading masih MATI TOTAL di tahap ini!
 
         float timer = 0f;
         while (timer < durasiTransisi)
@@ -120,7 +123,19 @@ public class TransisiRuangan : MonoBehaviour
         materialTransisi.SetFloat("_Progress", 0f); // Layar 100% gelap
 
         // ====== TAHAP 2: LAYAR SUDAH GELAP TOTAL, MUNCULKAN RAW IMAGE LOADING ======
-        if (rawImageLoading != null) rawImageLoading.enabled = true;
+        if (rawImageLoading != null)
+        {
+            // Nyalakan GameObject RawImage
+            rawImageLoading.gameObject.SetActive(true);
+
+            // Cari VideoPlayer pada RawImage dan mulai putar dari awal
+            UnityEngine.Video.VideoPlayer vp = rawImageLoading.GetComponent<UnityEngine.Video.VideoPlayer>();
+            if (vp != null)
+            {
+                vp.Stop();
+                vp.Play();
+            }
+        }
 
         // Jeda agar pemain bisa melihat animasi loading
         yield return new WaitForSeconds(jedaDiTengah);
@@ -130,7 +145,15 @@ public class TransisiRuangan : MonoBehaviour
         yield return new WaitForEndOfFrame();
 
         // ====== TAHAP 4: SEMBUNYIKAN RAW IMAGE LOADING DULU ======
-        if (rawImageLoading != null) rawImageLoading.enabled = false;
+        if (rawImageLoading != null)
+        {
+            // Hentikan video terlebih dahulu
+            UnityEngine.Video.VideoPlayer vp = rawImageLoading.GetComponent<UnityEngine.Video.VideoPlayer>();
+            if (vp != null) vp.Stop();
+
+            // Matikan TOTAL GameObject-nya agar benar-benar hilang
+            rawImageLoading.gameObject.SetActive(false);
+        }
 
         // Tunggu sebentar agar perpindahan bersih
         yield return new WaitForSeconds(0.1f);
