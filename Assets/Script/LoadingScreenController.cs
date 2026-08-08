@@ -244,8 +244,19 @@ public class LoadingScreenController : MonoBehaviour
         {
             panelLoading.SetActive(true);
 
-            // Garansi 100% panel Loading dipindah ke urutan paling bawah di Hierarchy Canvas agar berada DI LAPISAN PALING DEPAN dan tidak terhalang oleh panel lain (seperti STARTING MENU / SETTING)!
+            // Garansi 100% panel Loading dipindah ke urutan paling bawah di Hierarchy Canvas agar berada DI LAPISAN PALING DEPAN
             panelLoading.transform.SetAsLastSibling();
+
+            // SANGAT PENTING: Jika objek ditaruh sembarangan (bukan di dalam Canvas), UI akan menjadi transparan/hilang!
+            // Kita garansi objek ini memiliki Canvas-nya sendiri dan menutupi layar sepenuhnya.
+            Canvas c = panelLoading.GetComponent<Canvas>();
+            if (c == null)
+            {
+                c = panelLoading.AddComponent<Canvas>();
+                panelLoading.AddComponent<UnityEngine.UI.GraphicRaycaster>();
+            }
+            c.renderMode = RenderMode.ScreenSpaceOverlay;
+            c.sortingOrder = 9999;
 
             CanvasGroup cgPanel = panelLoading.GetComponent<CanvasGroup>();
             if (cgPanel != null) { cgPanel.alpha = 1f; cgPanel.blocksRaycasts = true; }
