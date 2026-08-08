@@ -7,8 +7,14 @@ public class KetikTeksDialog : MonoBehaviour
     [Header("Referensi")]
     [Tooltip("Masukkan Text (TMP) yang akan dijadikan tempat teks dialog berjalan")]
     public TextMeshProUGUI teksDialog;
+    
+    [Tooltip("Masukkan Text (TMP) untuk nama karakter (Opsional, biarkan kosong jika tidak ada)")]
+    public TextMeshProUGUI teksNama;
 
     [Header("Pengaturan Dialog")]
+    [Tooltip("Nama karakter yang sedang berbicara")]
+    public string namaKarakter = "Nama Karakter";
+
     [Tooltip("Samakan dengan angka Jeda Sebelum Text di AnimasiPanelFoto agar teks mulai mengetik tepat saat gelembung muncul")]
     public float waktuTungguMulai = 3.5f;
     
@@ -25,6 +31,12 @@ public class KetikTeksDialog : MonoBehaviour
 
     void OnEnable()
     {
+        // Tampilkan nama karakter di awal jika ada
+        if (teksNama != null)
+        {
+            teksNama.text = namaKarakter;
+        }
+
         if (daftarKalimat.Length > 0 && teksDialog != null)
         {
             teksDialog.text = ""; // Kosongkan teks di awal
