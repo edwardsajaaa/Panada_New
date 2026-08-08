@@ -24,8 +24,14 @@ public class TeksBerjalanUI : MonoBehaviour
     [Tooltip("Digunakan jika Hitung Batas Otomatis dimatikan.")]
     public float batasKanan = 1000f;
 
+    [Header("Pengaturan Looping")]
+    [Tooltip("Centang agar teks terus menyambung tanpa jeda kosong (seamless loop)")]
+    public bool seamlessLoop = true;
+
     private RectTransform rectTransform;
     private RectTransform parentRect;
+    private float lebarTeks;
+    private float lebarWadah;
 
     void Start()
     {
@@ -38,7 +44,11 @@ public class TeksBerjalanUI : MonoBehaviour
         // 1. Gabungkan teks jika daftarBerita diisi
         if (daftarBerita != null && daftarBerita.Length > 0)
         {
-            string gabungan = string.Join(teksPemisah, daftarBerita);
+            // Untuk seamless loop, duplikasi teks agar selalu ada yang terlihat di layar
+            string gabunganAsli = string.Join(teksPemisah, daftarBerita);
+            string gabungan = seamlessLoop 
+                ? gabunganAsli + teksPemisah + gabunganAsli 
+                : gabunganAsli;
             
             // Mencari komponen teks dan menimpanya
             TMP_Text tmpText = GetComponent<TMP_Text>();
@@ -54,20 +64,29 @@ public class TeksBerjalanUI : MonoBehaviour
         // (Sangat disarankan menggunakan komponen Content Size Fitter di objek ini)
         UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(rectTransform);
 
-        // 3. Menghitung batas secara pintar
+        // 3. Simpan ukuran
+        lebarTeks = rectTransform.rect.width;
+        if (parentRect != null) lebarWadah = parentRect.rect.width;
+
+        // 4. Menghitung batas secara pintar
         if (hitungBatasOtomatis && parentRect != null)
         {
-            float lebarTeks = rectTransform.rect.width;
-            float lebarWadah = parentRect.rect.width;
-
-            // Logika dasar: (Asumsi Pivot X Teks adalah 0 / Kiri)
-            // Teks muncul mulai dari ukuran lebar wadahnya (paling kanan)
+            // Teks muncul mulai dari ujung kanan wadah
             batasKanan = lebarWadah;
             
-            // Teks dianggap lenyap ketika posisinya sudah melewati minus dari panjang teksnya sendiri
-            batasKiri = -lebarTeks;
+            if (seamlessLoop)
+            {
+                // Untuk seamless: reset posisi ketika setengah teks (bagian asli pertama) sudah lewat
+                // sehingga bagian duplikat yang masih terlihat akan menyambung dengan mulus
+                batasKiri = -(lebarTeks / 2f);
+            }
+            else
+            {
+                // Teks dianggap lenyap ketika posisinya sudah melewati minus dari panjang teksnya sendiri
+                batasKiri = -lebarTeks;
+            }
 
-            // Kita posisikan teks di ujung kanan pada awal permainan
+            // Posisikan teks di ujung kanan pada awal permainan
             rectTransform.anchoredPosition = new Vector2(batasKanan, rectTransform.anchoredPosition.y);
         }
     }
@@ -80,8 +99,18 @@ public class TeksBerjalanUI : MonoBehaviour
         // Jika teks sudah melewati batas paling kiri
         if (rectTransform.anchoredPosition.x <= batasKiri)
         {
-            // Teleportasi (kembalikan) teks ke batas paling kanan agar mengulang terus menerus
-            rectTransform.anchoredPosition = new Vector2(batasKanan, rectTransform.anchoredPosition.y);
+            if (seamlessLoop)
+            {
+                // Geser posisi ke kanan sebanyak setengah lebar teks (panjang teks asli)
+                // Ini membuat perpindahan terjadi secara halus tanpa lompatan visual
+                float selisih = rectTransform.anchoredPosition.x - batasKiri;
+                rectTransform.anchoredPosition = new Vector2(batasKanan + selisih, rectTransform.anchoredPosition.y);
+            }
+            else
+            {
+                // Teleportasi (kembalikan) teks ke batas paling kanan
+                rectTransform.anchoredPosition = new Vector2(batasKanan, rectTransform.anchoredPosition.y);
+            }
         }
     }
 }
