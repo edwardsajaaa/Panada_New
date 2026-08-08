@@ -62,7 +62,12 @@ public class KetikTeksDialog : MonoBehaviour
             sudahMulai = false;
 
             // Sembunyikan gelembung sepenuhnya di detik ke-0
-            if (grupGelembung != null) grupGelembung.alpha = 0f;
+            if (grupGelembung != null) 
+            {
+                grupGelembung.alpha = 0f;
+                grupGelembung.interactable = true;
+                grupGelembung.blocksRaycasts = true;
+            }
 
             // Mulai proses alur animasi yang mulus
             StartCoroutine(AlurDialogMengalir());
@@ -133,7 +138,30 @@ public class KetikTeksDialog : MonoBehaviour
         }
         else
         {
-            Debug.Log("Dialog sudah habis.");
+            // Dialog habis, saatnya menutup gelembung agar pemain bisa fokus ke TV
+            StartCoroutine(TutupGelembung());
+        }
+    }
+
+    IEnumerator TutupGelembung()
+    {
+        sudahMulai = false; // Mencegah pemain mengklik lagi
+
+        // 1. Fade Out Gelembung
+        if (grupGelembung != null && durasiFadeGelembung > 0)
+        {
+            float timer = 0;
+            while (timer < durasiFadeGelembung)
+            {
+                timer += Time.deltaTime;
+                grupGelembung.alpha = Mathf.Lerp(1f, 0f, timer / durasiFadeGelembung);
+                yield return null;
+            }
+            grupGelembung.alpha = 0f;
+            
+            // Matikan raycast agar tidak menghalangi tombol 'Kembali' di belakangnya
+            grupGelembung.interactable = false;
+            grupGelembung.blocksRaycasts = false;
         }
     }
 
