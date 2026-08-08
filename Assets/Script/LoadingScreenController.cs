@@ -78,36 +78,38 @@ public class LoadingScreenController : MonoBehaviour
 
     IEnumerator ProsesTransisiLokal(UnityEngine.Events.UnityEvent eventTengah)
     {
-        if (panelLoading != null)
-        {
-            panelLoading.SetActive(true);
-            panelLoading.transform.SetAsLastSibling();
-            CanvasGroup cgPanel = panelLoading.GetComponent<CanvasGroup>();
-            if (cgPanel != null) { cgPanel.alpha = 1f; cgPanel.blocksRaycasts = true; }
-            
-            // Untuk transisi antar ruangan sekejap, kita sembunyikan video loadingnya
-            AturVisibilitasVideo(false);
-        }
+        // 1. Siapkan panel dan mulai putar video di belakang layar (tersembunyi dulu)
+        AktifkanPanelDanMulaiGif();
 
-        // 1. Transisi masuk (layar menjadi pixelated / hitam)
+        // 2. Transisi masuk (layar memudar perlahan menjadi hitam/pixelated)
         if (materialTransisiPixel != null)
         {
             yield return StartCoroutine(JalankanTransisiPixel(true));
+            
+            // 3. SETELAH LAYAR BENAR-BENAR HITAM, MUNCULKAN VIDEO LOADING!
+            AturVisibilitasVideo(true);
         }
 
-        // 2. Jalankan Event (Misalnya SetActive mematikan Kamar dan menyalakan Outdoor)
+        // 4. Tahan layar loading agar pemain bisa melihat animasi GIF/Video-nya
+        yield return new WaitForSeconds(minimalWaktuLoading);
+
+        // 5. Jalankan Event perpindahan ruangan (Kamar mati, Outdoor nyala) secara instan di balik layar gelap
         eventTengah?.Invoke();
 
-        // Jeda sejenak agar pemain tidak pusing
-        yield return new WaitForSeconds(0.2f);
+        // Sembunyikan video sebelum layar transisi kembali terbuka
+        AturVisibilitasVideo(false);
 
-        // 3. Transisi keluar (layar kembali jernih)
+        // 6. Transisi keluar (layar kembali jernih dan menampilkan ruangan baru)
         if (materialTransisiPixel != null)
         {
             yield return StartCoroutine(JalankanTransisiPixel(false));
         }
+        else
+        {
+            yield return new WaitForSeconds(0.3f);
+        }
 
-        // 4. Selesai, matikan panel loading
+        // 7. Selesai, matikan panel loading sepenuhnya
         if (panelLoading != null)
         {
             panelLoading.SetActive(false);
