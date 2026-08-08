@@ -43,10 +43,13 @@ public class InteraksiNPC : MonoBehaviour, IPointerClickHandler
     private CanvasGroup dialogGroup;
     private RectTransform dialogRect;
     private Vector2 posisiAsliDialog;
-    private Coroutine animasiAktif;
+    private PopupInteraksi popup;
 
     void Start()
     {
+        // Cari script PopupInteraksi di objek yang sama
+        popup = GetComponent<PopupInteraksi>();
+
         // Pastikan Image di Interact ini bisa di-raycast (diklik) walau transparan
         Image img = GetComponent<Image>();
         if (img != null)
@@ -126,12 +129,19 @@ public class InteraksiNPC : MonoBehaviour, IPointerClickHandler
 
         dialogPopup.SetActive(true);
         dialogSedangAktif = true;
+        
+        // Sembunyikan balon '?' dari PopupInteraksi jika ada
+        if (popup != null) popup.sembunyikanSementara = true;
+
         animasiAktif = StartCoroutine(AnimasiBuka());
     }
 
     public void TutupDialog()
     {
         if (animasiAktif != null) StopCoroutine(animasiAktif);
+
+        // Munculkan kembali balon '?'
+        if (popup != null) popup.sembunyikanSementara = false;
 
         animasiAktif = StartCoroutine(AnimasiTutup());
     }

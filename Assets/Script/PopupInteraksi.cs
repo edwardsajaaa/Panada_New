@@ -95,25 +95,26 @@ public class PopupInteraksi : MonoBehaviour
         }
     }
 
+    [HideInInspector]
+    public bool sembunyikanSementara = false; // Digunakan oleh script lain untuk menyembunyikan balon '?' sementara
+
     void Update()
     {
-        if (playerTransform == null || popupVisual == null) return;
+        if (popupVisual == null) return;
 
-        Vector3 titikPusat = pusatInteraksi != null ? pusatInteraksi.position : transform.position;
         sedangAktif = false;
-        
+        Vector3 titikPusat = pusatInteraksi != null ? pusatInteraksi.position : transform.position;
+
+        // Mendeteksi jarak pemain
         if (modeUICanvas)
         {
-            // Untuk UI Canvas, kita gunakan jarak murni karena objek UI biasanya tidak pakai Collider Fisika 3D
-            float jarak = Vector3.Distance(titikPusat, playerTransform.position);
-            if (jarak <= jarakInteraksi)
+            if (playerTransform != null && Vector2.Distance(titikPusat, playerTransform.position) <= jarakInteraksi)
             {
                 sedangAktif = true;
             }
         }
         else
         {
-            // Untuk 3D, kita gunakan OverlapSphere agar mendeteksi ujung collider
             Collider[] hitColliders = Physics.OverlapSphere(titikPusat, jarakInteraksi);
             foreach (var hitCol in hitColliders)
             {
@@ -141,18 +142,20 @@ public class PopupInteraksi : MonoBehaviour
         }
 
         // Terapkan animasi skala atau langsung aktif/nonaktif
+        bool harusTampil = sedangAktif && !sembunyikanSementara;
+
         if (gunakanAnimasiSkala)
         {
-            if (sedangAktif && !popupVisual.activeSelf)
+            if (harusTampil && !popupVisual.activeSelf)
             {
                 popupVisual.SetActive(true); // Nyalakan objek sebelum animasinya mulai membesar
             }
 
-            Vector3 targetSkala = sedangAktif ? skalaAsli : Vector3.zero;
+            Vector3 targetSkala = harusTampil ? skalaAsli : Vector3.zero;
             popupVisual.transform.localScale = Vector3.Lerp(popupVisual.transform.localScale, targetSkala, Time.deltaTime * kecepatanAnimasi);
             
             // Matikan objek jika skala sudah benar-benar mengecil habis untuk menghemat performa
-            if (!sedangAktif && popupVisual.transform.localScale.sqrMagnitude < 0.001f)
+            if (!harusTampil && popupVisual.transform.localScale.sqrMagnitude < 0.001f)
             {
                 if (popupVisual.activeSelf) popupVisual.SetActive(false);
             }
@@ -160,9 +163,9 @@ public class PopupInteraksi : MonoBehaviour
         else
         {
             // Jika tidak pakai animasi, langsung matikan/nyalakan
-            if (popupVisual.activeSelf != sedangAktif)
+            if (popupVisual.activeSelf != harusTampil)
             {
-                popupVisual.SetActive(sedangAktif);
+                popupVisual.SetActive(harusTampil);
             }
         }
 
