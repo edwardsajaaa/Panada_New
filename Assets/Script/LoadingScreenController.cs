@@ -302,10 +302,20 @@ public class LoadingScreenController : MonoBehaviour
     void AturVisibilitasVideo(bool terlihat)
     {
         if (panelLoading == null) return;
-        RawImage[] rawImages = panelLoading.GetComponentsInChildren<RawImage>(true);
-        foreach (var img in rawImages)
+        
+        // HANYA matikan RawImage yang digunakan untuk memutar Video. 
+        // Jangan matikan semua RawImage, karena RawImage mungkin digunakan untuk Material Transisi Pixel!
+        UnityEngine.Video.VideoPlayer[] videoPlayers = panelLoading.GetComponentsInChildren<UnityEngine.Video.VideoPlayer>(true);
+        foreach (var vp in videoPlayers)
         {
-            if (img != null) img.enabled = terlihat;
+            if (vp != null)
+            {
+                RawImage rawImg = vp.GetComponent<RawImage>();
+                if (rawImg != null)
+                {
+                    rawImg.enabled = terlihat;
+                }
+            }
         }
     }
 
