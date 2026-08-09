@@ -41,7 +41,15 @@ public class DialogBergantian : MonoBehaviour
     [Tooltip("Dijalankan setelah semua dialog selesai (misal: memberikan item, membuka pintu, dll)")]
     public UnityEvent saatSemuaSelesai;
 
-    [Header("Pengaturan Jarak (Tutup Otomatis)")]
+    [Header("Pengaturan Input & Visual")]
+    [Tooltip("Tombol untuk melanjutkan atau men-skip teks")]
+    public KeyCode tombolLanjut = KeyCode.F;
+
+    private int indeksKalimat = 0;
+    private bool sedangNgetik = false;
+    private bool sudahMulai = false;
+    private bool sedangMenungguMenjauh = false;
+    private float waktuBolehKlik = 0f;
     [Tooltip("Jika dicentang, dialog terakhir NPC akan tetap tampil dan baru tertutup saat pemain berjalan menjauh.")]
     public bool tutupSaatMenjauh = true;
     public float jarakMaksimal = 3f;
@@ -67,6 +75,9 @@ public class DialogBergantian : MonoBehaviour
 
     void OnEnable()
     {
+        // Mencegah input 'F' dari interaksi awal NPC terbaca sebagai perintah skip dialog di frame yang sama
+        waktuBolehKlik = Time.time + 0.2f; 
+        
         if (percakapan.Length > 0)
         {
             MulaiPercakapan(0);
@@ -108,10 +119,15 @@ public class DialogBergantian : MonoBehaviour
         }
 
         if (!sudahMulai) return;
+        
+        // Mencegah klik ganda terlalu cepat atau bocor dari event sebelumnya
+        if (Time.time < waktuBolehKlik) return;
 
-        // Klik mouse kiri atau tekan spasi untuk lanjut/skip
-        if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space))
+        // Klik mouse kiri, Spasi, atau tombol lanjut (F) untuk lanjut/skip
+        if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(tombolLanjut))
         {
+            waktuBolehKlik = Time.time + 0.1f; // Beri sedikit jeda agar klik tidak dobel
+            
             if (sedangNgetik)
             {
                 // Skip ngetik, langsung munculkan semua tulisan
@@ -175,7 +191,17 @@ public class DialogBergantian : MonoBehaviour
         var data = percakapan[indeksKalimat];
 
         // Nyalakan gelembung target
-        if (data.gelembungAktif != null) data.gelembungAktif.SetActive(true);
+        if (data.gelembungAktif != null) 
+        {
+            data.gelembungAktif.SetActive(true);
+            
+            // JAGA-JAGA: Jika script KetikTeksDialog yang lama meninggalkan CanvasGroup dengan alpha = 0, paksakan jadi 1
+            CanvasGroup cg = data.gelembungAktif.GetComponent<CanvasGroup>();
+            if (cg != null) cg.alpha = 1f;
+            
+            CanvasGroup cgParent = data.gelembungAktif.GetComponentInParent<CanvasGroup>();
+            if (cgParent != null) cgParent.alpha = 1f;
+        }
         
         // Atur teks
         if (data.tempatTeksNama != null) data.tempatTeksNama.text = data.namaKarakter;
