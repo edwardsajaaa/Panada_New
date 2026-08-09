@@ -20,6 +20,10 @@ public class DialogBergantian : MonoBehaviour
     public float kecepatanKetik = 0.04f;
     public KeyCode tombolLanjut = KeyCode.F;
 
+    [Header("Interact (Opsional)")]
+    [Tooltip("Tarik objek Interact (balon ?) ke sini agar otomatis disembunyikan saat dialog muncul")]
+    public GameObject interactPopup;
+
     [Header("Tutup Saat Menjauh")]
     public bool tutupSaatMenjauh = true;
     public float jarakMaksimal = 100f;
@@ -46,7 +50,6 @@ public class DialogBergantian : MonoBehaviour
 
     void OnEnable()
     {
-        // Tunggu 2 frame agar tombol F dari PopupInteraksi benar-benar selesai
         aktif = false;
         sedangNgetik = false;
         menungguMenjauh = false;
@@ -55,12 +58,15 @@ public class DialogBergantian : MonoBehaviour
 
     IEnumerator MulaiSetelahJeda()
     {
-        // Tunggu 2 frame penuh agar input F dari luar tidak bocor
         yield return null;
         yield return null;
 
         indeks = 0;
         MatikanSemuaGelembung();
+
+        // Sembunyikan balon Interact (?) saat dialog mulai
+        if (interactPopup != null) interactPopup.SetActive(false);
+
         Tampilkan(0);
         aktif = true;
     }
@@ -118,7 +124,8 @@ public class DialogBergantian : MonoBehaviour
         if (data.gelembungAktif != null)
         {
             data.gelembungAktif.SetActive(true);
-            data.gelembungAktif.transform.localScale = Vector3.one;
+
+            // Perbaiki alpha saja, JANGAN ubah scale (biarkan scale asli dari Inspector)
             CanvasGroup cg = data.gelembungAktif.GetComponent<CanvasGroup>();
             if (cg != null) { cg.alpha = 1f; cg.blocksRaycasts = true; }
             CanvasGroup cgP = data.gelembungAktif.GetComponentInParent<CanvasGroup>();
@@ -156,6 +163,10 @@ public class DialogBergantian : MonoBehaviour
         aktif = false;
         menungguMenjauh = false;
         sedangNgetik = false;
+
+        // Kembalikan balon Interact (?) saat dialog selesai
+        if (interactPopup != null) interactPopup.SetActive(true);
+
         gameObject.SetActive(false);
     }
 }
