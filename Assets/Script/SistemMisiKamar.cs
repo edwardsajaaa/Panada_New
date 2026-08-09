@@ -18,6 +18,9 @@ public class SistemMisiKamar : MonoBehaviour
     [Header("Event Pintu TERBUKA")]
     [Tooltip("Dijalankan saat pemain mengklik pintu dan semua barang SUDAH dicek (Misal: memanggil fungsi pindah ruangan).")]
     public UnityEvent saatBisaKeluar;
+    
+    [Tooltip("Centang ini jika ingin menggunakan efek transisi hitam ber-pixel saat pintu berhasil dibuka.")]
+    public bool gunakanTransisi = true;
 
     private int jumlahSudahDicek = 0;
 
@@ -40,7 +43,17 @@ public class SistemMisiKamar : MonoBehaviour
         {
             // Misi selesai, izinkan keluar!
             Debug.Log("Misi selesai! Pintu terbuka.");
-            saatBisaKeluar?.Invoke();
+            
+            if (gunakanTransisi && TransisiRuangan.Instance != null)
+            {
+                // Gunakan animasi transisi pixel dari TransisiRuangan
+                TransisiRuangan.Instance.Jalankan(saatBisaKeluar);
+            }
+            else
+            {
+                // Pindah instan tanpa transisi
+                saatBisaKeluar?.Invoke();
+            }
         }
         else
         {
