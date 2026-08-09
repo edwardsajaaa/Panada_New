@@ -9,12 +9,11 @@ public class BarisDialogBergantian
     public GameObject gelembungAktif;
     public TextMeshProUGUI tempatTeksDialog;
 
-    [Tooltip("Centang jika panel/teks terlihat terbalik (khusus untuk baris dialog ini)")]
-    public bool balikPanel = false;
-
     [TextArea(2, 4)]
     public string kalimat;
 }
+
+public enum ArahHadapPemain { Otomatis, HadapKanan, HadapKiri }
 
 public class DialogBergantian : MonoBehaviour
 {
@@ -36,6 +35,8 @@ public class DialogBergantian : MonoBehaviour
     [Header("Posisi Pemain Saat Dialog (Opsional)")]
     [Tooltip("Buat GameObject kosong untuk titik berdiri Nathan. Jika diisi, Nathan akan otomatis pindah ke titik ini dan menghadap NPC.")]
     public Transform titikBerdiriPemain;
+    [Tooltip("Pilih arah hadap Nathan setelah sampai di titik berdiri.")]
+    public ArahHadapPemain arahHadapPemain = ArahHadapPemain.Otomatis;
 
     [Header("Event Selesai")]
     public UnityEvent saatSemuaSelesai;
@@ -127,11 +128,23 @@ public class DialogBergantian : MonoBehaviour
 
         if (anim != null) anim.SetBool("isWalking", false);
         
-        // Terakhir, hadapkan ke NPC
-        if (gerakUI != null && pusatInteraksi != null)
+        // Terakhir, atur arah hadap sesuai pengaturan
+        if (gerakUI != null)
         {
-            bool npcDiKanan = pusatInteraksi.position.x > playerTransform.position.x;
-            gerakUI.Hadap(npcDiKanan);
+            if (arahHadapPemain == ArahHadapPemain.HadapKanan)
+            {
+                gerakUI.Hadap(true);
+            }
+            else if (arahHadapPemain == ArahHadapPemain.HadapKiri)
+            {
+                gerakUI.Hadap(false);
+            }
+            else if (pusatInteraksi != null) // Mode Otomatis
+            {
+                bool npcDiKanan = pusatInteraksi.position.x > playerTransform.position.x;
+                gerakUI.Hadap(npcDiKanan);
+            }
+            
             gerakUI.abaikanInput = false; // Kembalikan kontrol ke pemain
         }
     }
@@ -190,30 +203,7 @@ public class DialogBergantian : MonoBehaviour
         {
             data.gelembungAktif.SetActive(true);
 
-            // Fitur membalik panel (buntut balon) secara manual per baris dialog
-            Vector3 scale = data.gelembungAktif.transform.localScale;
-            if (data.balikPanel)
-                scale.x = -Mathf.Abs(scale.x);
-            else
-                scale.x = Mathf.Abs(scale.x);
-            data.gelembungAktif.transform.localScale = scale;
-
-            // SISTEM ANTI-MIRROR TEKS: Pastikan teks selalu bisa dibaca (tidak terbalik)
-            if (data.tempatTeksDialog != null)
-            {
-                // Reset local scale teks menjadi positif dulu
-                Vector3 textScale = data.tempatTeksDialog.transform.localScale;
-                textScale.x = Mathf.Abs(textScale.x);
-                data.tempatTeksDialog.transform.localScale = textScale;
-
-                // Jika secara dunia (world) ternyata teksnya masih negatif (terbalik), kita balik local-nya!
-                if (data.tempatTeksDialog.transform.lossyScale.x < 0)
-                {
-                    textScale.x = -textScale.x;
-                    data.tempatTeksDialog.transform.localScale = textScale;
-                }
-            }
-
+            // Perbaiki alpha saja, JANGAN ubah scale (biarkan scale asli dari Inspector)
             CanvasGroup cg = data.gelembungAktif.GetComponent<CanvasGroup>();
             if (cg != null) { cg.alpha = 1f; cg.blocksRaycasts = true; }
             CanvasGroup cgP = data.gelembungAktif.GetComponentInParent<CanvasGroup>();
