@@ -9,6 +9,9 @@ public class BarisDialogBergantian
     public GameObject gelembungAktif;
     public TextMeshProUGUI tempatTeksDialog;
 
+    [Tooltip("Centang jika panel/teks terlihat terbalik (khusus untuk baris dialog ini)")]
+    public bool balikPanel = false;
+
     [TextArea(2, 4)]
     public string kalimat;
 }
@@ -187,18 +190,14 @@ public class DialogBergantian : MonoBehaviour
         {
             data.gelembungAktif.SetActive(true);
 
-            // Mencegah teks terbalik (mirror) saat karakter parent-nya berbalik arah
-            Transform parentTransform = data.gelembungAktif.transform.parent;
-            if (parentTransform != null)
-            {
-                float parentWorldScaleX = parentTransform.lossyScale.x;
-                Vector3 currentScale = data.gelembungAktif.transform.localScale;
-                // Samakan tanda minus/plus dengan parent agar hasil akhirnya selalu positif (tidak mirror)
-                currentScale.x = Mathf.Abs(currentScale.x) * Mathf.Sign(parentWorldScaleX);
-                data.gelembungAktif.transform.localScale = currentScale;
-            }
+            // Fitur membalik panel secara manual per baris dialog
+            Vector3 scale = data.gelembungAktif.transform.localScale;
+            if (data.balikPanel)
+                scale.x = -Mathf.Abs(scale.x);
+            else
+                scale.x = Mathf.Abs(scale.x);
+            data.gelembungAktif.transform.localScale = scale;
 
-            // Perbaiki alpha saja
             CanvasGroup cg = data.gelembungAktif.GetComponent<CanvasGroup>();
             if (cg != null) { cg.alpha = 1f; cg.blocksRaycasts = true; }
             CanvasGroup cgP = data.gelembungAktif.GetComponentInParent<CanvasGroup>();
