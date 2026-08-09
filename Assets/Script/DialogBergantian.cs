@@ -187,7 +187,18 @@ public class DialogBergantian : MonoBehaviour
         {
             data.gelembungAktif.SetActive(true);
 
-            // Perbaiki alpha saja, JANGAN ubah scale (biarkan scale asli dari Inspector)
+            // Mencegah teks terbalik (mirror) saat karakter parent-nya berbalik arah
+            Transform parentTransform = data.gelembungAktif.transform.parent;
+            if (parentTransform != null)
+            {
+                float parentWorldScaleX = parentTransform.lossyScale.x;
+                Vector3 currentScale = data.gelembungAktif.transform.localScale;
+                // Samakan tanda minus/plus dengan parent agar hasil akhirnya selalu positif (tidak mirror)
+                currentScale.x = Mathf.Abs(currentScale.x) * Mathf.Sign(parentWorldScaleX);
+                data.gelembungAktif.transform.localScale = currentScale;
+            }
+
+            // Perbaiki alpha saja
             CanvasGroup cg = data.gelembungAktif.GetComponent<CanvasGroup>();
             if (cg != null) { cg.alpha = 1f; cg.blocksRaycasts = true; }
             CanvasGroup cgP = data.gelembungAktif.GetComponentInParent<CanvasGroup>();
