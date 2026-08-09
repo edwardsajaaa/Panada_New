@@ -41,9 +41,14 @@ public class KetikTeksDialog : MonoBehaviour
     [Tooltip("Daftar percakapan Anda. Tekan tombol + untuk menambah dialog!")]
     public BarisCeritaDialog[] percakapan;
 
+    [Header("Pengaturan Pengulangan")]
+    [Tooltip("Jika dicentang, maka saat dialog ini muncul untuk kedua kalinya (setelah ditutup), ia akan melompati baris ke-1 dan langsung mulai dari baris ke-2.")]
+    public bool lewatiBarisPertamaSetelahDiulang = false;
+
     private int indeksKalimat = 0;
     private bool sedangNgetik = false;
     private bool sudahMulai = false;
+    private bool sudahPernahDitampilkan = false;
     private CanvasGroup grupGelembung;
 
     void Awake()
@@ -97,7 +102,16 @@ public class KetikTeksDialog : MonoBehaviour
 
         // 4. Barulah mulai mengetik ceritanya
         sudahMulai = true;
-        MulaiDialog(0);
+        
+        // Cek apakah harus melompati baris pertama
+        int indeksAwal = 0;
+        if (lewatiBarisPertamaSetelahDiulang && sudahPernahDitampilkan && percakapan.Length > 1)
+        {
+            indeksAwal = 1; // Mulai dari baris kedua
+        }
+        
+        sudahPernahDitampilkan = true; // Tandai bahwa dialog ini sudah pernah muncul
+        MulaiDialog(indeksAwal);
     }
 
     void Update()
@@ -163,6 +177,9 @@ public class KetikTeksDialog : MonoBehaviour
             grupGelembung.interactable = false;
             grupGelembung.blocksRaycasts = false;
         }
+
+        // MATIKAN objek ini agar bisa dipanggil (SetActive(true)) lagi di masa depan
+        gameObject.SetActive(false);
     }
 
     IEnumerator KetikKalimat()
