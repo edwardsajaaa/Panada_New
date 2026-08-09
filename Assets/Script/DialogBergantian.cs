@@ -6,210 +6,158 @@ using UnityEngine.Events;
 [System.Serializable]
 public class BarisDialogBergantian
 {
-    [Tooltip("Objek Gelembung siapa yang mau dinyalakan untuk baris ini? (Misal: tarik objek 'Buble Name' milik NPC atau Player ke sini)")]
     public GameObject gelembungAktif;
-
-    [Tooltip("Tempat Teks Dialog (TMP) di dalam gelembung tersebut")]
     public TextMeshProUGUI tempatTeksDialog;
 
-    [Tooltip("Tempat Teks Nama (Opsional) di dalam gelembung tersebut")]
-    public TextMeshProUGUI tempatTeksNama;
-
-    [Tooltip("Nama yang akan ditampilkan")]
-    public string namaKarakter;
-
     [TextArea(2, 4)]
-    [Tooltip("Kalimat yang diucapkan")]
     public string kalimat;
 }
 
 /// <summary>
-/// Script manajer untuk mengatur dialog yang saling berbalas (dua arah) antar beberapa karakter/gelembung.
-/// Letakkan script ini pada objek kosong (misalnya "Manajer Dialog NPC 1").
-/// Pastikan script KetikTeksDialog lama DIMATIKAN/DIHAPUS dari gelembung-gelembung yang terlibat agar tidak bentrok!
+/// Mengatur dialog dua arah antar gelembung karakter secara bergantian.
 /// </summary>
 public class DialogBergantian : MonoBehaviour
 {
-    [Header("Isi Percakapan Dua Arah")]
-    [Tooltip("Urutkan percakapan dari atas ke bawah. Tentukan gelembung siapa yang bicara di tiap baris.")]
+    [Header("Percakapan")]
     public BarisDialogBergantian[] percakapan;
-
-    [Header("Pengaturan Ketik")]
     public float kecepatanKetik = 0.04f;
-    
-    [Header("Event Selesai (Opsional)")]
-    [Tooltip("Dijalankan setelah semua dialog selesai (misal: memberikan item, membuka pintu, dll)")]
-    public UnityEvent saatSemuaSelesai;
-
-    [Header("Pengaturan Input & Visual")]
-    [Tooltip("Tombol untuk melanjutkan atau men-skip teks")]
     public KeyCode tombolLanjut = KeyCode.F;
 
-    private int indeksKalimat = 0;
-    private bool sedangNgetik = false;
-    private bool sudahMulai = false;
-    private bool sedangMenungguMenjauh = false;
-    private float waktuBolehKlik = 0f;
-    [Tooltip("Jika dicentang, dialog terakhir NPC akan tetap tampil dan baru tertutup saat pemain berjalan menjauh.")]
+    [Header("Tutup Saat Menjauh")]
     public bool tutupSaatMenjauh = true;
-    public float jarakMaksimal = 3f;
-    [Tooltip("Kosongkan saja, akan dicari otomatis")]
+    public float jarakMaksimal = 100f;
     public Transform playerTransform;
-    [Tooltip("Kosongkan saja, otomatis memakai posisi objek ini")]
     public Transform pusatInteraksi;
 
+    [Header("Event Selesai")]
+    public UnityEvent saatSemuaSelesai;
+
+    int indeks = 0;
+    bool sedangNgetik = false;
+    bool aktif = false;
+    bool menungguMenjauh = false;
+    float bolehInput = 0f;
+    Coroutine proses;
 
     void Awake()
     {
-        // Cari pemain otomatis jika belum diisi
         if (playerTransform == null)
         {
-            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-            if (playerObj != null) playerTransform = playerObj.transform;
+            GameObject p = GameObject.FindGameObjectWithTag("Player");
+            if (p != null) playerTransform = p.transform;
         }
     }
 
     void OnEnable()
     {
-        // Mencegah input 'F' dari interaksi awal NPC terbaca sebagai perintah skip dialog di frame yang sama
-        waktuBolehKlik = Time.time + 0.2f; 
-        
-        if (percakapan.Length > 0)
-        {
-            MulaiPercakapan(0);
-        }
-    }
-
-    void SembunyikanSemuaGelembung()
-    {
-        // Matikan semua gelembung yang terdaftar agar tidak ada gelembung bocor/dobel
-        foreach(var baris in percakapan)
-        {
-            if (baris.gelembungAktif != null && baris.gelembungAktif.activeSelf)
-            {
-                baris.gelembungAktif.SetActive(false);
-            }
-        }
-    }
-
-    public void MulaiPercakapan(int indeks)
-    {
-        indeksKalimat = indeks;
-        sudahMulai = true;
-        
-        SembunyikanSemuaGelembung();
-        StartCoroutine(KetikKalimat());
+        // Cooldown agar tombol F dari PopupInteraksi tidak bocor ke dialog
+        bolehInput = Time.time + 0.3f;
+        indeks = 0;
+        aktif = true;
+        menungguMenjauh = false;
+        MatikanSemuaGelembung();
+        Tampilkan(0);
     }
 
     void Update()
     {
-        // Deteksi jarak untuk menutup otomatis jika pemain menjauh
-        if (tutupSaatMenjauh && (sudahMulai || sedangMenungguMenjauh))
+        // Cek jarak untuk menutup dialog jika pemain menjauh
+        if (tutupSaatMenjauh && (aktif || menungguMenjauh))
         {
             Vector3 pusat = pusatInteraksi != null ? pusatInteraksi.position : transform.position;
             if (playerTransform != null && Vector2.Distance(pusat, playerTransform.position) > jarakMaksimal)
             {
-                TutupPercakapan();
+                Tutup();
                 return;
             }
         }
 
-        if (!sudahMulai) return;
-        
-        // Mencegah klik ganda terlalu cepat atau bocor dari event sebelumnya
-        if (Time.time < waktuBolehKlik) return;
+        if (!aktif) return;
+        if (Time.time < bolehInput) return;
 
-        // Klik mouse kiri, Spasi, atau tombol lanjut (F) untuk lanjut/skip
-        if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(tombolLanjut))
+        if (Input.GetKeyDown(tombolLanjut) || Input.GetKeyDown(KeyCode.Space))
         {
-            waktuBolehKlik = Time.time + 0.1f; // Beri sedikit jeda agar klik tidak dobel
-            
+            bolehInput = Time.time + 0.15f;
+
             if (sedangNgetik)
             {
-                // Skip ngetik, langsung munculkan semua tulisan
-                StopAllCoroutines();
-                var data = percakapan[indeksKalimat];
-                if (data.tempatTeksDialog != null) data.tempatTeksDialog.text = data.kalimat;
+                // Skip ketikan, langsung tampilkan semua teks
+                if (proses != null) StopCoroutine(proses);
+                percakapan[indeks].tempatTeksDialog.text = percakapan[indeks].kalimat;
                 sedangNgetik = false;
             }
             else
             {
-                // Lanjut ke kalimat berikutnya
-                Lanjut();
+                // Lanjut ke dialog berikutnya
+                if (indeks < percakapan.Length - 1)
+                {
+                    indeks++;
+                    MatikanSemuaGelembung();
+                    Tampilkan(indeks);
+                }
+                else
+                {
+                    // Dialog terakhir tercapai
+                    aktif = false;
+                    if (tutupSaatMenjauh)
+                    {
+                        menungguMenjauh = true;
+                        saatSemuaSelesai?.Invoke();
+                    }
+                    else
+                    {
+                        Tutup();
+                    }
+                }
             }
         }
     }
 
-    void Lanjut()
+    void Tampilkan(int i)
     {
-        if (indeksKalimat < percakapan.Length - 1)
-        {
-            indeksKalimat++;
-            SembunyikanSemuaGelembung();
-            StartCoroutine(KetikKalimat());
-        }
-        else
-        {
-            // Percakapan habis
-            if (tutupSaatMenjauh)
-            {
-                // Biarkan dialog terakhir tetap muncul.
-                // Matikan input klik, dan tunggu sampai pemain berjalan menjauh.
-                sudahMulai = false;
-                sedangMenungguMenjauh = true;
-                
-                // Memicu event selesai (misal: buka pintu) lebih awal
-                saatSemuaSelesai?.Invoke();
-            }
-            else
-            {
-                TutupPercakapan();
-            }
-        }
-    }
-
-    void TutupPercakapan()
-    {
-        SembunyikanSemuaGelembung();
-        sudahMulai = false;
-        sedangMenungguMenjauh = false;
-        
-        // Panggil event selesai jika belum dipanggil
-        if (!tutupSaatMenjauh) saatSemuaSelesai?.Invoke();
-        
-        // Matikan dirinya sendiri agar siap jika dipanggil lagi
-        gameObject.SetActive(false);
-    }
-
-    IEnumerator KetikKalimat()
-    {
-        sedangNgetik = true;
-        var data = percakapan[indeksKalimat];
-
-        // Nyalakan gelembung target
-        if (data.gelembungAktif != null) 
+        var data = percakapan[i];
+        if (data.gelembungAktif != null)
         {
             data.gelembungAktif.SetActive(true);
-            
-            // JAGA-JAGA: Jika script KetikTeksDialog yang lama meninggalkan CanvasGroup dengan alpha = 0, paksakan jadi 1
+
+            // Paksa alpha jadi 1 jika ada CanvasGroup tersisa
             CanvasGroup cg = data.gelembungAktif.GetComponent<CanvasGroup>();
             if (cg != null) cg.alpha = 1f;
-            
-            CanvasGroup cgParent = data.gelembungAktif.GetComponentInParent<CanvasGroup>();
-            if (cgParent != null) cgParent.alpha = 1f;
+            CanvasGroup cgP = data.gelembungAktif.GetComponentInParent<CanvasGroup>();
+            if (cgP != null) cgP.alpha = 1f;
         }
-        
-        // Atur teks
-        if (data.tempatTeksNama != null) data.tempatTeksNama.text = data.namaKarakter;
-        if (data.tempatTeksDialog != null) data.tempatTeksDialog.text = "";
 
-        // Animasi ketik huruf demi huruf
-        foreach (char huruf in data.kalimat.ToCharArray())
+        if (data.tempatTeksDialog != null) data.tempatTeksDialog.text = "";
+        proses = StartCoroutine(Ketik(data));
+    }
+
+    IEnumerator Ketik(BarisDialogBergantian data)
+    {
+        sedangNgetik = true;
+        foreach (char c in data.kalimat.ToCharArray())
         {
-            if (data.tempatTeksDialog != null) data.tempatTeksDialog.text += huruf;
+            if (data.tempatTeksDialog != null) data.tempatTeksDialog.text += c;
             yield return new WaitForSeconds(kecepatanKetik);
         }
-        
         sedangNgetik = false;
+    }
+
+    void MatikanSemuaGelembung()
+    {
+        foreach (var b in percakapan)
+        {
+            if (b.gelembungAktif != null && b.gelembungAktif.activeSelf)
+                b.gelembungAktif.SetActive(false);
+        }
+    }
+
+    void Tutup()
+    {
+        if (proses != null) StopCoroutine(proses);
+        MatikanSemuaGelembung();
+        aktif = false;
+        menungguMenjauh = false;
+        sedangNgetik = false;
+        gameObject.SetActive(false);
     }
 }
