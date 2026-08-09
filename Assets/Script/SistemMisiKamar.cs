@@ -47,7 +47,7 @@ public class SistemMisiKamar : MonoBehaviour
             // Misi belum selesai, tolak!
             int kurang = totalBarangWajib - jumlahSudahDicek;
             Debug.Log($"Pintu terkunci! Masih ada {kurang} barang yang belum dicek.");
-            saatBelumSelesai?.Invoke();
+            saatBelumBisaKeluar?.Invoke();
         }
     }
 }
