@@ -41,9 +41,29 @@ public class DialogBergantian : MonoBehaviour
     [Tooltip("Dijalankan setelah semua dialog selesai (misal: memberikan item, membuka pintu, dll)")]
     public UnityEvent saatSemuaSelesai;
 
+    [Header("Pengaturan Jarak (Tutup Otomatis)")]
+    [Tooltip("Jika dicentang, dialog terakhir NPC akan tetap tampil dan baru tertutup saat pemain berjalan menjauh.")]
+    public bool tutupSaatMenjauh = true;
+    public float jarakMaksimal = 3f;
+    [Tooltip("Kosongkan saja, akan dicari otomatis")]
+    public Transform playerTransform;
+    [Tooltip("Kosongkan saja, otomatis memakai posisi objek ini")]
+    public Transform pusatInteraksi;
+
     private int indeksKalimat = 0;
     private bool sedangNgetik = false;
     private bool sudahMulai = false;
+    private bool sedangMenungguMenjauh = false;
+
+    void Awake()
+    {
+        // Cari pemain otomatis jika belum diisi
+        if (playerTransform == null)
+        {
+            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+            if (playerObj != null) playerTransform = playerObj.transform;
+        }
+    }
 
     void OnEnable()
     {
@@ -76,6 +96,17 @@ public class DialogBergantian : MonoBehaviour
 
     void Update()
     {
+        // Deteksi jarak untuk menutup otomatis jika pemain menjauh
+        if (tutupSaatMenjauh && (sudahMulai || sedangMenungguMenjauh))
+        {
+            Vector3 pusat = pusatInteraksi != null ? pusatInteraksi.position : transform.position;
+            if (playerTransform != null && Vector2.Distance(pusat, playerTransform.position) > jarakMaksimal)
+            {
+                TutupPercakapan();
+                return;
+            }
+        }
+
         if (!sudahMulai) return;
 
         // Klik mouse kiri atau tekan spasi untuk lanjut/skip
@@ -108,13 +139,34 @@ public class DialogBergantian : MonoBehaviour
         else
         {
             // Percakapan habis
-            SembunyikanSemuaGelembung();
-            sudahMulai = false;
-            saatSemuaSelesai?.Invoke();
-            
-            // Matikan dirinya sendiri agar siap jika dipanggil lagi
-            gameObject.SetActive(false);
+            if (tutupSaatMenjauh)
+            {
+                // Biarkan dialog terakhir tetap muncul.
+                // Matikan input klik, dan tunggu sampai pemain berjalan menjauh.
+                sudahMulai = false;
+                sedangMenungguMenjauh = true;
+                
+                // Memicu event selesai (misal: buka pintu) lebih awal
+                saatSemuaSelesai?.Invoke();
+            }
+            else
+            {
+                TutupPercakapan();
+            }
         }
+    }
+
+    void TutupPercakapan()
+    {
+        SembunyikanSemuaGelembung();
+        sudahMulai = false;
+        sedangMenungguMenjauh = false;
+        
+        // Panggil event selesai jika belum dipanggil
+        if (!tutupSaatMenjauh) saatSemuaSelesai?.Invoke();
+        
+        // Matikan dirinya sendiri agar siap jika dipanggil lagi
+        gameObject.SetActive(false);
     }
 
     IEnumerator KetikKalimat()
