@@ -114,7 +114,7 @@ public class PlayerMovementUI : MonoBehaviour
         }
     }
 
-    void BalikArah()
+    public void BalikArah()
     {
         menghadapKanan = !menghadapKanan;
         
@@ -122,5 +122,11 @@ public class PlayerMovementUI : MonoBehaviour
         Vector3 scale = transform.localScale;
         scale.x *= -1;
         transform.localScale = scale;
+    }
+
+    public void Hadap(bool keKanan)
+    {
+        if (keKanan && !menghadapKanan) BalikArah();
+        else if (!keKanan && menghadapKanan) BalikArah();
     }
 }

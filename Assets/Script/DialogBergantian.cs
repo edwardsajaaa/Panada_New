@@ -30,6 +30,10 @@ public class DialogBergantian : MonoBehaviour
     public Transform playerTransform;
     public Transform pusatInteraksi;
 
+    [Header("Posisi Pemain Saat Dialog (Opsional)")]
+    [Tooltip("Buat GameObject kosong untuk titik berdiri Nathan. Jika diisi, Nathan akan otomatis pindah ke titik ini dan menghadap NPC.")]
+    public Transform titikBerdiriPemain;
+
     [Header("Event Selesai")]
     public UnityEvent saatSemuaSelesai;
 
@@ -66,6 +70,22 @@ public class DialogBergantian : MonoBehaviour
 
         // Sembunyikan balon Interact (?) saat dialog mulai
         if (popupInteraksiNPC != null) popupInteraksiNPC.sembunyikanSementara = true;
+
+        // Pindahkan dan hadapkan pemain ke NPC
+        if (titikBerdiriPemain != null && playerTransform != null)
+        {
+            playerTransform.position = titikBerdiriPemain.position;
+
+            if (pusatInteraksi != null)
+            {
+                PlayerMovementUI gerakUI = playerTransform.GetComponent<PlayerMovementUI>();
+                if (gerakUI != null)
+                {
+                    bool npcDiKanan = pusatInteraksi.position.x > playerTransform.position.x;
+                    gerakUI.Hadap(npcDiKanan);
+                }
+            }
+        }
 
         Tampilkan(0);
         aktif = true;
