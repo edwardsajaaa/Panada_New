@@ -95,15 +95,18 @@ public class DialogBergantian : MonoBehaviour
         }
 
         RectTransform playerRect = playerTransform.GetComponent<RectTransform>();
-        RectTransform titikRect = titik.GetComponent<RectTransform>();
 
-        if (playerRect != null && titikRect != null)
+        if (playerRect != null && titik != null)
         {
-            while (Mathf.Abs(playerRect.anchoredPosition.x - titikRect.anchoredPosition.x) > 5f)
+            // Ubah posisi dunia target menjadi koordinat lokal parent dari pemain
+            Vector3 targetLocalPos = playerTransform.parent.InverseTransformPoint(titik.position);
+            float targetX = targetLocalPos.x;
+
+            while (Mathf.Abs(playerRect.anchoredPosition.x - targetX) > 5f)
             {
                 if (gerakUI != null)
                 {
-                    bool keKanan = titikRect.anchoredPosition.x > playerRect.anchoredPosition.x;
+                    bool keKanan = targetX > playerRect.anchoredPosition.x;
                     gerakUI.Hadap(keKanan);
                 }
 
@@ -111,7 +114,7 @@ public class DialogBergantian : MonoBehaviour
 
                 playerRect.anchoredPosition = Vector2.MoveTowards(
                     playerRect.anchoredPosition, 
-                    new Vector2(titikRect.anchoredPosition.x, playerRect.anchoredPosition.y), 
+                    new Vector2(targetX, playerRect.anchoredPosition.y), 
                     speed * Time.deltaTime
                 );
 
