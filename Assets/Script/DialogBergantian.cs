@@ -190,13 +190,29 @@ public class DialogBergantian : MonoBehaviour
         {
             data.gelembungAktif.SetActive(true);
 
-            // Fitur membalik panel secara manual per baris dialog
+            // Fitur membalik panel (buntut balon) secara manual per baris dialog
             Vector3 scale = data.gelembungAktif.transform.localScale;
             if (data.balikPanel)
                 scale.x = -Mathf.Abs(scale.x);
             else
                 scale.x = Mathf.Abs(scale.x);
             data.gelembungAktif.transform.localScale = scale;
+
+            // SISTEM ANTI-MIRROR TEKS: Pastikan teks selalu bisa dibaca (tidak terbalik)
+            if (data.tempatTeksDialog != null)
+            {
+                // Reset local scale teks menjadi positif dulu
+                Vector3 textScale = data.tempatTeksDialog.transform.localScale;
+                textScale.x = Mathf.Abs(textScale.x);
+                data.tempatTeksDialog.transform.localScale = textScale;
+
+                // Jika secara dunia (world) ternyata teksnya masih negatif (terbalik), kita balik local-nya!
+                if (data.tempatTeksDialog.transform.lossyScale.x < 0)
+                {
+                    textScale.x = -textScale.x;
+                    data.tempatTeksDialog.transform.localScale = textScale;
+                }
+            }
 
             CanvasGroup cg = data.gelembungAktif.GetComponent<CanvasGroup>();
             if (cg != null) { cg.alpha = 1f; cg.blocksRaycasts = true; }
