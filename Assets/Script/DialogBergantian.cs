@@ -58,10 +58,6 @@ public class DialogBergantian : MonoBehaviour
     [Tooltip("Kosongkan saja, otomatis memakai posisi objek ini")]
     public Transform pusatInteraksi;
 
-    private int indeksKalimat = 0;
-    private bool sedangNgetik = false;
-    private bool sudahMulai = false;
-    private bool sedangMenungguMenjauh = false;
 
     void Awake()
     {
