@@ -36,7 +36,7 @@ public class DialogBergantian : MonoBehaviour
     bool sedangNgetik = false;
     bool aktif = false;
     bool menungguMenjauh = false;
-    float bolehInput = 0f;
+    bool menungguLepas = false; // Tunggu tombol F dilepas dulu sebelum boleh input
     Coroutine proses;
 
     void Awake()
@@ -50,11 +50,10 @@ public class DialogBergantian : MonoBehaviour
 
     void OnEnable()
     {
-        // Cooldown agar tombol F dari PopupInteraksi tidak bocor ke dialog
-        bolehInput = Time.time + 0.3f;
         indeks = 0;
         aktif = true;
         menungguMenjauh = false;
+        menungguLepas = true; // KUNCI: Jangan terima input sampai pemain MELEPAS tombol F
         MatikanSemuaGelembung();
         Tampilkan(0);
     }
@@ -73,22 +72,27 @@ public class DialogBergantian : MonoBehaviour
         }
 
         if (!aktif) return;
-        if (Time.time < bolehInput) return;
+
+        // Tunggu tombol F dilepas dulu sebelum menerima input baru
+        if (menungguLepas)
+        {
+            if (!Input.GetKey(tombolLanjut))
+                menungguLepas = false;
+            return;
+        }
 
         if (Input.GetKeyDown(tombolLanjut) || Input.GetKeyDown(KeyCode.Space))
         {
-            bolehInput = Time.time + 0.15f;
+            menungguLepas = true; // Setelah ditekan, tunggu dilepas lagi
 
             if (sedangNgetik)
             {
-                // Skip ketikan, langsung tampilkan semua teks
                 if (proses != null) StopCoroutine(proses);
                 percakapan[indeks].tempatTeksDialog.text = percakapan[indeks].kalimat;
                 sedangNgetik = false;
             }
             else
             {
-                // Lanjut ke dialog berikutnya
                 if (indeks < percakapan.Length - 1)
                 {
                     indeks++;
@@ -97,7 +101,6 @@ public class DialogBergantian : MonoBehaviour
                 }
                 else
                 {
-                    // Dialog terakhir tercapai
                     aktif = false;
                     if (tutupSaatMenjauh)
                     {
@@ -119,14 +122,11 @@ public class DialogBergantian : MonoBehaviour
         if (data.gelembungAktif != null)
         {
             data.gelembungAktif.SetActive(true);
-
-            // Paksa alpha jadi 1 jika ada CanvasGroup tersisa
             CanvasGroup cg = data.gelembungAktif.GetComponent<CanvasGroup>();
             if (cg != null) cg.alpha = 1f;
             CanvasGroup cgP = data.gelembungAktif.GetComponentInParent<CanvasGroup>();
             if (cgP != null) cgP.alpha = 1f;
         }
-
         if (data.tempatTeksDialog != null) data.tempatTeksDialog.text = "";
         proses = StartCoroutine(Ketik(data));
     }
