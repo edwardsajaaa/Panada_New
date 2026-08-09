@@ -21,8 +21,8 @@ public class DialogBergantian : MonoBehaviour
     public KeyCode tombolLanjut = KeyCode.F;
 
     [Header("Interact (Opsional)")]
-    [Tooltip("Tarik objek Interact (balon ?) ke sini agar otomatis disembunyikan saat dialog muncul")]
-    public GameObject interactPopup;
+    [Tooltip("Tarik objek NPC 1 (yang punya script PopupInteraksi) ke sini agar balon ? otomatis disembunyikan saat dialog")]
+    public PopupInteraksi popupInteraksiNPC;
 
     [Header("Tutup Saat Menjauh")]
     public bool tutupSaatMenjauh = true;
@@ -65,7 +65,7 @@ public class DialogBergantian : MonoBehaviour
         MatikanSemuaGelembung();
 
         // Sembunyikan balon Interact (?) saat dialog mulai
-        if (interactPopup != null) interactPopup.SetActive(false);
+        if (popupInteraksiNPC != null) popupInteraksiNPC.sembunyikanSementara = true;
 
         Tampilkan(0);
         aktif = true;
@@ -165,7 +165,7 @@ public class DialogBergantian : MonoBehaviour
         sedangNgetik = false;
 
         // Kembalikan balon Interact (?) saat dialog selesai
-        if (interactPopup != null) interactPopup.SetActive(true);
+        if (popupInteraksiNPC != null) popupInteraksiNPC.sembunyikanSementara = false;
 
         gameObject.SetActive(false);
     }
