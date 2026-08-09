@@ -50,6 +50,8 @@ public class PlayerMovementUI : MonoBehaviour
         if (animatorKarakter == null) animatorKarakter = GetComponentInChildren<Animator>();
     }
 
+    [HideInInspector] public bool abaikanInput = false;
+
     void Update()
     {
         if (rectTransform == null) return;
@@ -61,40 +63,43 @@ public class PlayerMovementUI : MonoBehaviour
             return; // Berhenti memproses input di bawah
         }
 
-        // Ambil input A/D atau Panah Kiri/Kanan
-        float inputX = Input.GetAxisRaw("Horizontal");
-        
-        if (balikArahKiriKanan) inputX = -inputX;
-
-        // Gerakkan posisi UI secara langsung berdasarkan Pixel per detik
-        if (Mathf.Abs(inputX) > 0.01f)
+        if (!abaikanInput)
         {
-            Vector2 posBaru = rectTransform.anchoredPosition + new Vector2(inputX * kecepatanJalan * Time.deltaTime, 0f);
+            // Ambil input A/D atau Panah Kiri/Kanan
+            float inputX = Input.GetAxisRaw("Horizontal");
             
-            // Batasi pergerakan agar tidak keluar layar
-            if (gunakanBatas)
+            if (balikArahKiriKanan) inputX = -inputX;
+
+            // Gerakkan posisi UI secara langsung berdasarkan Pixel per detik
+            if (Mathf.Abs(inputX) > 0.01f)
             {
-                posBaru.x = Mathf.Clamp(posBaru.x, batasKiri, batasKanan);
+                Vector2 posBaru = rectTransform.anchoredPosition + new Vector2(inputX * kecepatanJalan * Time.deltaTime, 0f);
+                
+                // Batasi pergerakan agar tidak keluar layar
+                if (gunakanBatas)
+                {
+                    posBaru.x = Mathf.Clamp(posBaru.x, batasKiri, batasKanan);
+                }
+                
+                rectTransform.anchoredPosition = posBaru;
             }
-            
-            rectTransform.anchoredPosition = posBaru;
-        }
 
-        // --- MENGATUR ANIMASI ---
-        if (animatorKarakter != null)
-        {
-            bool sedangBerjalan = Mathf.Abs(inputX) > 0.01f;
-            animatorKarakter.SetBool("isWalking", sedangBerjalan);
-        }
+            // --- MENGATUR ANIMASI ---
+            if (animatorKarakter != null)
+            {
+                bool sedangBerjalan = Mathf.Abs(inputX) > 0.01f;
+                animatorKarakter.SetBool("isWalking", sedangBerjalan);
+            }
 
-        // Logika membalik gambar karakter saat berbelok
-        if (inputX > 0 && !menghadapKanan)
-        {
-            BalikArah();
-        }
-        else if (inputX < 0 && menghadapKanan)
-        {
-            BalikArah();
+            // Logika membalik gambar karakter saat berbelok
+            if (inputX > 0 && !menghadapKanan)
+            {
+                BalikArah();
+            }
+            else if (inputX < 0 && menghadapKanan)
+            {
+                BalikArah();
+            }
         }
 
         // Trik Ajaib: Salin animasi dari SpriteRenderer (milik 3D) ke Image (milik UI)

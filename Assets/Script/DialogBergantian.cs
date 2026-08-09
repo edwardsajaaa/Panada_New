@@ -71,24 +71,63 @@ public class DialogBergantian : MonoBehaviour
         // Sembunyikan balon Interact (?) saat dialog mulai
         if (popupInteraksiNPC != null) popupInteraksiNPC.sembunyikanSementara = true;
 
-        // Pindahkan dan hadapkan pemain ke NPC
+        // Pindahkan dan hadapkan pemain ke NPC dengan berjalan otomatis
         if (titikBerdiriPemain != null && playerTransform != null)
         {
-            playerTransform.position = titikBerdiriPemain.position;
-
-            if (pusatInteraksi != null)
-            {
-                PlayerMovementUI gerakUI = playerTransform.GetComponent<PlayerMovementUI>();
-                if (gerakUI != null)
-                {
-                    bool npcDiKanan = pusatInteraksi.position.x > playerTransform.position.x;
-                    gerakUI.Hadap(npcDiKanan);
-                }
-            }
+            yield return StartCoroutine(ProsesJalanOtomatis(titikBerdiriPemain));
         }
 
         Tampilkan(0);
         aktif = true;
+    }
+
+    IEnumerator ProsesJalanOtomatis(Transform titik)
+    {
+        PlayerMovementUI gerakUI = playerTransform.GetComponent<PlayerMovementUI>();
+        float speed = 300f; // Kecepatan default
+        Animator anim = null;
+
+        if (gerakUI != null)
+        {
+            speed = gerakUI.kecepatanJalan;
+            anim = gerakUI.animatorKarakter;
+            gerakUI.abaikanInput = true; // Blokir input pemain
+        }
+
+        RectTransform playerRect = playerTransform.GetComponent<RectTransform>();
+        RectTransform titikRect = titik.GetComponent<RectTransform>();
+
+        if (playerRect != null && titikRect != null)
+        {
+            while (Mathf.Abs(playerRect.anchoredPosition.x - titikRect.anchoredPosition.x) > 5f)
+            {
+                if (gerakUI != null)
+                {
+                    bool keKanan = titikRect.anchoredPosition.x > playerRect.anchoredPosition.x;
+                    gerakUI.Hadap(keKanan);
+                }
+
+                if (anim != null) anim.SetBool("isWalking", true);
+
+                playerRect.anchoredPosition = Vector2.MoveTowards(
+                    playerRect.anchoredPosition, 
+                    new Vector2(titikRect.anchoredPosition.x, playerRect.anchoredPosition.y), 
+                    speed * Time.deltaTime
+                );
+
+                yield return null;
+            }
+        }
+
+        if (anim != null) anim.SetBool("isWalking", false);
+        
+        // Terakhir, hadapkan ke NPC
+        if (gerakUI != null && pusatInteraksi != null)
+        {
+            bool npcDiKanan = pusatInteraksi.position.x > playerTransform.position.x;
+            gerakUI.Hadap(npcDiKanan);
+            gerakUI.abaikanInput = false; // Kembalikan kontrol ke pemain
+        }
     }
 
     void Update()
