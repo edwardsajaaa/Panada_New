@@ -116,7 +116,7 @@ public class SistemDialogKamar : MonoBehaviour
         {
             // Sembunyikan UI sementara menunggu jeda
             if (panelUtamaDialog != null) panelUtamaDialog.SetActive(false);
-            else if (panelBubleName != null) panelBubleName.SetActive(false);
+            if (panelBubleName != null) panelBubleName.SetActive(false);
             
             if (teksIsiDialog != null) teksIsiDialog.text = "";
             StartCoroutine(ProsesMulaiSetelahJeda());
