@@ -4,8 +4,11 @@ using UnityEngine.Events;
 public class PopupInteraksi : MonoBehaviour
 {
     [Header("Pengaturan Jarak")]
-    [Tooltip("Jarak maksimal pemain dari objek ini agar popup muncul")]
+    [Tooltip("Jarak maksimal pemain dari objek ini agar ikon/popup muncul")]
     public float jarakInteraksi = 3f;
+
+    [Tooltip("KHUSUS OTOMATIS: Jarak agar event benar-benar dipicu. Harus lebih kecil dari Jarak Interaksi agar ikon muncul lebih dulu.")]
+    public float jarakOtomatis = 1f;
 
     [Tooltip("Pusat area interaksi. Jika titik kuning tidak pas di tengah objek, buat GameObject kosong di tengah objek, lalu masukkan ke sini. (Boleh dikosongkan)")]
     public Transform pusatInteraksi;
@@ -107,14 +110,20 @@ public class PopupInteraksi : MonoBehaviour
         if (popupVisual == null) return;
 
         sedangAktif = false;
+        bool dalamAreaOtomatis = false;
         Vector3 titikPusat = pusatInteraksi != null ? pusatInteraksi.position : transform.position;
 
         // Mendeteksi jarak pemain
         if (modeUICanvas)
         {
-            if (playerTransform != null && Vector2.Distance(titikPusat, playerTransform.position) <= jarakInteraksi)
+            if (playerTransform != null)
             {
-                sedangAktif = true;
+                float jarak = Vector2.Distance(titikPusat, playerTransform.position);
+                if (jarak <= jarakInteraksi)
+                {
+                    sedangAktif = true;
+                    if (jarak <= jarakOtomatis) dalamAreaOtomatis = true;
+                }
             }
         }
         else
@@ -125,6 +134,8 @@ public class PopupInteraksi : MonoBehaviour
                 if (hitCol.CompareTag("Player") || hitCol.transform == playerTransform)
                 {
                     sedangAktif = true;
+                    float jarak = Vector3.Distance(titikPusat, hitCol.transform.position);
+                    if (jarak <= jarakOtomatis) dalamAreaOtomatis = true;
                     break;
                 }
             }
@@ -135,7 +146,7 @@ public class PopupInteraksi : MonoBehaviour
         // Logika memicu event
         if (sedangAktif)
         {
-            if (pemicuOtomatis && !sudahOtomatis)
+            if (pemicuOtomatis && !sudahOtomatis && dalamAreaOtomatis)
             {
                 terpicu = true;
                 sudahOtomatis = true;
@@ -200,11 +211,18 @@ public class PopupInteraksi : MonoBehaviour
         }
     }
     
-    // Fitur tambahan: Bantuan garis visual (bola kuning) di Editor Unity untuk memudahkan mengatur jarak
+    // Fitur tambahan: Bantuan garis visual (bola kuning/merah) di Editor Unity untuk memudahkan mengatur jarak
     void OnDrawGizmosSelected()
     {
-        Gizmos.color = Color.yellow;
         Vector3 titikPusat = pusatInteraksi != null ? pusatInteraksi.position : transform.position;
+        
+        Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(titikPusat, jarakInteraksi);
+
+        if (pemicuOtomatis)
+        {
+            Gizmos.color = Color.red;
+            Gizmos.DrawWireSphere(titikPusat, jarakOtomatis);
+        }
     }
 }
