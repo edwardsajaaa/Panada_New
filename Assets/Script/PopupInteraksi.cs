@@ -17,6 +17,9 @@ public class PopupInteraksi : MonoBehaviour
     [Tooltip("Tombol yang harus ditekan pemain untuk berinteraksi saat berada di dekat objek (misal: F)")]
     public KeyCode tombolInteraksi = KeyCode.F;
     
+    [Tooltip("Centang ini jika event ingin langsung dijalankan OTOMATIS saat pemain masuk area, tanpa menekan tombol.")]
+    public bool pemicuOtomatis = false;
+
     [Tooltip("Pilih ini jika interaksi ini berfungsi untuk Pindah Ruangan. Layar akan tertutup efek transisi pixel sejenak.")]
     public bool gunakanTransisiPindahRuang = false;
 
@@ -97,6 +100,7 @@ public class PopupInteraksi : MonoBehaviour
 
     [HideInInspector]
     public bool sembunyikanSementara = false; // Digunakan oleh script lain untuk menyembunyikan balon '?' sementara
+    private bool sudahOtomatis = false;
 
     void Update()
     {
@@ -126,8 +130,28 @@ public class PopupInteraksi : MonoBehaviour
             }
         }
 
-        // Jika pemain berada di area dan menekan tombol interaksi, jalankan event-nya!
-        if (sedangAktif && Input.GetKeyDown(tombolInteraksi))
+        bool terpicu = false;
+
+        // Logika memicu event
+        if (sedangAktif)
+        {
+            if (pemicuOtomatis && !sudahOtomatis)
+            {
+                terpicu = true;
+                sudahOtomatis = true;
+            }
+            else if (!pemicuOtomatis && Input.GetKeyDown(tombolInteraksi))
+            {
+                terpicu = true;
+            }
+        }
+        else
+        {
+            sudahOtomatis = false;
+        }
+
+        // Jika terpicu, jalankan event-nya!
+        if (terpicu)
         {
             if (gunakanTransisiPindahRuang && TransisiRuangan.Instance != null)
             {
