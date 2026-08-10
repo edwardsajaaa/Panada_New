@@ -192,6 +192,13 @@ public class SistemDialogKamar : MonoBehaviour
         SetTeksAlpha(1f); // Pastikan alpha tidak tembus pandang
         
         teksIsiDialog.text = teks;
+
+        // Tunggu sampai objek benar-benar aktif di layar (mencegah error merah NullReferenceException)
+        while (teksIsiDialog != null && !teksIsiDialog.gameObject.activeInHierarchy)
+        {
+            yield return null;
+        }
+
         // Hitung total karakter bersih yang dimiliki oleh TextMeshPro
         teksIsiDialog.ForceMeshUpdate();
         int totalKarakter = teksIsiDialog.textInfo.characterCount;
