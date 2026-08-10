@@ -6,9 +6,15 @@ using TMPro;
 public class SistemDialogKamar : MonoBehaviour
 {
     [Header("Referensi UI")]
+    [Tooltip("Opsional: Panel kotak dialog keseluruhan (akan disembunyikan selama jeda)")]
+    public GameObject panelUtamaDialog;
     public GameObject panelBubleName;
     public TMP_Text teksNamaKarakter;
     public TMP_Text teksIsiDialog;
+
+    [Header("Pengaturan Waktu")]
+    [Tooltip("Waktu tunggu (detik) sebelum dialog pertama kali muncul")]
+    public float jedaAwal = 0f;
 
     [Header("Data Percakapan")]
     [Tooltip("Percakapan utama yang dimainkan pertama kali")]
@@ -106,8 +112,34 @@ public class SistemDialogKamar : MonoBehaviour
         indeksDialog = 0;
         sedangDitutup = false;
         
+        if (jedaAwal > 0f)
+        {
+            // Sembunyikan UI sementara menunggu jeda
+            if (panelUtamaDialog != null) panelUtamaDialog.SetActive(false);
+            else if (panelBubleName != null) panelBubleName.SetActive(false);
+            
+            if (teksIsiDialog != null) teksIsiDialog.text = "";
+            StartCoroutine(ProsesMulaiSetelahJeda());
+        }
+        else
+        {
+            MulaiDialog();
+        }
+    }
+
+    IEnumerator ProsesMulaiSetelahJeda()
+    {
+        yield return new WaitForSeconds(jedaAwal);
+        MulaiDialog();
+    }
+
+    void MulaiDialog()
+    {
+        if (panelUtamaDialog != null) panelUtamaDialog.SetActive(true);
+        
         if (panelBubleName != null)
         {
+            panelBubleName.SetActive(true);
             // Set durasi standar untuk popup awal
             StartCoroutine(PopupAwalObjek(panelBubleName.transform, 0.3f));
         }
