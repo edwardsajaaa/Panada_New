@@ -105,11 +105,7 @@ public class AnimasiHandphoneKamar : MonoBehaviour
 
         yield return new WaitForSeconds(2f);
 
-        if (visualPesanKedua != null)
-        {
-            foreach (var obj in visualPesanKedua)
-                if (obj != null) obj.SetActive(true);
-        }
+        AktifkanVisualDanEfek(visualPesanKedua);
 
         if (eventSaatHpMenyala != null) eventSaatHpMenyala.Invoke();
     }
@@ -121,11 +117,7 @@ public class AnimasiHandphoneKamar : MonoBehaviour
 
         yield return new WaitForSeconds(2f);
 
-        if (visualYangMuncul != null)
-        {
-            foreach (var obj in visualYangMuncul)
-                if (obj != null) obj.SetActive(true);
-        }
+        AktifkanVisualDanEfek(visualYangMuncul);
 
         if (eventSaatHpMenyala != null) eventSaatHpMenyala.Invoke();
     }
@@ -143,11 +135,7 @@ public class AnimasiHandphoneKamar : MonoBehaviour
         yield return new WaitForSeconds(2f);
 
         // 4. Nyalain semua object
-        if (visualYangMuncul != null)
-        {
-            foreach (var obj in visualYangMuncul)
-                if (obj != null) obj.SetActive(true);
-        }
+        AktifkanVisualDanEfek(visualYangMuncul);
 
         if (eventSaatHpMenyala != null) eventSaatHpMenyala.Invoke();
     }
