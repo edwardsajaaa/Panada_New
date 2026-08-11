@@ -3,6 +3,7 @@ using UnityEngine.Events;
 
 public class PopupInteraksi : MonoBehaviour
 {
+    public enum TipeAnimasiGerak { Diam, NaikTurun, GeserSamping }
     [Header("Pengaturan Jarak")]
     [Tooltip("Jarak maksimal pemain dari objek ini agar ikon/popup muncul")]
     public float jarakInteraksi = 3f;
@@ -43,8 +44,16 @@ public class PopupInteraksi : MonoBehaviour
     public bool gunakanAnimasiSkala = true;
     public float kecepatanAnimasi = 10f;
 
+    [Header("Animasi Gerak Mengambang (Bouncing)")]
+    [Tooltip("Animasi tambahan (naik-turun atau kiri-kanan) saat ikon sedang tampil")]
+    public TipeAnimasiGerak tipeGerakTambahan = TipeAnimasiGerak.Diam;
+    public float kecepatanBouncing = 5f;
+    [Tooltip("Jarak bolak-balik (Isi sekitar 0.5 untuk 3D, atau 10 - 20 untuk UI Canvas)")]
+    public float jarakBouncing = 10f;
+
     private bool sedangAktif = false;
     private Vector3 skalaAsli;
+    private Vector3 posisiAwalPopup;
     private Camera cam;
 
     void Start()
@@ -84,10 +93,11 @@ public class PopupInteraksi : MonoBehaviour
             }
         }
 
-        // Menyimpan ukuran asli popup dan menyembunyikannya di awal
+        // Menyimpan ukuran & posisi asli popup dan menyembunyikannya di awal
         if (popupVisual != null)
         {
             skalaAsli = popupVisual.transform.localScale;
+            posisiAwalPopup = popupVisual.transform.localPosition;
             
             if (gunakanAnimasiSkala)
             {
@@ -202,6 +212,25 @@ public class PopupInteraksi : MonoBehaviour
             {
                 popupVisual.SetActive(harusTampil);
             }
+        }
+
+        // Terapkan gerak mengambang bolak-balik (Bouncing)
+        if (harusTampil && popupVisual.activeSelf && tipeGerakTambahan != TipeAnimasiGerak.Diam)
+        {
+            float offset = Mathf.Sin(Time.time * kecepatanBouncing) * jarakBouncing;
+            if (tipeGerakTambahan == TipeAnimasiGerak.NaikTurun)
+            {
+                popupVisual.transform.localPosition = posisiAwalPopup + new Vector3(0, offset, 0);
+            }
+            else if (tipeGerakTambahan == TipeAnimasiGerak.GeserSamping)
+            {
+                popupVisual.transform.localPosition = posisiAwalPopup + new Vector3(offset, 0, 0);
+            }
+        }
+        else if (!harusTampil && popupVisual.activeSelf)
+        {
+            // Kembalikan ke posisi awal jika sedang tidak harus tampil tapi masih dalam proses menghilang
+            popupVisual.transform.localPosition = posisiAwalPopup;
         }
 
         // Membuat popup selalu menghadap kamera (Billboarding) agar tidak miring di 2.5D
