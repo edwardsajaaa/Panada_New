@@ -426,6 +426,20 @@ public class SistemDialogKamar : MonoBehaviour
         }
         if (blinkMat != null) blinkMat.SetFloat("_Blink", 0f);
 
+        // 4. JALANKAN ZOOM SEBELUM MEMATIKAN LAYAR HITAM (agar coroutine tidak ikut mati!)
+        if (!gunakanLanjutan && panelUntukZoom != null)
+        {
+            // Buat objek sementara sebagai runner agar coroutine tidak mati
+            GameObject tempRunnerObj = new GameObject("TempZoomRunner");
+            MonoBehaviour zoomRunner = tempRunnerObj.AddComponent<AnimasiNotifikasiGanda>();
+            zoomRunner.StartCoroutine(ProsesZoomSekuensial(tempRunnerObj));
+        }
+
+        if (eventSetelahZoomSelesai != null && (gunakanLanjutan || panelUntukZoom == null))
+        {
+            eventSetelahZoomSelesai.Invoke();
+        }
+
         panelLayarHitam.SetActive(false);
         
         if (gunakanLanjutan && oldLayarHitamParent != null)
@@ -438,15 +452,6 @@ public class SistemDialogKamar : MonoBehaviour
         if (blinkMat != null) Destroy(blinkMat);
         
         sedangDitutup = false;
-
-        // 4. JALANKAN ZOOM SETELAH MATA TERBUKA (Hanya jika bukan lanjutan)
-        if (!gunakanLanjutan && panelUntukZoom != null)
-        {
-            // Buat objek sementara sebagai runner agar coroutine tidak mati
-            GameObject tempRunnerObj = new GameObject("TempZoomRunner");
-            MonoBehaviour zoomRunner = tempRunnerObj.AddComponent<AnimasiNotifikasiGanda>();
-            zoomRunner.StartCoroutine(ProsesZoomSekuensial(tempRunnerObj));
-        }
     }
 
     IEnumerator FadeOutLaluTutup()
