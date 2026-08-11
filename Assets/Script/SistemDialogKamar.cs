@@ -103,6 +103,9 @@ public class SistemDialogKamar : MonoBehaviour
     [Tooltip("Fungsi yang dijalankan SETELAH seluruh proses zoom selesai (cocok untuk memanggil AnimasiHandphoneKamar)")]
     public UnityEvent eventSetelahZoomSelesai;
 
+    [Tooltip("Centang ini jika ingin MEMAKAI ZOOM LUAR (misal AnimasiHandphoneKamar). Meja tetap di-reset saat layar gelap, tapi animasi zoom bawaan dilewati.")]
+    public bool lewatiAnimasiZoom = false;
+
     private int indeksDialog = 0;
     private bool sedangTransisi = false;
     private Coroutine transisiCoroutine;
@@ -427,7 +430,7 @@ public class SistemDialogKamar : MonoBehaviour
         if (blinkMat != null) blinkMat.SetFloat("_Blink", 0f);
 
         // 4. JALANKAN ZOOM SEBELUM MEMATIKAN LAYAR HITAM (agar coroutine tidak ikut mati!)
-        if (!gunakanLanjutan && panelUntukZoom != null)
+        if (!gunakanLanjutan && panelUntukZoom != null && !lewatiAnimasiZoom)
         {
             // Buat objek sementara sebagai runner agar coroutine tidak mati
             GameObject tempRunnerObj = new GameObject("TempZoomRunner");
@@ -435,7 +438,8 @@ public class SistemDialogKamar : MonoBehaviour
             zoomRunner.StartCoroutine(ProsesZoomSekuensial(tempRunnerObj));
         }
 
-        if (eventSetelahZoomSelesai != null && (gunakanLanjutan || panelUntukZoom == null))
+        // Panggil event jika zoom bawaan dilewati ATAU tidak ada panelUntukZoom
+        if (eventSetelahZoomSelesai != null && (lewatiAnimasiZoom || gunakanLanjutan || panelUntukZoom == null))
         {
             eventSetelahZoomSelesai.Invoke();
         }
@@ -557,11 +561,17 @@ public class SistemDialogKamar : MonoBehaviour
         sedangDitutup = false;
 
         // 4. JALANKAN ZOOM SETELAH TRANSISI SELESAI
-        if (!gunakanLanjutan && panelUntukZoom != null)
+        if (!gunakanLanjutan && panelUntukZoom != null && !lewatiAnimasiZoom)
         {
             GameObject tempRunnerObj = new GameObject("TempZoomRunner");
             MonoBehaviour zoomRunner = tempRunnerObj.AddComponent<AnimasiNotifikasiGanda>();
             zoomRunner.StartCoroutine(ProsesZoomSekuensial(tempRunnerObj));
+        }
+
+        // Panggil event jika zoom bawaan dilewati ATAU tidak ada panelUntukZoom
+        if (eventSetelahZoomSelesai != null && (lewatiAnimasiZoom || gunakanLanjutan || panelUntukZoom == null))
+        {
+            eventSetelahZoomSelesai.Invoke();
         }
     }
 
