@@ -22,8 +22,19 @@ public class AnimasiHandphoneKamar : MonoBehaviour
     [Space(10)]
     public UnityEvent eventSaatHpMenyala;
 
+    private Vector3 posisiAwalMeja;
+    private Vector3 skalaAwalMeja;
+    private bool sudahSimpanPosisi = false;
+
     void Start()
     {
+        if (panelMeja != null && !sudahSimpanPosisi)
+        {
+            posisiAwalMeja = panelMeja.localPosition;
+            skalaAwalMeja = panelMeja.localScale;
+            sudahSimpanPosisi = true;
+        }
+
         // matiin semua visual pas mulai
         if (visualYangMuncul != null)
         {
@@ -36,6 +47,12 @@ public class AnimasiHandphoneKamar : MonoBehaviour
     // Fungsi ini bisa dipanggil lewat Inspector (Button / UnityEvent) untuk mengulang animasi zoom
     public void JalankanAnimasi()
     {
+        if (panelMeja != null && sudahSimpanPosisi)
+        {
+            panelMeja.localPosition = posisiAwalMeja;
+            panelMeja.localScale = skalaAwalMeja;
+        }
+
         if (visualYangMuncul != null)
         {
             foreach(var obj in visualYangMuncul)
@@ -48,6 +65,12 @@ public class AnimasiHandphoneKamar : MonoBehaviour
     // Fungsi alternatif jika ingin zoom langsung tanpa harus menunggu waktuTunggu
     public void JalankanAnimasiTanpaTunggu()
     {
+        if (panelMeja != null && sudahSimpanPosisi)
+        {
+            panelMeja.localPosition = posisiAwalMeja;
+            panelMeja.localScale = skalaAwalMeja;
+        }
+
         if (visualYangMuncul != null)
         {
             foreach(var obj in visualYangMuncul)
@@ -60,6 +83,12 @@ public class AnimasiHandphoneKamar : MonoBehaviour
     // Fungsi KHUSUS untuk pesan kedua
     public void JalankanAnimasiPesanKedua()
     {
+        if (panelMeja != null && sudahSimpanPosisi)
+        {
+            panelMeja.localPosition = posisiAwalMeja;
+            panelMeja.localScale = skalaAwalMeja;
+        }
+
         if (visualPesanKedua != null)
         {
             foreach(var obj in visualPesanKedua)
