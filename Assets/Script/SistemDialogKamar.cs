@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 using TMPro;
 
@@ -97,6 +98,10 @@ public class SistemDialogKamar : MonoBehaviour
     public GameObject objekNyalaSaatZoomIn;
     [Tooltip("Objek yang akan diaktifkan SETELAH zoom in selesai (misal: untuk memunculkan notifikasi baru)")]
     public GameObject objekTriggerSetelahZoom;
+
+    [Header("Event Setelah Zoom Selesai")]
+    [Tooltip("Fungsi yang dijalankan SETELAH seluruh proses zoom selesai (cocok untuk memanggil AnimasiHandphoneKamar)")]
+    public UnityEvent eventSetelahZoomSelesai;
 
     private int indeksDialog = 0;
     private bool sedangTransisi = false;
@@ -630,6 +635,8 @@ public class SistemDialogKamar : MonoBehaviour
         {
             objekTriggerSetelahZoom.SetActive(true);
         }
+
+        if (eventSetelahZoomSelesai != null) eventSetelahZoomSelesai.Invoke();
 
         if (tempRunnerObj != null) Destroy(tempRunnerObj);
     }
