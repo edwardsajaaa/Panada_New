@@ -30,6 +30,46 @@ public class AnimasiHandphoneKamar : MonoBehaviour
         StartCoroutine(ProsesMulai());
     }
 
+    // Fungsi ini bisa dipanggil lewat Inspector (Button / UnityEvent) untuk mengulang animasi zoom
+    public void JalankanAnimasi()
+    {
+        if (visualYangMuncul != null)
+        {
+            foreach(var obj in visualYangMuncul)
+                if (obj != null) obj.SetActive(false);
+        }
+        StopAllCoroutines();
+        StartCoroutine(ProsesMulai());
+    }
+
+    // Fungsi alternatif jika ingin zoom langsung tanpa harus menunggu waktuTunggu
+    public void JalankanAnimasiTanpaTunggu()
+    {
+        if (visualYangMuncul != null)
+        {
+            foreach(var obj in visualYangMuncul)
+                if (obj != null) obj.SetActive(false);
+        }
+        StopAllCoroutines();
+        StartCoroutine(ProsesLangsung());
+    }
+
+    IEnumerator ProsesLangsung()
+    {
+        if (panelMeja != null)
+            yield return StartCoroutine(AnimasiZoomPanel());
+
+        yield return new WaitForSeconds(2f);
+
+        if (visualYangMuncul != null)
+        {
+            foreach (var obj in visualYangMuncul)
+                if (obj != null) obj.SetActive(true);
+        }
+
+        if (eventSaatHpMenyala != null) eventSaatHpMenyala.Invoke();
+    }
+
     IEnumerator ProsesMulai()
     {
         // 1. Tunggu beberapa detik
