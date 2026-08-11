@@ -15,17 +15,48 @@ public class EfekKedipBergantian : MonoBehaviour
 
     private float timer;
     private bool statusGrupA = true;
+    private bool sedangKedip = false;
 
     void OnEnable()
     {
-        // Reset timer dan status setiap kali HP / objek dinyalakan
+        MulaiKedip();
+    }
+
+    void OnDisable()
+    {
+        HentikanKedip();
+    }
+
+    public void MulaiKedip()
+    {
+        sedangKedip = true;
         timer = kecepatanKedip;
         statusGrupA = true;
         UpdateVisual();
     }
 
+    public void HentikanKedip()
+    {
+        sedangKedip = false;
+        
+        // Matikan semua saat dihentikan
+        if (grupA != null)
+        {
+            foreach (var obj in grupA)
+                if (obj != null) obj.SetActive(false);
+        }
+        
+        if (grupB != null)
+        {
+            foreach (var obj in grupB)
+                if (obj != null) obj.SetActive(false);
+        }
+    }
+
     void Update()
     {
+        if (!sedangKedip) return;
+
         timer -= Time.unscaledDeltaTime;
         if (timer <= 0f)
         {
@@ -40,16 +71,16 @@ public class EfekKedipBergantian : MonoBehaviour
 
     void UpdateVisual()
     {
-        // Nyalakan/matikan Grup A
-        foreach (var obj in grupA)
+        if (grupA != null)
         {
-            if (obj != null) obj.SetActive(statusGrupA);
+            foreach (var obj in grupA)
+                if (obj != null) obj.SetActive(statusGrupA);
         }
 
-        // Nyalakan/matikan Grup B berlawanan dengan Grup A
-        foreach (var obj in grupB)
+        if (grupB != null)
         {
-            if (obj != null) obj.SetActive(!statusGrupA);
+            foreach (var obj in grupB)
+                if (obj != null) obj.SetActive(!statusGrupA);
         }
     }
 }

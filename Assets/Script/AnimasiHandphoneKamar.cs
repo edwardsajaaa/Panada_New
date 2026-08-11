@@ -209,6 +209,7 @@ public class AnimasiHandphoneKamar : MonoBehaviour
                     if (efek != null)
                     {
                         efek.enabled = true;
+                        efek.MulaiKedip();
                     }
                 }
             }
