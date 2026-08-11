@@ -9,8 +9,11 @@ public class AnimasiHandphoneKamar : MonoBehaviour
 
     [Header("Visual Yang Muncul (HP & Tombol)")]
     public GameObject[] visualYangMuncul;
+
+    [Header("Visual Pesan Kedua")]
+    [Tooltip("Isi dengan HandPhone dan PesanMasukkedua")]
+    public GameObject[] visualPesanKedua;
     
-    [Header("Zoom Setup")]
     public RectTransform panelMeja;
     public RectTransform titikFokusZoom;
     public float durasiZoom = 1.5f;
@@ -52,6 +55,34 @@ public class AnimasiHandphoneKamar : MonoBehaviour
         }
         StopAllCoroutines();
         StartCoroutine(ProsesLangsung());
+    }
+
+    // Fungsi KHUSUS untuk pesan kedua
+    public void JalankanAnimasiPesanKedua()
+    {
+        if (visualPesanKedua != null)
+        {
+            foreach(var obj in visualPesanKedua)
+                if (obj != null) obj.SetActive(false);
+        }
+        StopAllCoroutines();
+        StartCoroutine(ProsesPesanKedua());
+    }
+
+    IEnumerator ProsesPesanKedua()
+    {
+        if (panelMeja != null)
+            yield return StartCoroutine(AnimasiZoomPanel());
+
+        yield return new WaitForSeconds(2f);
+
+        if (visualPesanKedua != null)
+        {
+            foreach (var obj in visualPesanKedua)
+                if (obj != null) obj.SetActive(true);
+        }
+
+        if (eventSaatHpMenyala != null) eventSaatHpMenyala.Invoke();
     }
 
     IEnumerator ProsesLangsung()
