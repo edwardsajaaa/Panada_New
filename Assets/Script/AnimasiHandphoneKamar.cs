@@ -193,4 +193,25 @@ public class AnimasiHandphoneKamar : MonoBehaviour
         panelMeja.localScale = skalaAkhir;
         panelMeja.position = posisiAkhir;
     }
+
+    void AktifkanVisualDanEfek(GameObject[] arrayObjek)
+    {
+        if (arrayObjek != null)
+        {
+            foreach (var obj in arrayObjek)
+            {
+                if (obj != null)
+                {
+                    obj.SetActive(true);
+                    
+                    // Otomatis nyalakan lagi script kedip jika ada
+                    EfekKedipBergantian efek = obj.GetComponentInChildren<EfekKedipBergantian>(true);
+                    if (efek != null)
+                    {
+                        efek.enabled = true;
+                    }
+                }
+            }
+        }
+    }
 }
