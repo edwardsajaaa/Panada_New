@@ -26,7 +26,7 @@ public class EfekKedipBergantian : MonoBehaviour
 
     void Update()
     {
-        timer -= Time.deltaTime;
+        timer -= Time.unscaledDeltaTime;
         if (timer <= 0f)
         {
             // Tukar status nyala/mati
