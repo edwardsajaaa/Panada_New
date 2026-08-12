@@ -130,6 +130,9 @@ public class ItemBaju : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         }
     }
 
+    [Tooltip("Centang agar ukuran baju otomatis menyesuaikan gambar aslinya (tidak gepeng) saat berganti fase")]
+    public bool gunakanUkuranAsliGambar = true;
+
     // Memperbarui visual sesuai fase saat ini
     void UpdateVisual()
     {
@@ -143,6 +146,12 @@ public class ItemBaju : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         if (spriteFase != null && spriteFase.Length > faseSaatIni && spriteFase[faseSaatIni] != null)
         {
             img.sprite = spriteFase[faseSaatIni];
+            
+            // 3. Reset ukuran ke ukuran asli gambar agar tidak gepeng
+            if (gunakanUkuranAsliGambar)
+            {
+                img.SetNativeSize();
+            }
         }
     }
 }
