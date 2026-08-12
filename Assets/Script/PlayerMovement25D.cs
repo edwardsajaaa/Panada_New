@@ -6,10 +6,19 @@ public class PlayerMovement25D : MonoBehaviour
     [Header("Pengaturan Pergerakan")]
     [Tooltip("Kecepatan jalan karakter")]
     public float kecepatanJalan = 5f;
+    [Tooltip("Kecepatan lari karakter")]
+    public float kecepatanLari = 8f;
+    [Tooltip("Tombol keyboard untuk lari")]
+    public KeyCode tombolLari = KeyCode.LeftShift;
+    
     [Tooltip("Centang ini untuk area Outdoor (2D Side-scrolling) agar karakter HANYA bisa bergerak ke kiri dan kanan.")]
     public bool hanyaKiriKanan = false;
     [Tooltip("Centang jika saat tekan Kiri malah ke Kanan, atau sebaliknya (Berguna jika posisi kamera membelakangi map)")]
     public bool balikArahKiriKanan = false;
+
+    [Header("Pengaturan Animasi Lari")]
+    [Tooltip("Centang jika Anda TIDAK PUNYA animasi lari khusus. Script akan otomatis memutar animasi jalan 1.5x lebih cepat saat berlari.")]
+    public bool percepatAnimasiJalanSaja = true;
 
     [Header("Referensi")]
     [Tooltip("Kosongkan jika komponen SpriteRenderer ada di objek ini langsung")]
@@ -21,6 +30,7 @@ public class PlayerMovement25D : MonoBehaviour
     private Vector3 arahGerak;
     private bool menghadapKanan = true; // Asumsi default karakter menghadap kanan
     private Transform camTransform;
+    private bool sedangLari = false; // Status lari saat ini
 
     void Start()
     {
@@ -52,9 +62,13 @@ public class PlayerMovement25D : MonoBehaviour
         if (SistemBlokirGerak.SedangBukaUI())
         {
             arahGerak = Vector3.zero;
+            sedangLari = false;
             if (animatorKarakter != null) animatorKarakter.SetBool("isWalking", false);
             return; // Berhenti memproses input
         }
+
+        // Cek apakah tombol lari ditekan
+        sedangLari = Input.GetKey(tombolLari);
 
         // Ambil input dari keyboard (W/A/S/D atau Panah)
         float inputX = Input.GetAxisRaw("Horizontal");
@@ -95,9 +109,55 @@ public class PlayerMovement25D : MonoBehaviour
         // --- MENGATUR ANIMASI ---
         if (animatorKarakter != null)
         {
-            // Jika ada arah gerak, berarti sedang berjalan (isWalking = true)
-            bool sedangBerjalan = arahGerak.sqrMagnitude > 0.01f;
-            animatorKarakter.SetBool("isWalking", sedangBerjalan);
+            // Jika ada arah gerak, berarti sedang berjalan/berlari
+            bool sedangGerak = arahGerak.sqrMagnitude > 0.01f;
+            
+            if (percepatAnimasiJalanSaja)
+            {
+                // Cara 1: Mempercepat animasi jalan biasa (Tidak butuh parameter isRunning)
+                animatorKarakter.SetBool("isWalking", sedangGerak);
+                
+                if (sedangGerak && sedangLari)
+                    animatorKarakter.speed = 1.6f; // Putar animasi 1.6x lebih cepat
+                else
+                    animatorKarakter.speed = 1f;   // Kecepatan normal
+            }
+            else
+            {
+                // Cara 2: Menggunakan animasi lari terpisah (Butuh parameter bool "isRunning" di Animator)
+                animatorKarakter.speed = 1f; // Pastikan kecepatan tetap normal
+                
+                if (sedangGerak)
+                {
+                    if (sedangLari)
+                    {
+                        animatorKarakter.SetBool("isWalking", false);
+                        
+                        // Gunakan try-catch atau logika aman untuk mencegah error jika parameter belum dibuat
+                        foreach (AnimatorControllerParameter param in animatorKarakter.parameters)
+                        {
+                            if (param.name == "isRunning") animatorKarakter.SetBool("isRunning", true);
+                        }
+                    }
+                    else
+                    {
+                        animatorKarakter.SetBool("isWalking", true);
+                        
+                        foreach (AnimatorControllerParameter param in animatorKarakter.parameters)
+                        {
+                            if (param.name == "isRunning") animatorKarakter.SetBool("isRunning", false);
+                        }
+                    }
+                }
+                else
+                {
+                    animatorKarakter.SetBool("isWalking", false);
+                    foreach (AnimatorControllerParameter param in animatorKarakter.parameters)
+                    {
+                        if (param.name == "isRunning") animatorKarakter.SetBool("isRunning", false);
+                    }
+                }
+            }
         }
 
         // Logika membalik arah (menghadap kiri/kanan) berdasarkan tombol yang ditekan
@@ -113,8 +173,11 @@ public class PlayerMovement25D : MonoBehaviour
 
     void FixedUpdate()
     {
+        // Tentukan kecepatan saat ini (Lari atau Jalan)
+        float kecepatanSaatIni = sedangLari ? kecepatanLari : kecepatanJalan;
+
         // Terapkan kecepatan pada Rigidbody, biarkan sumbu Y (gravitasi) apa adanya
-        Vector3 targetKecepatan = new Vector3(arahGerak.x * kecepatanJalan, rb.velocity.y, arahGerak.z * kecepatanJalan);
+        Vector3 targetKecepatan = new Vector3(arahGerak.x * kecepatanSaatIni, rb.velocity.y, arahGerak.z * kecepatanSaatIni);
         rb.velocity = targetKecepatan;
     }
 

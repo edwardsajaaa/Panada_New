@@ -7,6 +7,10 @@ public class PlayerMovementUI : MonoBehaviour
     [Header("Pengaturan Pergerakan (Canvas UI)")]
     [Tooltip("Kecepatan jalan dalam hitungan Pixel per detik. Biasanya butuh angka besar (misal 300 - 500)")]
     public float kecepatanJalan = 300f;
+    [Tooltip("Kecepatan lari dalam hitungan Pixel per detik.")]
+    public float kecepatanLari = 500f;
+    [Tooltip("Tombol untuk berlari")]
+    public KeyCode tombolLari = KeyCode.LeftShift;
     
     [Tooltip("Centang jika saat tekan Kiri malah ke Kanan")]
     public bool balikArahKiriKanan = false;
@@ -65,6 +69,10 @@ public class PlayerMovementUI : MonoBehaviour
 
         if (!abaikanInput)
         {
+            // Cek apakah tombol lari ditekan
+            bool sedangLari = Input.GetKey(tombolLari);
+            float kecepatanSaatIni = sedangLari ? kecepatanLari : kecepatanJalan;
+
             // Ambil input A/D atau Panah Kiri/Kanan
             float inputX = Input.GetAxisRaw("Horizontal");
             
@@ -73,7 +81,7 @@ public class PlayerMovementUI : MonoBehaviour
             // Gerakkan posisi UI secara langsung berdasarkan Pixel per detik
             if (Mathf.Abs(inputX) > 0.01f)
             {
-                Vector2 posBaru = rectTransform.anchoredPosition + new Vector2(inputX * kecepatanJalan * Time.deltaTime, 0f);
+                Vector2 posBaru = rectTransform.anchoredPosition + new Vector2(inputX * kecepatanSaatIni * Time.deltaTime, 0f);
                 
                 // Batasi pergerakan agar tidak keluar layar
                 if (gunakanBatas)
@@ -89,6 +97,11 @@ public class PlayerMovementUI : MonoBehaviour
             {
                 bool sedangBerjalan = Mathf.Abs(inputX) > 0.01f;
                 animatorKarakter.SetBool("isWalking", sedangBerjalan);
+
+                if (sedangBerjalan && sedangLari)
+                    animatorKarakter.speed = 1.6f; // Putar animasi jalan lebih cepat saat lari
+                else
+                    animatorKarakter.speed = 1f;
             }
 
             // Logika membalik gambar karakter saat berbelok
