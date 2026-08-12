@@ -29,6 +29,7 @@ public class EfekKedipBergantian : MonoBehaviour
 
     public void MulaiKedip()
     {
+        Debug.Log("[EfekKedipBergantian] MulaiKedip dipanggil di objek: " + gameObject.name);
         sedangKedip = true;
         timer = kecepatanKedip;
         statusGrupA = true;
@@ -37,6 +38,7 @@ public class EfekKedipBergantian : MonoBehaviour
 
     public void HentikanKedip()
     {
+        Debug.Log("[EfekKedipBergantian] HentikanKedip dipanggil di objek: " + gameObject.name);
         sedangKedip = false;
         
         // Matikan semua saat dihentikan

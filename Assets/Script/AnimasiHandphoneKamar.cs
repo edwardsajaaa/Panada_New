@@ -208,8 +208,13 @@ public class AnimasiHandphoneKamar : MonoBehaviour
                     EfekKedipBergantian efek = obj.GetComponentInChildren<EfekKedipBergantian>(true);
                     if (efek != null)
                     {
+                        Debug.Log("[AnimasiHandphoneKamar] Menyalakan efek kedip untuk: " + obj.name);
                         efek.enabled = true;
                         efek.MulaiKedip();
+                    }
+                    else
+                    {
+                        Debug.LogWarning("[AnimasiHandphoneKamar] Script EfekKedipBergantian TIDAK DITEMUKAN pada: " + obj.name);
                     }
                 }
             }
