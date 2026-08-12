@@ -60,6 +60,8 @@ public class DialogCutscene : MonoBehaviour
     private int indeks = 0;
     private bool sedangNgetik = false;
     private bool aktif = false;
+    private bool kunciInput = false;
+    private float antiSpamTimer = 0f;
     private Coroutine prosesKetik;
     private Material blinkMat;
 
@@ -96,22 +98,32 @@ public class DialogCutscene : MonoBehaviour
 
     IEnumerator MulaiDialogBerjeda()
     {
+        kunciInput = true;
         yield return new WaitForSeconds(jedaAwal);
         
         if (panelUtamaDialog != null) panelUtamaDialog.SetActive(true);
         if (teksNamaKarakter != null) teksNamaKarakter.text = namaKarakter;
         
         aktif = true;
+        kunciInput = false;
         MulaiKetik();
     }
 
     void Update()
     {
-        if (!aktif) return;
+        if (!aktif || kunciInput) return;
+
+        if (antiSpamTimer > 0f)
+        {
+            antiSpamTimer -= Time.deltaTime;
+            return; // Tunggu cooldown selesai
+        }
 
         // Klik kiri atau spasi untuk lanjut
         if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space))
         {
+            antiSpamTimer = 0.2f; // Anti-spam 0.2 detik setiap kali nge-klik
+
             if (sedangNgetik)
             {
                 // Jika sedang mengetik, paksa langsung selesai
@@ -137,6 +149,9 @@ public class DialogCutscene : MonoBehaviour
 
         if (percakapan[indeks].gunakanTransisiPixelSebelumAksi && TransisiRuangan.Instance != null)
         {
+            // Kunci input agar tidak bisa diklik saat layar sedang transisi
+            kunciInput = true;
+            
             // Gunakan efek Pixel Transisi yang sudah Anda buat
             TransisiRuangan.Instance.Jalankan(percakapan[indeks].aksiSaatKalimatMulai);
             
@@ -156,7 +171,6 @@ public class DialogCutscene : MonoBehaviour
 
     IEnumerator KetikTeksDenganJeda(BarisDialogCutscene baris, float jeda)
     {
-        sedangNgetik = true; // Kunci input agar teks tidak di-skip saat layar masih transisi
         teksIsiDialog.text = "";
         
         // Sembunyikan panel dialog sebentar saat layar transisi
@@ -166,6 +180,9 @@ public class DialogCutscene : MonoBehaviour
         
         // Munculkan lagi panel dialog setelah transisi layar kebuka
         if (panelUtamaDialog != null) panelUtamaDialog.SetActive(true);
+        
+        // Buka kunci input
+        kunciInput = false;
         
         // Mulai ngetik
         prosesKetik = StartCoroutine(KetikTeks(baris));
