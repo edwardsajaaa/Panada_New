@@ -16,6 +16,9 @@ public class BarisDialogCutscene
     [Space(5)]
     [Tooltip("Aksi atau event yang dipicu berbarengan saat teks ini mulai diketik. (Misal: Menyalakan panel awan)")]
     public UnityEvent aksiSaatKalimatMulai;
+
+    [Tooltip("Centang ini jika Anda ingin layar tertutup efek transisi pixel sejenak SEBELUM memicu aksi di atas.")]
+    public bool gunakanTransisiPixelSebelumAksi = false;
 }
 
 public class DialogCutscene : MonoBehaviour
@@ -114,10 +117,40 @@ public class DialogCutscene : MonoBehaviour
             return;
         }
 
-        // Panggil event khusus untuk kalimat ini (jika ada)
-        percakapan[indeks].aksiSaatKalimatMulai?.Invoke();
+        if (percakapan[indeks].gunakanTransisiPixelSebelumAksi && TransisiRuangan.Instance != null)
+        {
+            // Gunakan efek Pixel Transisi yang sudah Anda buat
+            TransisiRuangan.Instance.Jalankan(percakapan[indeks].aksiSaatKalimatMulai);
+            
+            // Hitung total waktu transisi
+            float totalJeda = (TransisiRuangan.Instance.durasiTransisi * 2) + TransisiRuangan.Instance.jedaDiTengah;
+            
+            // Tunda pengetikan teks sampai transisi selesai membuka
+            StartCoroutine(KetikTeksDenganJeda(percakapan[indeks], totalJeda));
+        }
+        else
+        {
+            // Panggil event khusus secara langsung (tanpa transisi)
+            percakapan[indeks].aksiSaatKalimatMulai?.Invoke();
+            prosesKetik = StartCoroutine(KetikTeks(percakapan[indeks]));
+        }
+    }
 
-        prosesKetik = StartCoroutine(KetikTeks(percakapan[indeks]));
+    IEnumerator KetikTeksDenganJeda(BarisDialogCutscene baris, float jeda)
+    {
+        sedangNgetik = true; // Kunci input agar teks tidak di-skip saat layar masih transisi
+        teksIsiDialog.text = "";
+        
+        // Sembunyikan panel dialog sebentar saat layar transisi
+        if (panelUtamaDialog != null) panelUtamaDialog.SetActive(false);
+        
+        yield return new WaitForSeconds(jeda);
+        
+        // Munculkan lagi panel dialog setelah transisi layar kebuka
+        if (panelUtamaDialog != null) panelUtamaDialog.SetActive(true);
+        
+        // Mulai ngetik
+        prosesKetik = StartCoroutine(KetikTeks(baris));
     }
 
     IEnumerator KetikTeks(BarisDialogCutscene baris)
