@@ -42,8 +42,19 @@ public class DialogCutscene : MonoBehaviour
     public GameObject panelLayarHitam;
     public float durasiFadeOut = 1.5f;
 
+    [Header("Teks Penutup (Di Layar Hitam)")]
+    [Tooltip("Teks yang muncul di tengah layar hitam setelah dialog buble selesai (Opsional)")]
+    [TextArea(2, 4)]
+    public string teksPenutupLayarHitam;
+    [Tooltip("Komponen TextMeshProUGUI untuk menampilkan teks penutup (tarik dari dalam objek layar hitam Anda)")]
+    public TextMeshProUGUI UIteksPenutup;
+    [Tooltip("Lama teks penutup diam di layar sebelum menghilang")]
+    public float durasiTampilTeksPenutup = 2f;
+    [Tooltip("Durasi efek fade out (menghilang) khusus untuk teks penutup")]
+    public float durasiFadeOutTeksPenutup = 1.5f;
+
     [Header("Event Akhir")]
-    [Tooltip("Dijalankan setelah seluruh dialog selesai (dan setelah layar memudar jika ada)")]
+    [Tooltip("Dijalankan setelah seluruh dialog selesai (dan setelah layar & teks memudar jika ada)")]
     public UnityEvent saatSemuaSelesai;
 
     private int indeks = 0;
@@ -58,6 +69,13 @@ public class DialogCutscene : MonoBehaviour
         if (panelUtamaDialog != null) panelUtamaDialog.SetActive(false);
         if (teksNamaKarakter != null) teksNamaKarakter.text = "";
         if (teksIsiDialog != null) teksIsiDialog.text = "";
+
+        // Matikan teks penutup di awal
+        if (UIteksPenutup != null)
+        {
+            UIteksPenutup.text = "";
+            UIteksPenutup.gameObject.SetActive(false);
+        }
 
         // Siapkan layar hitam (transparan di awal)
         if (panelLayarHitam != null)
@@ -201,6 +219,7 @@ public class DialogCutscene : MonoBehaviour
     {
         panelLayarHitam.SetActive(true);
         
+        // 1. Fase Fade Out Layar
         Image bgImage = panelLayarHitam.GetComponent<Image>();
         if (bgImage != null)
         {
@@ -221,6 +240,42 @@ public class DialogCutscene : MonoBehaviour
             yield return new WaitForSeconds(durasiFadeOut);
         }
 
+        // 2. Fase Epilog (Teks Penutup)
+        if (!string.IsNullOrEmpty(teksPenutupLayarHitam) && UIteksPenutup != null)
+        {
+            UIteksPenutup.gameObject.SetActive(true);
+            UIteksPenutup.text = "";
+            
+            // Mengembalikan warna teks menjadi solid (karena mungkin pudar dari main sebelumnya)
+            Color warnaTeksAwal = UIteksPenutup.color;
+            warnaTeksAwal.a = 1f;
+            UIteksPenutup.color = warnaTeksAwal;
+
+            // Efek mengetik teks penutup
+            foreach (char huruf in teksPenutupLayarHitam.ToCharArray())
+            {
+                UIteksPenutup.text += huruf;
+                yield return new WaitForSeconds(kecepatanKetikBawaan);
+            }
+
+            // Tahan di layar
+            yield return new WaitForSeconds(durasiTampilTeksPenutup);
+
+            // Efek Fade Out Teks
+            float waktuTeks = 0f;
+            Color warnaTeksMemudar = UIteksPenutup.color;
+            while(waktuTeks < durasiFadeOutTeksPenutup)
+            {
+                waktuTeks += Time.deltaTime;
+                warnaTeksMemudar.a = Mathf.Lerp(1f, 0f, waktuTeks / durasiFadeOutTeksPenutup);
+                UIteksPenutup.color = warnaTeksMemudar;
+                yield return null;
+            }
+            
+            UIteksPenutup.gameObject.SetActive(false);
+        }
+
+        // 3. Eksekusi Aksi Terakhir (seperti pindah scene)
         saatSemuaSelesai?.Invoke();
     }
 }
