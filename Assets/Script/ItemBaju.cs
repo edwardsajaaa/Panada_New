@@ -18,6 +18,9 @@ public class ItemBaju : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     [Tooltip("Opsional: Masukkan objek area di kanan (tempat baju rapi) ke sini. Baju otomatis pindah ke sini saat selesai.")]
     public RectTransform areaSelesai;
 
+    [Tooltip("Opsional: Titik spesifik untuk posisi mendarat. Jika kosong, baju akan mendarat persis di tengah 'Area Selesai'.")]
+    public RectTransform titikSnapSelesai;
+
     [Header("Pengaturan Fase (Warna / Gambar)")]
     [Tooltip("Urutan warna: 0 = Merah (Berantakan), 1 = Kuning (Setengah Rapih), 2 = Hijau (Rapih)")]
     public Color[] warnaFase = new Color[] { Color.red, Color.yellow, Color.green };
@@ -84,7 +87,16 @@ public class ItemBaju : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
             {
                 // Sukses ditaruh di area kanan!
                 sudahDisimpanSelesai = true;
-                rectTransform.position = areaSelesai.position;
+                
+                // Gunakan titik snap spesifik jika ada, jika tidak kembali ke tengah area selesai
+                if (titikSnapSelesai != null)
+                {
+                    rectTransform.position = titikSnapSelesai.position;
+                }
+                else
+                {
+                    rectTransform.position = areaSelesai.position;
+                }
                 
                 // Memicu event selesai HANYA saat sudah berhasil ditaruh di kanan
                 saatBajuSelesaiDirapikan?.Invoke();
