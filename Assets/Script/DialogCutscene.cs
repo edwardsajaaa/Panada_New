@@ -48,6 +48,8 @@ public class DialogCutscene : MonoBehaviour
     public string teksPenutupLayarHitam;
     [Tooltip("Komponen TextMeshProUGUI untuk menampilkan teks penutup (tarik dari dalam objek layar hitam Anda)")]
     public TextMeshProUGUI UIteksPenutup;
+    [Tooltip("Lama layar dibiarkan gelap sepenuhnya SEBELUM teks penutup mulai mengetik")]
+    public float jedaSebelumTeksPenutup = 2f;
     [Tooltip("Lama teks penutup diam di layar sebelum menghilang")]
     public float durasiTampilTeksPenutup = 2f;
     [Tooltip("Durasi efek fade out (menghilang) khusus untuk teks penutup")]
@@ -260,6 +262,9 @@ public class DialogCutscene : MonoBehaviour
         // 2. Fase Epilog (Teks Penutup)
         if (!string.IsNullOrEmpty(teksPenutupLayarHitam) && UIteksPenutup != null)
         {
+            // Tambahan: Jeda tunggu layar gelap total sebelum ngetik teks!
+            yield return new WaitForSeconds(jedaSebelumTeksPenutup);
+
             UIteksPenutup.gameObject.SetActive(true);
             UIteksPenutup.text = "";
             
