@@ -63,14 +63,7 @@ public class ResponPilihanPesan : MonoBehaviour
         // Catat bahwa pemain pernah menekan Nanti Saja
         pernahPilihNantiSaja = true;
 
-        // Siapkan perubahan UI HP di belakang layar untuk nanti
-        if (pesanBaru != null)
-        {
-            foreach (var pesan in pesanBaru)
-            {
-                if (pesan != null) pesan.SetActive(true);
-            }
-        }
+        // Siapkan perubahan UI HP di belakang layar (dipindahkan ke saat layar sudah gelap)
         if (tombolDimatikan != null) tombolDimatikan.SetActive(false);
         if (tombolDitengah != null) 
         {
@@ -220,6 +213,15 @@ public class ResponPilihanPesan : MonoBehaviour
     {
         // Matikan UI Tangan/HP
         if (panelPesan != null) panelPesan.SetActive(false);
+
+        // --- AKTIFKAN PESAN BARU DI SINI (Saat HP sudah disembunyikan) ---
+        if (!isLanjutan && pesanBaru != null)
+        {
+            foreach (var pesan in pesanBaru)
+            {
+                if (pesan != null) pesan.SetActive(true);
+            }
+        }
 
         // Matikan HP di meja jika ada
         if (handphoneMeja != null) handphoneMeja.SetActive(false);
