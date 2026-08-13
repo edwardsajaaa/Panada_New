@@ -343,35 +343,7 @@ public class SistemDialogKamar : MonoBehaviour
                 panelStoryUtama.SetActive(false);
             }
 
-            // --- NYALAKAN LOADING SCREEN SAAT GELAP SEMPURNA ---
-            if (panelLoadingScreen != null)
-            {
-                // Jangan dipindah jika Loading Screen sudah aman di dalam Layar Hitam
-                bool sudahAman = panelLoadingScreen.transform.IsChildOf(panelLayarHitam.transform);
-                
-                // Lepas parent Loading Screen ke Canvas jika belum aman
-                if (!sudahAman && canvasUtama != null) 
-                {
-                    panelLoadingScreen.transform.SetParent(canvasUtama, false);
-                }
-                
-                panelLoadingScreen.SetActive(true);
-                panelLoadingScreen.transform.SetAsLastSibling();
-                
-                if (tahanLayarHitamSetelahLoading)
-                {
-                    yield break;
-                }
-                else
-                {
-                    // Jika hanya pindah ke 3D (tidak pindah scene), maka kita tunggu
-                    // sampai video Loading Screen selesai dan non-aktif dengan sendirinya.
-                    while (panelLoadingScreen != null && panelLoadingScreen.activeInHierarchy)
-                    {
-                        yield return null;
-                    }
-                }
-            }
+
         }
         else
         {
