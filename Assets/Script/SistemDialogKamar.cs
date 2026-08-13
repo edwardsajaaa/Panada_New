@@ -35,7 +35,7 @@ public class SistemDialogKamar : MonoBehaviour
     [Tooltip("Waktu jeda (detik) per karakter saat mengetik")]
     public float kecepatanKetik = 0.03f; 
 
-    public enum TransisiKeluar { Fade, PopOut, HilangLangsung, Blink, LoadingScreenKhusus }
+    public enum TransisiKeluar { Fade, PopOut, HilangLangsung, Blink, LoadingScreenKhusus, BlinkLaluBukaPanel }
     
     [Header("Pengaturan Transisi Keluar")]
     public TransisiKeluar transisiBuble = TransisiKeluar.PopOut;
@@ -43,11 +43,19 @@ public class SistemDialogKamar : MonoBehaviour
     public float durasiTutupBuble = 0.3f;
 
     [Header("Transisi Blink (Opsional)")]
-    [Tooltip("Masukkan BlackScreenPanel jika memilih transisiBuble = Blink")]
+    [Tooltip("Masukkan BlackScreenPanel jika memilih transisiBuble = Blink atau BlinkLaluBukaPanel")]
     public GameObject panelLayarHitam;
     public float durasiTutupMata = 0.25f;
     public float jedaGelap = 0.15f;
     public float durasiBukaMata = 0.4f;
+
+    [Header("Transisi BlinkLaluBukaPanel (Opsional)")]
+    [Tooltip("Panel utama yang akan diaktifkan setelah blink (misal: Panel Pesan HP)")]
+    public GameObject panelTargetSetelahBlink;
+    [Tooltip("Panel lanjutan yang muncul beberapa detik setelah panel target aktif (misal: panel pilihan)")]
+    public GameObject panelLanjutanSetelahBlink;
+    [Tooltip("Waktu tunggu (detik) sebelum panel lanjutan muncul setelah blink selesai")]
+    public float jedaPanelLanjutanBlink = 0.5f;
 
     [Header("Aksi Setelah Dialog Habis (Urutan Normal)")]
     public GameObject[] objekYangIkutMati;
@@ -269,7 +277,16 @@ public class SistemDialogKamar : MonoBehaviour
             {
                 sedangDitutup = true;
 
-                if (transisiBuble == TransisiKeluar.Blink && panelLayarHitam != null)
+                if (transisiBuble == TransisiKeluar.BlinkLaluBukaPanel && panelLayarHitam != null)
+                {
+                    panelLayarHitam.SetActive(true);
+                    
+                    MonoBehaviour blinkRunner = panelLayarHitam.GetComponent<UnityEngine.UI.Image>();
+                    if (blinkRunner == null) blinkRunner = this;
+
+                    blinkRunner.StartCoroutine(BlinkLaluBukaPanelRoutine(blinkRunner));
+                }
+                else if (transisiBuble == TransisiKeluar.Blink && panelLayarHitam != null)
                 {
                     panelLayarHitam.SetActive(true);
                     
@@ -408,6 +425,76 @@ public class SistemDialogKamar : MonoBehaviour
         if (bgImage != null && originalMat != null) bgImage.material = originalMat;
         if (blinkMat != null) Destroy(blinkMat);
         
+        sedangDitutup = false;
+    }
+
+    IEnumerator BlinkLaluBukaPanelRoutine(MonoBehaviour runner)
+    {
+        panelLayarHitam.transform.SetAsLastSibling();
+
+        UnityEngine.UI.Image bgImage = panelLayarHitam.GetComponent<UnityEngine.UI.Image>();
+        Material originalMat = null;
+        Material blinkMat = null;
+
+        if (bgImage != null && bgImage.material != null && bgImage.material.HasProperty("_Blink"))
+        {
+            originalMat = bgImage.material;
+            blinkMat = new Material(originalMat);
+            bgImage.material = blinkMat;
+            blinkMat.SetFloat("_Blink", 0f);
+        }
+
+        // === TUTUP MATA ===
+        float waktu = 0f;
+        while (waktu < durasiTutupMata)
+        {
+            waktu += Time.unscaledDeltaTime;
+            if (blinkMat != null) blinkMat.SetFloat("_Blink", Mathf.Clamp01(waktu / durasiTutupMata));
+            yield return null;
+        }
+        if (blinkMat != null) blinkMat.SetFloat("_Blink", 1f);
+
+        yield return new WaitForSecondsRealtime(jedaGelap);
+
+        // === SAAT LAYAR GELAP: matikan bubble, matikan objek lama, nyalakan panel target ===
+        if (panelBubleName != null) panelBubleName.SetActive(false);
+
+        // Matikan objek yang ikut mati (normal atau lanjutan)
+        if (gunakanLanjutan)
+        {
+            if (objekYangIkutMatiLanjutan != null) foreach (var obj in objekYangIkutMatiLanjutan) if (obj != null) obj.SetActive(false);
+        }
+        else
+        {
+            if (objekYangIkutMati != null) foreach (var obj in objekYangIkutMati) if (obj != null) obj.SetActive(false);
+        }
+
+        // Aktifkan panel target (misal Panel Pesan HP)
+        if (panelTargetSetelahBlink != null)
+            panelTargetSetelahBlink.SetActive(true);
+
+        // === BUKA MATA ===
+        waktu = 0f;
+        while (waktu < durasiBukaMata)
+        {
+            waktu += Time.unscaledDeltaTime;
+            if (blinkMat != null) blinkMat.SetFloat("_Blink", Mathf.Clamp01(1f - (waktu / durasiBukaMata)));
+            yield return null;
+        }
+        if (blinkMat != null) blinkMat.SetFloat("_Blink", 0f);
+
+        panelLayarHitam.SetActive(false);
+
+        if (bgImage != null && originalMat != null) bgImage.material = originalMat;
+        if (blinkMat != null) Destroy(blinkMat);
+
+        // === TUNGGU, LALU MUNCULKAN PANEL LANJUTAN ===
+        if (panelLanjutanSetelahBlink != null)
+        {
+            yield return new WaitForSecondsRealtime(jedaPanelLanjutanBlink);
+            panelLanjutanSetelahBlink.SetActive(true);
+        }
+
         sedangDitutup = false;
     }
 
