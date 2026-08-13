@@ -22,7 +22,10 @@ Pemain akan dibawa ke dalam kisah karakter-karakter (salah satunya bernama Natha
 - **Sistem Transisi Main Menu & Sub-Panel (TransisiMenuUI.cs)**: Logika navigasi UI yang mulus dengan efek transisi antar panel. Dilengkapi fitur *Smart Back Button* dan hierarki bersarang (seperti *Setting Panel* -> *Audio Panel*) yang otomatis menjaga sisa objek (seperti dekorasi meja) tetap utuh.
 - **Visualisasi Volume Audio & Save Data (PengaturanAudioUI.cs)**: Sistem interaktif untuk pengaturan volume (BGM, Main, Voice, SFX) dengan indikator balok (0-5) yang menyala secara dinamis lewat penggantian Sprite (*Sprite Swapping*). Didukung sistem *PlayerPrefs* otomatis agar pengaturan pemain tidak riset saat *game* ditutup.
 - **Sistem Loading Screen Asinkron (LoadingScreenController.cs)**: Memuat *scene* secara mulus di latar belakang (*AsyncOperation*) dengan ditemani panel layar pudar (*Fade Out / Fade In*) agar tidak terjadi *freeze* saat perpindahan tempat.
-
+- **Sistem Background Music Global (BGMManager.cs & BGMTrigger.cs)**: Sistem audio BGM persisten (DontDestroyOnLoad) yang mendukung transisi mulus (*Crossfade*) antar scene. Dilengkapi pengaturan volume khusus per lagu dan fitur *Fade-to-Silence* ("Jadikan Hening") saat panel tertentu dibuka.
+- **Animasi Slideshow Otomatis (AnimasiSlideshow.cs)**: Komponen yang secara otomatis mendeteksi objek *Image* anak dan memutarnya bergantian seperti *slideshow*. Dilengkapi deteksi cerdas yang akan mengabaikan objek *Text* agar tulisan tidak ikut berkedip.
+- **Sistem Anti-Spam Klik (BukaPanelPesan.cs)**: Implementasi *flagging* keamanan (`sedangDiproses`) pada tombol-tombol interaktif guna mencegah eksekusi beruntun ganda (*spam click*) yang dapat memicu error *coroutine* atau tumpang tindih animasi.
+- **Pembersihan Kode Massal (Clean Code Refactoring)**: Seluruh 38 script C# pada proyek telah dibersihkan secara massal menggunakan metode heuristik; menghilangkan ratusan baris komentar receh/XML usang/emoticon untuk mempertahankan standar kualitas kode yang profesional, ringan, dan rapi.
 ## Setup Project
 Game ini dikembangkan menggunakan **Unity Engine**.
 1. *Clone/Download* repositori ini.
