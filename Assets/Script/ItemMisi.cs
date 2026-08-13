@@ -1,9 +1,6 @@
 using UnityEngine;
 
-/// <summary>
-/// Script pelapor untuk barang yang wajib diinteraksi (PC, Koper, Laci).
-/// Ditempelkan ke masing-class objek barang.
-/// </summary>
+// Script pelapor untuk barang yang wajib diinteraksi (PC, Koper, Laci).
 public class ItemMisi : MonoBehaviour
 {
     [Tooltip("Masukkan objek Pintu (yang memiliki script SistemMisiKamar) ke sini.")]
@@ -11,9 +8,7 @@ public class ItemMisi : MonoBehaviour
 
     private bool sudahDicek = false;
 
-    /// <summary>
-    /// Dipanggil dari Unity Event PopupInteraksi pada barang ini.
-    /// </summary>
+    // Dipanggil dari Unity Event PopupInteraksi pada barang ini.
     public void TandaiDiinteraksi()
     {
         if (!sudahDicek)

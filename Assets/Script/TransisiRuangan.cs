@@ -3,11 +3,7 @@ using UnityEngine.UI;
 using UnityEngine.Events;
 using System.Collections;
 
-/// <summary>
-/// Script mandiri untuk transisi pixel antar ruangan (tanpa pindah Scene).
-/// Tempel script ini langsung di objek PixelOverlay/Panel Anda.
-/// RawImage anak akan dicari secara OTOMATIS jika tidak diisi manual.
-/// </summary>
+// Script mandiri untuk transisi pixel antar ruangan (tanpa pindah Scene).
 public class TransisiRuangan : MonoBehaviour
 {
     public static TransisiRuangan Instance;
@@ -96,9 +92,7 @@ public class TransisiRuangan : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Panggil fungsi ini untuk menjalankan transisi pindah ruangan.
-    /// </summary>
+    // Panggil fungsi ini untuk menjalankan transisi pindah ruangan.
     public void Jalankan(UnityEvent eventDiTengah)
     {
         StartCoroutine(ProsesTransisi(eventDiTengah));

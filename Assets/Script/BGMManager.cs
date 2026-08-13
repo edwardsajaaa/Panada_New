@@ -2,10 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Audio;
 
-/// <summary>
-/// Sistem BGM Global yang tidak hancur saat pindah Scene.
-/// Menangani Crossfade antar lagu dan terhubung dengan AudioMixer.
-/// </summary>
+// Sistem BGM Global yang tidak hancur saat pindah Scene.
 public class BGMManager : MonoBehaviour
 {
     public static BGMManager Instance { get; private set; }
@@ -53,9 +50,7 @@ public class BGMManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Memutar lagu baru. Jika lagu yang diminta sama dengan yang sedang main, ia tidak akan mengulang.
-    /// </summary>
+    // Memutar lagu baru. Jika lagu yang diminta sama dengan yang sedang main, ia tidak akan mengulang.
     public void PutarLagu(AudioClip laguBaru, float durasiFade = 2f, float targetVolume = 1f)
     {
         if (laguBaru == null) return;
@@ -82,9 +77,7 @@ public class BGMManager : MonoBehaviour
         pakaiSource1 = !pakaiSource1;
     }
 
-    /// <summary>
-    /// Menghentikan BGM yang sedang bermain secara perlahan
-    /// </summary>
+    // Menghentikan BGM yang sedang bermain secara perlahan
     public void HentikanBGM(float durasiFade = 2f)
     {
         AudioSource sourceAktif = pakaiSource1 ? audioSource1 : audioSource2;

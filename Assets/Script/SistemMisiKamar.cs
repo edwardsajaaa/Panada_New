@@ -1,10 +1,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-/// <summary>
-/// Script manajer yang mengunci pintu ruangan sampai sejumlah misi (interaksi barang) terpenuhi.
-/// Ditempelkan pada objek Pintu Keluar.
-/// </summary>
+// Script manajer yang mengunci pintu ruangan sampai sejumlah misi (interaksi barang) terpenuhi.
 public class SistemMisiKamar : MonoBehaviour
 {
     [Header("Pengaturan Syarat Keluar")]
@@ -24,19 +21,14 @@ public class SistemMisiKamar : MonoBehaviour
 
     private int jumlahSudahDicek = 0;
 
-    /// <summary>
-    /// Dipanggil oleh script ItemMisi pada barang (PC, Koper) saat pemain menginteraksinya.
-    /// </summary>
+    // Dipanggil oleh script ItemMisi pada barang (PC, Koper) saat pemain menginteraksinya.
     public void TambahProgres()
     {
         jumlahSudahDicek++;
         Debug.Log($"Progres Misi Kamar: {jumlahSudahDicek} / {totalBarangWajib} barang telah dicek.");
     }
 
-    /// <summary>
-    /// Dipanggil oleh PopupInteraksi milik Pintu Keluar.
-    /// Menggantikan sistem pindah ruangan langsung.
-    /// </summary>
+    // Dipanggil oleh PopupInteraksi milik Pintu Keluar.
     public void CobaKeluar()
     {
         if (jumlahSudahDicek >= totalBarangWajib)

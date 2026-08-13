@@ -116,10 +116,7 @@ public class AnimasiLogoPanada : MonoBehaviour, IPointerDownHandler, IPointerUpH
         yield return StartCoroutine(AnimasiKembali(true));
     }
 
-    /// <summary>
-    /// Fase 1: Logo mengecil dan turun ("kecelup ke dalam kopi")
-    /// Spinning terus berjalan di background — hanya skala dan posisi yang berubah di sini.
-    /// </summary>
+    // Fase 1: Logo mengecil dan turun ("kecelup ke dalam kopi")
     IEnumerator AnimasiCelup()
     {
         Vector3 skalaTarget  = skalaAwal * skalaKecelup;
@@ -146,10 +143,7 @@ public class AnimasiLogoPanada : MonoBehaviour, IPointerDownHandler, IPointerUpH
         if (rectTransform != null) rectTransform.anchoredPosition = posisiTarget;
     }
 
-    /// <summary>
-    /// Fase 2: Logo balik ke ukuran semula dengan bounce ("mental dari kopi")
-    /// Spinning tetap berjalan — hanya skala dan posisi yang dikembalikan.
-    /// </summary>
+    // Fase 2: Logo balik ke ukuran semula dengan bounce ("mental dari kopi")
     IEnumerator AnimasiKembali(bool pemicuEvent = false)
     {
         Vector3 skalaStart  = transform.localScale;

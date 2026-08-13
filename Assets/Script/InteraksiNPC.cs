@@ -4,11 +4,7 @@ using UnityEngine.EventSystems;
 using System.Collections;
 using TMPro;
 
-/// <summary>
-/// Script untuk interaksi NPC di area 2D (Canvas UI).
-/// Tempel di objek Interact pada NPC. Saat diklik, DialogPopup akan muncul dengan animasi popup.
-/// Klik lagi untuk menutup dialog.
-/// </summary>
+// Script untuk interaksi NPC di area 2D (Canvas UI).
 [RequireComponent(typeof(Image))] // Agar bisa diklik, butuh komponen Image (bisa transparan)
 public class InteraksiNPC : MonoBehaviour, IPointerClickHandler
 {
@@ -107,9 +103,7 @@ public class InteraksiNPC : MonoBehaviour, IPointerClickHandler
         ToggleDialog();
     }
 
-    /// <summary>
-    /// Buka/Tutup dialog secara otomatis (Sangat berguna untuk dipanggil lewat Event Tombol F)
-    /// </summary>
+    // Buka/Tutup dialog secara otomatis (Sangat berguna untuk dipanggil lewat Event Tombol F)
     public void ToggleDialog()
     {
         if (dialogSedangAktif) TutupDialog();

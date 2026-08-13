@@ -3,10 +3,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using UnityEngine.Events;
 
-/// <summary>
-/// Script untuk mekanik Drag & Drop baju serta sistem melipat (Klik untuk mengganti warna/gambar).
-/// Harus ditempel pada objek Baju (Image).
-/// </summary>
+// Script untuk mekanik Drag & Drop baju serta sistem melipat (Klik untuk mengganti warna/gambar).
 [RequireComponent(typeof(Image))]
 [RequireComponent(typeof(CanvasGroup))]
 public class ItemBaju : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerClickHandler

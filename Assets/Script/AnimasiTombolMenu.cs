@@ -513,9 +513,7 @@ public class AnimasiTombolMenu : MonoBehaviour, IPointerEnterHandler, IPointerEx
         }
     }
 
-    /// <summary>
-    /// Jalankan ulang animasi In dari posisi awal (misal saat panel dipanggil lagi).
-    /// </summary>
+    // Jalankan ulang animasi In dari posisi awal (misal saat panel dipanggil lagi).
     public void JalankanUlangAnimasiIn()
     {
         if (!sudahInisialisasi) return;
@@ -528,9 +526,7 @@ public class AnimasiTombolMenu : MonoBehaviour, IPointerEnterHandler, IPointerEx
         }
     }
 
-    /// <summary>
-    /// Jalankan animasi keluar (Animasi Out) lalu nonaktifkan GameObject atau jalankan callback setelah selesai.
-    /// </summary>
+    // Jalankan animasi keluar (Animasi Out) lalu nonaktifkan GameObject atau jalankan callback setelah selesai.
     public void JalankanAnimasiOut(System.Action setelahOutSelesai = null, bool nonaktifkanSetelahOut = true)
     {
         if (!sudahInisialisasi)

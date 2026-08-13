@@ -1,9 +1,6 @@
 using UnityEngine;
 
-/// <summary>
-/// Script pemicu sederhana untuk dipasang di dalam Scene (misal di Main Camera atau GameManager).
-/// Saat Scene terbuka, script ini akan otomatis menyuruh BGMManager memainkan lagu yang dipilih.
-/// </summary>
+// Script pemicu sederhana untuk dipasang di dalam Scene (misal di Main Camera atau GameManager).
 public class BGMTrigger : MonoBehaviour
 {
     [Tooltip("Lagu BGM yang ingin diputar di Scene ini")]
@@ -40,9 +37,7 @@ public class BGMTrigger : MonoBehaviour
         PutarBGM();
     }
 
-    /// <summary>
-    /// Bisa dipanggil secara manual lewat UnityEvent (misalnya di tombol atau akhir cutscene)
-    /// </summary>
+    // Bisa dipanggil secara manual lewat UnityEvent (misalnya di tombol atau akhir cutscene)
     public void PutarBGM()
     {
         if (BGMManager.Instance == null)
@@ -61,9 +56,7 @@ public class BGMTrigger : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Mematikan lagu yang sedang menyala secara perlahan
-    /// </summary>
+    // Mematikan lagu yang sedang menyala secara perlahan
     public void HentikanBGMSaatIni()
     {
         if (BGMManager.Instance != null)
