@@ -12,10 +12,10 @@ public class BGMTrigger : MonoBehaviour
     [Tooltip("Berapa lama efek fade transisi pergantian lagu (dalam detik)")]
     public float durasiFade = 2f;
 
-    [Tooltip("Centang jika ingin BGM langsung diputar otomatis saat Scene terbuka")]
+    [Tooltip("Centang jika ingin BGM langsung diputar otomatis saat Scene/Panel terbuka")]
     public bool putarOtomatisSaatMulai = true;
 
-    void Start()
+    void OnEnable()
     {
         if (putarOtomatisSaatMulai)
         {
