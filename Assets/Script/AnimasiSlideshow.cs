@@ -29,6 +29,12 @@ public class AnimasiSlideshow : MonoBehaviour
             daftarGambar.Clear();
             foreach (Transform anak in transform)
             {
+                // Abaikan objek yang merupakan teks (mengandung TextMeshPro)
+                if (anak.GetComponent<TMPro.TMP_Text>() != null)
+                {
+                    continue; // Jangan masukkan ke daftar slideshow
+                }
+                
                 daftarGambar.Add(anak.gameObject);
             }
         }
