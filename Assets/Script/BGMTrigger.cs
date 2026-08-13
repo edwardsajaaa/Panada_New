@@ -19,9 +19,12 @@ public class BGMTrigger : MonoBehaviour
     [Tooltip("Centang jika ingin BGM langsung diputar otomatis saat Scene/Panel terbuka")]
     public bool putarOtomatisSaatMulai = true;
 
+    [Tooltip("Centang ini HANYA JIKA Anda ingin panel ini HENING (mematikan semua musik yang sedang menyala).")]
+    public bool jadikanHening = false;
+
     void OnEnable()
     {
-        if (putarOtomatisSaatMulai)
+        if (putarOtomatisSaatMulai || jadikanHening)
         {
             StartCoroutine(TungguDanPutar());
         }
@@ -43,13 +46,19 @@ public class BGMTrigger : MonoBehaviour
     /// </summary>
     public void PutarBGM()
     {
-        if (BGMManager.Instance != null && laguBGM != null)
-        {
-            BGMManager.Instance.PutarLagu(laguBGM, durasiFade, volumeKhusus);
-        }
-        else if (BGMManager.Instance == null)
+        if (BGMManager.Instance == null)
         {
             Debug.LogWarning("BGMTrigger: Tidak menemukan BGMManager di scene! Pastikan ada objek BGMManager.");
+            return;
+        }
+
+        if (jadikanHening)
+        {
+            BGMManager.Instance.HentikanBGM(durasiFade);
+        }
+        else if (laguBGM != null)
+        {
+            BGMManager.Instance.PutarLagu(laguBGM, durasiFade, volumeKhusus);
         }
     }
 
