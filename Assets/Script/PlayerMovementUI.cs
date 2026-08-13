@@ -30,6 +30,10 @@ public class PlayerMovementUI : MonoBehaviour
     [Tooltip("Batas mentok sebelah kanan (lihat posisi X di RectTransform saat karakter digeser mentok ke kanan)")]
     public float batasKanan = 900f;
 
+    [Header("Pengaturan Animasi Lari")]
+    [Tooltip("Jika dicentang, lari hanya akan mempercepat animasi jalan. Jika tidak, akan menggunakan parameter 'isRunning' di Animator.")]
+    public bool percepatAnimasiJalanSaja = false;
+
     [Header("Referensi")]
     [Tooltip("Otomatis dicari jika dikosongkan")]
     public Animator animatorKarakter;
@@ -94,9 +98,23 @@ public class PlayerMovementUI : MonoBehaviour
                 animatorKarakter.SetBool("isWalking", sedangBerjalan);
 
                 if (sedangBerjalan && sedangLari)
-                    animatorKarakter.speed = 1.6f;
+                {
+                    if (percepatAnimasiJalanSaja)
+                    {
+                        animatorKarakter.speed = 1.6f;
+                        animatorKarakter.SetBool("isRunning", false);
+                    }
+                    else
+                    {
+                        animatorKarakter.speed = 1f;
+                        animatorKarakter.SetBool("isRunning", true);
+                    }
+                }
                 else
+                {
                     animatorKarakter.speed = 1f;
+                    animatorKarakter.SetBool("isRunning", false);
+                }
             }
 
             if (inputX > 0 && !menghadapKanan)
