@@ -59,7 +59,7 @@ public class BGMManager : MonoBehaviour
     /// <summary>
     /// Memutar lagu baru. Jika lagu yang diminta sama dengan yang sedang main, ia tidak akan mengulang.
     /// </summary>
-    public void PutarLagu(AudioClip laguBaru, float durasiFade = 2f)
+    public void PutarLagu(AudioClip laguBaru, float durasiFade = 2f, float targetVolume = 1f)
     {
         if (laguBaru == null) return;
 
@@ -69,6 +69,11 @@ public class BGMManager : MonoBehaviour
         // Cegah lagu mengulang (restart) jika ternyata lagunya sama
         if (sourceAktif.clip == laguBaru && sourceAktif.isPlaying)
         {
+            // Jika lagunya sama tapi volumenya diubah, sesuaikan volumenya
+            if (sourceAktif.volume != targetVolume)
+            {
+                sourceAktif.volume = targetVolume;
+            }
             return;
         }
 
@@ -79,7 +84,7 @@ public class BGMManager : MonoBehaviour
 
         // Mulai transisi Crossfade
         if (transisiBerjalan != null) StopCoroutine(transisiBerjalan);
-        transisiBerjalan = StartCoroutine(ProsesCrossfade(sourceAktif, sourceBerikutnya, durasiFade));
+        transisiBerjalan = StartCoroutine(ProsesCrossfade(sourceAktif, sourceBerikutnya, durasiFade, targetVolume));
 
         // Tukar status source
         pakaiSource1 = !pakaiSource1;
@@ -95,10 +100,13 @@ public class BGMManager : MonoBehaviour
         transisiBerjalan = StartCoroutine(ProsesFadeOut(sourceAktif, durasiFade));
     }
 
-    private IEnumerator ProsesCrossfade(AudioSource sourceLama, AudioSource sourceBaru, float durasi)
+    private IEnumerator ProsesCrossfade(AudioSource sourceLama, AudioSource sourceBaru, float durasi, float targetVol)
     {
         float timer = 0f;
         float volLama = sourceLama.volume;
+        
+        // Batasi targetVol maksimal tidak lebih besar dari maxVolume manager
+        float volumeAkhir = Mathf.Min(targetVol, maxVolume);
 
         while (timer < durasi)
         {
@@ -106,13 +114,13 @@ public class BGMManager : MonoBehaviour
             float persentase = timer / durasi;
 
             sourceLama.volume = Mathf.Lerp(volLama, 0f, persentase);
-            sourceBaru.volume = Mathf.Lerp(0f, maxVolume, persentase);
+            sourceBaru.volume = Mathf.Lerp(0f, volumeAkhir, persentase);
             
             yield return null;
         }
 
         sourceLama.volume = 0f;
-        sourceBaru.volume = maxVolume;
+        sourceBaru.volume = volumeAkhir;
         sourceLama.Stop();
     }
 

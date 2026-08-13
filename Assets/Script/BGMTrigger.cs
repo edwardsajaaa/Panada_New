@@ -12,6 +12,10 @@ public class BGMTrigger : MonoBehaviour
     [Tooltip("Berapa lama efek fade transisi pergantian lagu (dalam detik)")]
     public float durasiFade = 2f;
 
+    [Tooltip("Volume khusus untuk lagu ini (0 sampai 1). Biarkan 1 untuk volume normal.")]
+    [Range(0f, 1f)]
+    public float volumeKhusus = 1f;
+
     [Tooltip("Centang jika ingin BGM langsung diputar otomatis saat Scene/Panel terbuka")]
     public bool putarOtomatisSaatMulai = true;
 
@@ -41,7 +45,7 @@ public class BGMTrigger : MonoBehaviour
     {
         if (BGMManager.Instance != null && laguBGM != null)
         {
-            BGMManager.Instance.PutarLagu(laguBGM, durasiFade);
+            BGMManager.Instance.PutarLagu(laguBGM, durasiFade, volumeKhusus);
         }
         else if (BGMManager.Instance == null)
         {
