@@ -269,14 +269,7 @@ public class SistemDialogKamar : MonoBehaviour
             {
                 sedangDitutup = true;
 
-                // PRIORITAS 1: Jika ini dialog lanjutan DAN ada Loading Screen, SELALU gunakan PixelOverlay
-                if (gunakanLanjutan && panelLoadingScreen != null)
-                {
-                    GameObject tempRunner = new GameObject("TempLoadingRunner");
-                    MonoBehaviour runner = tempRunner.AddComponent<AnimasiNotifikasiGanda>();
-                    runner.StartCoroutine(LoadingScreenRoutine(tempRunner));
-                }
-                else if (transisiBuble == TransisiKeluar.Blink && panelLayarHitam != null)
+                if (transisiBuble == TransisiKeluar.Blink && panelLayarHitam != null)
                 {
                     panelLayarHitam.SetActive(true);
                     
