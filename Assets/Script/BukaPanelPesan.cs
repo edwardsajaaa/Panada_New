@@ -21,6 +21,8 @@ public class BukaPanelPesan : MonoBehaviour
     [Tooltip("Waktu tunggu sebelum panel lanjutan muncul (disesuaikan dengan durasi animasi tangan).")]
     public float jedaPanelLanjutan = 0.5f;
 
+    private bool sedangDiproses = false;
+
     void Start()
     {
         if (panelPesan != null)
@@ -41,11 +43,16 @@ public class BukaPanelPesan : MonoBehaviour
 
     void OnKlik()
     {
+        // Mencegah Spam Click
+        if (sedangDiproses) return;
+        sedangDiproses = true;
+
         Debug.Log("Tombol ditekan: " + gameObject.name);
         
         if (panelLayarHitam == null)
         {
             Debug.LogError("GAGAL BUKA HP: Slot 'Panel Layar Hitam' di script BukaPanelPesan pada " + gameObject.name + " masih KOSONG! Silakan isi dulu di Inspector.");
+            sedangDiproses = false;
             return;
         }
         
