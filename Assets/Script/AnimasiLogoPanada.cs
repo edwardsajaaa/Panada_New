@@ -23,7 +23,6 @@ public class AnimasiLogoPanada : MonoBehaviour, IPointerDownHandler, IPointerUpH
     [Header("Event Saat Diklik")]
     public UnityEngine.Events.UnityEvent saatLogoDiklik;
 
-    // State internal
     private Vector3 skalaAwal;
     private Vector2 posisiAwal;
     private RectTransform rectTransform;
@@ -46,9 +45,7 @@ public class AnimasiLogoPanada : MonoBehaviour, IPointerDownHandler, IPointerUpH
             StartCoroutine(LoopSpinning());
     }
 
-    // ─────────────────────────────────────────────
     //  SPINNING — berjalan terus selamanya di background setelah animasi muncul selesai
-    // ─────────────────────────────────────────────
     IEnumerator LoopSpinning()
     {
         // 1. Pastikan posisi rotasi awal lurus horizontal (0 derajat)
@@ -86,9 +83,6 @@ public class AnimasiLogoPanada : MonoBehaviour, IPointerDownHandler, IPointerUpH
         }
     }
 
-    // ─────────────────────────────────────────────
-    //  KLIK — kecelup & kembali
-    // ─────────────────────────────────────────────
     public void OnPointerDown(PointerEventData eventData)
     {
         if (!bisaDiklik) return;
@@ -108,7 +102,6 @@ public class AnimasiLogoPanada : MonoBehaviour, IPointerDownHandler, IPointerUpH
     public void OnPointerClick(PointerEventData eventData)
     {
         if (!bisaDiklik) return;
-        // Cadangan jaminan jika klik cepat terinterupsi/terlepas
         if (!sedangDitekan && coroutineKecelup == null)
         {
             if (coroutineKecelup != null) StopCoroutine(coroutineKecelup);
@@ -140,7 +133,7 @@ public class AnimasiLogoPanada : MonoBehaviour, IPointerDownHandler, IPointerUpH
         {
             waktu += Time.deltaTime;
             float t = Mathf.Clamp01(waktu / durasiCelup);
-            float ease = 1f - (1f - t) * (1f - t); // EaseOutQuad
+            float ease = 1f - (1f - t) * (1f - t);
 
             transform.localScale = Vector3.LerpUnclamped(skalaStart, skalaTarget, ease);
             if (rectTransform != null)
@@ -180,7 +173,6 @@ public class AnimasiLogoPanada : MonoBehaviour, IPointerDownHandler, IPointerUpH
             yield return null;
         }
 
-        // Pastikan kembali tepat ke nilai awal
         transform.localScale = skalaAwal;
         if (rectTransform != null) rectTransform.anchoredPosition = posisiAwal;
 
@@ -207,7 +199,6 @@ public class AnimasiLogoPanada : MonoBehaviour, IPointerDownHandler, IPointerUpH
 
     void OnEnable()
     {
-        // Restart spinning saat GameObject diaktifkan kembali
         sudutPutaran = 0f;
         if (gunakanSpinning)
             StartCoroutine(LoopSpinning());

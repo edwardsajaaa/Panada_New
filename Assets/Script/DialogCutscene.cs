@@ -69,32 +69,28 @@ public class DialogCutscene : MonoBehaviour
 
     void Start()
     {
-        // Matikan panel dialog di awal
         if (panelUtamaDialog != null) panelUtamaDialog.SetActive(false);
         if (teksNamaKarakter != null) teksNamaKarakter.text = "";
         if (teksIsiDialog != null) teksIsiDialog.text = "";
 
-        // Matikan teks penutup di awal
         if (UIteksPenutup != null)
         {
             UIteksPenutup.text = "";
             UIteksPenutup.gameObject.SetActive(false);
         }
 
-        // Siapkan layar hitam (transparan di awal)
         if (panelLayarHitam != null)
         {
             Image bgImage = panelLayarHitam.GetComponent<Image>();
             if (bgImage != null)
             {
                 Color c = bgImage.color;
-                c.a = 0f; // Transparan di awal
+                c.a = 0f;
                 bgImage.color = c;
             }
             panelLayarHitam.SetActive(false);
         }
 
-        // Mulai otomatis
         StartCoroutine(MulaiDialogBerjeda());
     }
 
@@ -118,17 +114,15 @@ public class DialogCutscene : MonoBehaviour
         if (antiSpamTimer > 0f)
         {
             antiSpamTimer -= Time.deltaTime;
-            return; // Tunggu cooldown selesai
+            return;
         }
 
-        // Klik kiri atau spasi untuk lanjut
         if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space))
         {
-            antiSpamTimer = 0.2f; // Anti-spam 0.2 detik setiap kali nge-klik
+            antiSpamTimer = 0.2f;
 
             if (sedangNgetik)
             {
-                // Jika sedang mengetik, paksa langsung selesai
                 if (prosesKetik != null) StopCoroutine(prosesKetik);
                 teksIsiDialog.text = percakapan[indeks].kalimat;
                 sedangNgetik = false;
@@ -157,15 +151,12 @@ public class DialogCutscene : MonoBehaviour
             // Gunakan efek Pixel Transisi yang sudah Anda buat
             TransisiRuangan.Instance.Jalankan(percakapan[indeks].aksiSaatKalimatMulai);
             
-            // Hitung total waktu transisi
             float totalJeda = (TransisiRuangan.Instance.durasiTransisi * 2) + TransisiRuangan.Instance.jedaDiTengah;
             
-            // Tunda pengetikan teks sampai transisi selesai membuka
             StartCoroutine(KetikTeksDenganJeda(percakapan[indeks], totalJeda));
         }
         else
         {
-            // Panggil event khusus secara langsung (tanpa transisi)
             percakapan[indeks].aksiSaatKalimatMulai?.Invoke();
             prosesKetik = StartCoroutine(KetikTeks(percakapan[indeks]));
         }
@@ -175,7 +166,6 @@ public class DialogCutscene : MonoBehaviour
     {
         teksIsiDialog.text = "";
         
-        // Sembunyikan panel dialog sebentar saat layar transisi
         if (panelUtamaDialog != null) panelUtamaDialog.SetActive(false);
         
         yield return new WaitForSeconds(jeda);
@@ -183,10 +173,8 @@ public class DialogCutscene : MonoBehaviour
         // Munculkan lagi panel dialog setelah transisi layar kebuka
         if (panelUtamaDialog != null) panelUtamaDialog.SetActive(true);
         
-        // Buka kunci input
         kunciInput = false;
         
-        // Mulai ngetik
         prosesKetik = StartCoroutine(KetikTeks(baris));
     }
 
@@ -238,7 +226,6 @@ public class DialogCutscene : MonoBehaviour
     {
         panelLayarHitam.SetActive(true);
         
-        // 1. Fase Fade Out Layar
         Image bgImage = panelLayarHitam.GetComponent<Image>();
         if (bgImage != null)
         {
@@ -259,7 +246,6 @@ public class DialogCutscene : MonoBehaviour
             yield return new WaitForSeconds(durasiFadeOut);
         }
 
-        // 2. Fase Epilog (Teks Penutup)
         if (!string.IsNullOrEmpty(teksPenutupLayarHitam) && UIteksPenutup != null)
         {
             // Tambahan: Jeda tunggu layar gelap total sebelum ngetik teks!
@@ -273,17 +259,14 @@ public class DialogCutscene : MonoBehaviour
             warnaTeksAwal.a = 1f;
             UIteksPenutup.color = warnaTeksAwal;
 
-            // Efek mengetik teks penutup
             foreach (char huruf in teksPenutupLayarHitam.ToCharArray())
             {
                 UIteksPenutup.text += huruf;
                 yield return new WaitForSeconds(kecepatanKetikBawaan);
             }
 
-            // Tahan di layar
             yield return new WaitForSeconds(durasiTampilTeksPenutup);
 
-            // Efek Fade Out Teks
             float waktuTeks = 0f;
             Color warnaTeksMemudar = UIteksPenutup.color;
             while(waktuTeks < durasiFadeOutTeksPenutup)
@@ -297,7 +280,6 @@ public class DialogCutscene : MonoBehaviour
             UIteksPenutup.gameObject.SetActive(false);
         }
 
-        // 3. Eksekusi Aksi Terakhir (seperti pindah scene)
         saatSemuaSelesai?.Invoke();
     }
 }

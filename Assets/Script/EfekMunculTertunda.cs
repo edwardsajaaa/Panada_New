@@ -1,7 +1,6 @@
 using UnityEngine;
 using System.Collections;
 
-// Memastikan objek ini memiliki CanvasGroup agar bisa mengatur transparansi seluruh isinya sekaligus
 [RequireComponent(typeof(CanvasGroup))]
 public class EfekMunculTertunda : MonoBehaviour
 {
@@ -16,29 +15,23 @@ public class EfekMunculTertunda : MonoBehaviour
 
     void Awake()
     {
-        // Mengambil komponen CanvasGroup
         grupVisual = GetComponent<CanvasGroup>();
     }
 
-    // Dipanggil setiap kali panel induknya dinyalakan
     void OnEnable()
     {
         if (grupVisual != null)
         {
-            // Jadikan transparan sepenuhnya di awal
             grupVisual.alpha = 0f;
             
-            // Mulai penghitung waktu mundur
             StartCoroutine(ProsesMuncul());
         }
     }
 
     IEnumerator ProsesMuncul()
     {
-        // 1. Tunggu selama 3-4 detik (sesuai input Anda)
         yield return new WaitForSeconds(waktuTunggu);
 
-        // 2. Lakukan animasi Fade In
         if (durasiFade > 0)
         {
             float timer = 0;
@@ -50,7 +43,6 @@ public class EfekMunculTertunda : MonoBehaviour
             }
         }
         
-        // 3. Pastikan opasitas mentok 100% di akhir
         grupVisual.alpha = 1f;
     }
 }

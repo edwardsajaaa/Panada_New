@@ -41,7 +41,6 @@ public class EfekKedipBergantian : MonoBehaviour
         Debug.Log("[EfekKedipBergantian] HentikanKedip dipanggil di objek: " + gameObject.name);
         sedangKedip = false;
         
-        // Matikan semua saat dihentikan
         if (grupA != null)
         {
             foreach (var obj in grupA)
@@ -62,11 +61,9 @@ public class EfekKedipBergantian : MonoBehaviour
         timer -= Time.unscaledDeltaTime;
         if (timer <= 0f)
         {
-            // Tukar status nyala/mati
             statusGrupA = !statusGrupA;
             UpdateVisual();
             
-            // Reset timer
             timer = kecepatanKedip;
         }
     }

@@ -32,10 +32,9 @@ public class BGMTrigger : MonoBehaviour
 
     private System.Collections.IEnumerator TungguDanPutar()
     {
-        // Tunggu sebentar sampai BGMManager selesai memuat dirinya (mencegah error jika panel ini aktif duluan)
         while (BGMManager.Instance == null)
         {
-            yield return null; // Tunggu frame berikutnya
+            yield return null;
         }
         
         PutarBGM();

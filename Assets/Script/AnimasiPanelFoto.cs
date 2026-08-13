@@ -50,12 +50,10 @@ public class AnimasiPanelFoto : MonoBehaviour
 
     IEnumerator MainkanAnimasi()
     {
-        // --- 1. PERSIAPAN AWAL (Sembunyikan semua) ---
-        panelGroup.alpha = 0f; // Panel transparan
+        panelGroup.alpha = 0f;
         
         if (fotoObjek != null)
         {
-            // Tarik foto ke bawah
             fotoObjek.anchoredPosition = posisiAsliFoto - new Vector2(0, jarakMunculDariBawah);
         }
 
@@ -80,7 +78,6 @@ public class AnimasiPanelFoto : MonoBehaviour
             timer += Time.deltaTime;
             float persentase = timer / durasiMunculPanel;
             
-            // Fade In Panel
             panelGroup.alpha = Mathf.Lerp(0f, 1f, persentase);
             
             // Foto bergerak naik (menggunakan Ease Out agar melambat mulus di akhir)
@@ -97,7 +94,6 @@ public class AnimasiPanelFoto : MonoBehaviour
         panelGroup.alpha = 1f;
         if (fotoObjek != null) fotoObjek.anchoredPosition = posisiAsliFoto;
 
-        // --- 3. JEDA TUNGGU ---
         yield return new WaitForSeconds(jedaSebelumText);
 
         // --- 4. ANIMASI FADE TEXT / GRUP TERTUNDA ---
@@ -124,7 +120,6 @@ public class AnimasiPanelFoto : MonoBehaviour
                 yield return null;
             }
             
-            // Pastikan 100% muncul
             if (teksTertunda != null)
             {
                 Color finalColor = teksTertunda.color;
@@ -141,7 +136,6 @@ public class AnimasiPanelFoto : MonoBehaviour
     // Fungsi ini dipanggil dari luar (misalnya dari script TutupPanel) untuk menutup dengan elegan
     public void TutupDenganAnimasi()
     {
-        // Hentikan animasi muncul jika masih berjalan
         StopAllCoroutines();
         StartCoroutine(AnimasiTutup());
     }
@@ -149,7 +143,7 @@ public class AnimasiPanelFoto : MonoBehaviour
     IEnumerator AnimasiTutup()
     {
         float timer = 0;
-        float durasiTutup = durasiMunculPanel / 1.5f; // Animasi tutup dibuat sedikit lebih cepat
+        float durasiTutup = durasiMunculPanel / 1.5f;
         
         Vector2 posisiSekarang = fotoObjek != null ? fotoObjek.anchoredPosition : posisiAsliFoto;
         Vector2 posisiBawah = posisiAsliFoto - new Vector2(0, jarakMunculDariBawah);
@@ -162,17 +156,14 @@ public class AnimasiPanelFoto : MonoBehaviour
             timer += Time.deltaTime;
             float persentase = timer / durasiTutup;
             
-            // Fade Out Panel
             panelGroup.alpha = Mathf.Lerp(1f, 0f, persentase);
             
-            // Foto bergerak turun
             if (fotoObjek != null)
             {
                 float easeIn = persentase * persentase;
                 fotoObjek.anchoredPosition = Vector2.Lerp(posisiSekarang, posisiBawah, easeIn);
             }
 
-            // Teks / Grup memudar
             if (teksTertunda != null)
             {
                 Color c = teksTertunda.color;
@@ -188,7 +179,6 @@ public class AnimasiPanelFoto : MonoBehaviour
             yield return null;
         }
         
-        // Setelah animasi selesai, baru matikan objeknya
         gameObject.SetActive(false);
     }
 }

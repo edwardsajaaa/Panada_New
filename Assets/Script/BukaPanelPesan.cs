@@ -32,7 +32,6 @@ public class BukaPanelPesan : MonoBehaviour
         if (panelLayarHitam != null)
             panelLayarHitam.SetActive(false);
 
-        // Pastikan panel lanjutan juga mati di awal
         if (panelLanjutan != null)
             panelLanjutan.SetActive(false);
 
@@ -43,7 +42,6 @@ public class BukaPanelPesan : MonoBehaviour
 
     void OnKlik()
     {
-        // Mencegah Spam Click
         if (sedangDiproses) return;
         sedangDiproses = true;
 
@@ -62,7 +60,6 @@ public class BukaPanelPesan : MonoBehaviour
             return;
         }
 
-        // Jalankan coroutine di object ini sendiri
         StartCoroutine(ProsesKedip());
     }
 
@@ -75,7 +72,6 @@ public class BukaPanelPesan : MonoBehaviour
         Button btnTombol = GetComponent<Button>();
         if (btnTombol != null) btnTombol.enabled = false;
 
-        // 2. Nyalakan BlackScreenPanel
         if (panelLayarHitam == null) yield break;
         panelLayarHitam.SetActive(true);
         panelLayarHitam.transform.SetAsLastSibling();
@@ -90,10 +86,9 @@ public class BukaPanelPesan : MonoBehaviour
             originalMat = bgImage.material;
             blinkMat = new Material(originalMat);
             bgImage.material = blinkMat;
-            blinkMat.SetFloat("_Blink", 0f); // mulai dari mata terbuka
+            blinkMat.SetFloat("_Blink", 0f);
         }
 
-        // 4. TUTUP MATA (0 -> 1)
         float waktu = 0f;
         while (waktu < durasiTutupMata)
         {
@@ -107,7 +102,6 @@ public class BukaPanelPesan : MonoBehaviour
         }
         if (blinkMat != null) blinkMat.SetFloat("_Blink", 1f);
 
-        // 5. JEDA GELAP
         yield return new WaitForSecondsRealtime(jedaGelap);
 
         // 5.5. AKTIFKAN PANEL BARU (TANGAN MELUNCUR) SAAT LAYAR MASIH GELAP
@@ -115,7 +109,6 @@ public class BukaPanelPesan : MonoBehaviour
         if (panelPesan != null)
             panelPesan.SetActive(true);
 
-        // 6. BUKA MATA (1 -> 0)
         waktu = 0f;
         while (waktu < durasiBukaMata)
         {
@@ -129,10 +122,8 @@ public class BukaPanelPesan : MonoBehaviour
         }
         if (blinkMat != null) blinkMat.SetFloat("_Blink", 0f);
 
-        // 7. Matikan BlackScreenPanel
         panelLayarHitam.SetActive(false);
 
-        // 9. Bersihkan material instance dan kembalikan originalnya
         if (bgImage != null && originalMat != null)
         {
             bgImage.material = originalMat;

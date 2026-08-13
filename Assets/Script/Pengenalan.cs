@@ -39,24 +39,24 @@ public class Pengenalan : MonoBehaviour
     public GameObject blankMonitor;
     public GameObject bootingTV;
     public GameObject beritaKonteks;
-    public GameObject beritaKonteksFullscreen; // Panel berita versi fullscreen
-    public Material tvEffectMaterial; // Material TVEffectMaterial pada FullScreenPassRendererFeature
-    public GameObject bubbleNamePanel; // Panel penampung utama (Parent)
-    public GameObject panelKoran; // Panel koran yang akan muncul terakhir
+    public GameObject beritaKonteksFullscreen;
+    public Material tvEffectMaterial;
+    public GameObject bubbleNamePanel;
+    public GameObject panelKoran;
     public GameObject panelKasur; // Panel kasur yang muncul di tengah dialog awal
-    public GameObject mainMenuPanel; // Panel MainMenu tujuan akhir
-    public GameObject mainMenuScreenDialog; // Panel MainMenuScreenDialog di dalam layar TV
-    public GameObject[] daftarGambarKoran; // Daftar gambar koran yang muncul 1/1
+    public GameObject mainMenuPanel;
+    public GameObject mainMenuScreenDialog;
+    public GameObject[] daftarGambarKoran;
     
     [Header("Referensi Tombol Next Koran")]
-    public GameObject tombolNext; // Objek 'Next' di bawah Koran Panel
+    public GameObject tombolNext;
     public Transform gambarPanahNext; // Child 'Image' (panah ke bawah) di bawah objek Next (opsional, otomatis dicari jika kosong)
     [Tooltip("Jarak ayunan naik turun panah dalam pixel. Geser slider ke kiri/kanan untuk mengatur jaraknya.")]
     [Range(0.5f, 15f)]
     public float jarakNaikTurunPanah = 3f; // Jarak naik turun animasi (diubah ke 3 agar tidak mentok border)
     [Tooltip("Kecepatan gerakan animasi naik turun.")]
     [Range(0.5f, 10f)]
-    public float kecepatanNgambang = 3.5f;  // Kecepatan animasi mengambang
+    public float kecepatanNgambang = 3.5f;
     
     [Header("Referensi Fitur Detail Koran Interaktif")]
     [Tooltip("Panel overlay latar gelap penampung seluruh detail koran (Panel Detail Koran)")]
@@ -70,7 +70,7 @@ public class Pengenalan : MonoBehaviour
     
     [Header("Referensi Popup Terpisah (Opsional)")]
     public GameObject panelBackgroundDialog; // Background dialog yang akan ikut popup tiap ganti teks
-    public GameObject panelNamaKarakter;     // Panel nama yang hanya popup di awal
+    public GameObject panelNamaKarakter;
     
     public Slider loadingSlider;
 
@@ -89,8 +89,8 @@ public class Pengenalan : MonoBehaviour
     public float jedaSetelahDialogAwal = 2f;
     public float durasiBootingTV = 5f;
     public float durasiFadeOut = 1f;
-    public float jedaBacaBerita = 3f; // Jeda sebelum dialog berita muncul
-    public float durasiTransisiTeks = 0.3f; // Waktu fade in/out teks
+    public float jedaBacaBerita = 3f;
+    public float durasiTransisiTeks = 0.3f;
 
     private int indeksDialogSaatIni = 0;
     private int batasAkhirDialogSaatIni = 0;
@@ -98,10 +98,10 @@ public class Pengenalan : MonoBehaviour
     public static bool sedangDialogAktif = false;
     private bool sedangDialog = false;
     private bool sedangTransisiTeks = false;
-    private Material blinkMaterial; // Material shader untuk efek Eye Blink
+    private Material blinkMaterial;
 
     [HideInInspector] 
-    public bool sedangMencariBarang = false; // Flag untuk menghentikan dialog sampai barang dicari
+    public bool sedangMencariBarang = false;
 
     void Start()
     {
@@ -110,9 +110,8 @@ public class Pengenalan : MonoBehaviour
         if (blackScreenPanel != null) 
         {
             blackScreenPanel.SetActive(true);
-            blackScreenPanel.transform.SetAsLastSibling(); // Pastikan layar hitam berada paling depan
+            blackScreenPanel.transform.SetAsLastSibling();
             
-            // Coba ambil material shader Eye Blink
             Image bgImage = blackScreenPanel.GetComponent<Image>();
             if (bgImage != null && bgImage.material != null && bgImage.material.HasProperty("_Blink"))
             {
@@ -167,7 +166,7 @@ public class Pengenalan : MonoBehaviour
         // Matikan efek TV di awal (intensity = 0 agar tidak terlihat)
         SetTVEffectIntensity(0f);
         
-        if (loadingSlider != null) loadingSlider.gameObject.SetActive(false); // Sembunyikan slider di awal
+        if (loadingSlider != null) loadingSlider.gameObject.SetActive(false);
 
         // Cek jika mode langsung ke Main Menu diaktifkan (untuk cepat tes/debug)
         if (langsungKeMainMenu)
@@ -176,7 +175,6 @@ public class Pengenalan : MonoBehaviour
             return;
         }
 
-        // Memulai coroutine urutan alur
         StartCoroutine(UrutanPengenalan());
     }
 
@@ -213,7 +211,6 @@ public class Pengenalan : MonoBehaviour
         sedangDialogAktif = false;
         sedangTransisiTeks = false;
 
-        // Matikan semua panel/elemen pengenalan
         if (blankMonitor != null) blankMonitor.SetActive(false);
         if (bootingTV != null) bootingTV.SetActive(false);
         if (beritaKonteks != null) beritaKonteks.SetActive(false);
@@ -226,7 +223,6 @@ public class Pengenalan : MonoBehaviour
         if (panelDetailKoranLatar != null) panelDetailKoranLatar.SetActive(false);
         if (blackScreenPanel != null) blackScreenPanel.SetActive(false);
 
-        // Aktifkan langsung Main Menu utama beserta animasinya
         AktifkanDanAnimasikanMainMenu();
         Debug.Log("⚡ [DEBUG] Berhasil loncat langsung ke Main Menu tanpa melewati alur pengenalan!");
     }
@@ -237,7 +233,7 @@ public class Pengenalan : MonoBehaviour
         if (blackScreenPanel != null)
         {
             yield return StartCoroutine(FadeBlackScreen(1f, 0f, durasiFadeBlack));
-            blackScreenPanel.SetActive(false); // Nonaktifkan panel hitam setelah pudar
+            blackScreenPanel.SetActive(false);
         }
 
         // 2. Tunggu beberapa detik (default 3 detik) sebelum memunculkan dialog
@@ -246,38 +242,33 @@ public class Pengenalan : MonoBehaviour
         // 3. Munculkan dialog awal (Anda bisa isi sendiri nama dan dialognya di Inspector)
         yield return StartCoroutine(JalankanDialog(dialogAwal));
 
-        // 3.5 Jeda setelah dialog awal selesai
         yield return new WaitForSeconds(jedaSetelahDialogAwal);
 
         // Mematikan panel kasur jika masih menyala agar tidak menutupi booting TV
         if (panelKasur != null) panelKasur.SetActive(false);
 
-        // 4. Munculkan panel Booting TV
         if (bootingTV != null) bootingTV.SetActive(true);
         
         // 5. Jalankan animasi loading slider (muncul telat 1 detik, lalu ngisi tersendat)
         if (loadingSlider != null)
         {
-            loadingSlider.interactable = false; // Matikan interaksi klik oleh player
+            loadingSlider.interactable = false;
             loadingSlider.value = 0f;
-            loadingSlider.gameObject.SetActive(false); // Pastikan tersembunyi
+            loadingSlider.gameObject.SetActive(false);
             
             // Jeda 1 detik sebelum slider muncul di layar
             yield return new WaitForSeconds(1f);
             loadingSlider.gameObject.SetActive(true);
 
             float sisaWaktuLoading = durasiBootingTV - 1f;
-            if (sisaWaktuLoading <= 0) sisaWaktuLoading = 1f; // Failsafe
+            if (sisaWaktuLoading <= 0) sisaWaktuLoading = 1f;
             
             float waktuTersita = 0f;
 
-            // Loop untuk mengisi slider tersendat-sendat secara acak
             while (waktuTersita < sisaWaktuLoading && loadingSlider.value < 1f)
             {
-                // Jeda berhenti (tersendat)
                 float jedaAcak = Random.Range(0.1f, 0.4f);
                 
-                // Pastikan waktu tidak bablas dari total durasi
                 if (waktuTersita + jedaAcak > sisaWaktuLoading)
                 {
                     jedaAcak = sisaWaktuLoading - waktuTersita;
@@ -286,12 +277,11 @@ public class Pengenalan : MonoBehaviour
                 yield return new WaitForSeconds(jedaAcak);
                 waktuTersita += jedaAcak;
 
-                // Lompatan isi loading bar secara acak
                 float nilaiAcak = Random.Range(0.05f, 0.35f);
                 loadingSlider.value += nilaiAcak;
             }
 
-            loadingSlider.value = 1f; // Pastikan penuh 100% di akhir
+            loadingSlider.value = 1f;
 
             // Jika slider penuh lebih cepat dari sisa waktu, diam sejenak sampai waktunya pas
             if (waktuTersita < sisaWaktuLoading)
@@ -315,7 +305,7 @@ public class Pengenalan : MonoBehaviour
         if (bootingTV != null)
         {
             yield return StartCoroutine(FadeOutObjek(bootingTV, durasiFadeOut));
-            bootingTV.SetActive(false); // Matikan objek setelah selesai fade out
+            bootingTV.SetActive(false);
         }
 
         // 7.5 Tunggu 3 detik agar pemain bisa mengamati isi gambar Berita Konteks
@@ -333,7 +323,6 @@ public class Pengenalan : MonoBehaviour
             blackScreenPanel.SetActive(true);
             blackScreenPanel.transform.SetAsLastSibling();
             
-            // Tutup mata (fade ke hitam penuh)
             yield return StartCoroutine(FadeBlackScreen(0f, 1f, 0.25f));
             
             // Gelap total selama 0.5 detik (Anda bisa sesuaikan waktunya)
@@ -344,13 +333,11 @@ public class Pengenalan : MonoBehaviour
             if (beritaKonteks != null) beritaKonteks.SetActive(true);
             SetTVEffectIntensity(0f);
             
-            // Buka mata perlahan
             yield return StartCoroutine(FadeBlackScreen(1f, 0f, 0.4f));
             blackScreenPanel.SetActive(false);
         }
         else
         {
-            // Fallback jika tidak ada objek black screen
             if (beritaKonteksFullscreen != null) beritaKonteksFullscreen.SetActive(false);
             if (beritaKonteks != null) beritaKonteks.SetActive(true);
             SetTVEffectIntensity(0f);
@@ -377,7 +364,6 @@ public class Pengenalan : MonoBehaviour
             blackScreenPanel.SetActive(true);
             blackScreenPanel.transform.SetAsLastSibling();
             
-            // Tutup mata (fade ke hitam penuh)
             yield return StartCoroutine(FadeBlackScreen(0f, 1f, 0.25f));
             yield return new WaitForSeconds(0.5f);
             
@@ -385,7 +371,6 @@ public class Pengenalan : MonoBehaviour
             if (panelKoran != null) panelKoran.SetActive(false);
             if (mainMenuScreenDialog != null) mainMenuScreenDialog.SetActive(true);
             
-            // Buka mata perlahan
             yield return StartCoroutine(FadeBlackScreen(1f, 0f, 0.4f));
             blackScreenPanel.SetActive(false);
         }
@@ -410,7 +395,6 @@ public class Pengenalan : MonoBehaviour
             blackScreenPanel.SetActive(true);
             blackScreenPanel.transform.SetAsLastSibling();
             
-            // Tutup mata (fade ke hitam penuh)
             yield return StartCoroutine(FadeBlackScreen(0f, 1f, 0.25f));
             yield return new WaitForSeconds(0.5f);
             
@@ -419,7 +403,6 @@ public class Pengenalan : MonoBehaviour
             if (blankMonitor != null) blankMonitor.SetActive(false);
             AktifkanDanAnimasikanMainMenu();
             
-            // Buka mata perlahan
             yield return StartCoroutine(FadeBlackScreen(1f, 0f, 0.4f));
             blackScreenPanel.SetActive(false);
         }
@@ -430,7 +413,6 @@ public class Pengenalan : MonoBehaviour
             AktifkanDanAnimasikanMainMenu();
         }
 
-        // Selesai pengenalan
         Debug.Log("Alur Pengenalan Selesai! Berhasil berpindah ke Main Menu.");
     }
 
@@ -468,7 +450,6 @@ public class Pengenalan : MonoBehaviour
             }
 
             // Jika script baru dipasang otomatis saat runtime (karena belum dipasang di Inspector),
-            // maka berikan konfigurasi default otomatis.
             // ATAU jika sudah dipasang tapi delayMuncul persis 0 dan modeStay masih default Breathing,
             // dan user TIDAK mencentang khusus atau merubahnya, kita hanya timpa jika memang otomatis dipasang.
             if (dipasangOtomatisOlehScript)
@@ -511,14 +492,12 @@ public class Pengenalan : MonoBehaviour
             }
         }
 
-        // Siapkan panel koran untuk di-fade
         CanvasGroup cg = panelKoran.GetComponent<CanvasGroup>();
         if (cg == null) cg = panelKoran.AddComponent<CanvasGroup>();
         cg.alpha = 0f;
         
         panelKoran.SetActive(true);
 
-        // Fade in keseluruhan panel (termasuk background blackFade)
         float durasiFade = 1f;
         float waktuMulai = Time.time;
         while (Time.time < waktuMulai + durasiFade)
@@ -528,12 +507,10 @@ public class Pengenalan : MonoBehaviour
         }
         cg.alpha = 1f;
 
-        // Beri jeda sedikit setelah panel gelap muncul
         yield return new WaitForSeconds(0.5f);
 
         if (daftarGambarKoran != null)
         {
-            // Munculkan koran satu per satu
             for (int i = 0; i < daftarGambarKoran.Length; i++)
             {
                 if (daftarGambarKoran[i] == null) continue;
@@ -566,39 +543,34 @@ public class Pengenalan : MonoBehaviour
                     Button btnKoran = daftarDetailKoran[i].koranDiMeja.GetComponent<Button>();
                     if (btnKoran == null) btnKoran = daftarDetailKoran[i].koranDiMeja.AddComponent<Button>();
                     btnKoran.interactable = true;
-                    btnKoran.transition = Selectable.Transition.None; // Matikan warna abu-abu kusam bawaan tombol
+                    btnKoran.transition = Selectable.Transition.None;
                     btnKoran.onClick.RemoveAllListeners();
                     btnKoran.onClick.AddListener(() => StartCoroutine(BukaDetailKoran(idx)));
 
-                    // Pasang efek animasi hover dinamis
                     AnimasiHoverUI hov = daftarDetailKoran[i].koranDiMeja.GetComponent<AnimasiHoverUI>();
                     if (hov == null) hov = daftarDetailKoran[i].koranDiMeja.AddComponent<AnimasiHoverUI>();
                 }
             }
         }
 
-        // Munculkan tombol Next secara Popup
         if (tombolNext != null)
         {
             tombolNext.transform.SetAsLastSibling();
             tombolNext.SetActive(true);
             yield return StartCoroutine(PopupObjekUI(tombolNext.transform, 0.35f));
 
-            // Cari target gambar panah (child dari tombolNext)
             Transform targetPanah = gambarPanahNext;
             if (targetPanah == null && tombolNext.transform.childCount > 0)
             {
                 targetPanah = tombolNext.transform.GetChild(0);
             }
-            if (targetPanah == null) targetPanah = tombolNext.transform; // Fallback jika tidak ada child
+            if (targetPanah == null) targetPanah = tombolNext.transform;
 
-            // Mulai animasi mengambang naik turun pada panah
             if (targetPanah != null)
             {
                 StartCoroutine(AnimasikanNgambang(targetPanah));
             }
 
-            // Siapkan deteksi klik tombol Next
             bool isNextClicked = false;
             Button btn = tombolNext.GetComponent<Button>();
             if (btn == null) btn = tombolNext.AddComponent<Button>();
@@ -641,7 +613,6 @@ public class Pengenalan : MonoBehaviour
     {
         sedangTransisiTeks = true;
         
-        // Fade out teks sebelumnya
         yield return StartCoroutine(FadeTeks(1f, 0f, durasiTransisiTeks));
 
         if (blackScreenPanel != null)
@@ -649,13 +620,10 @@ public class Pengenalan : MonoBehaviour
             blackScreenPanel.SetActive(true);
             blackScreenPanel.transform.SetAsLastSibling();
             
-            // Tutup mata (fade ke hitam penuh)
             yield return StartCoroutine(FadeBlackScreen(0f, 1f, 0.25f));
             
-            // Gelap total selama 0.5 detik
             yield return new WaitForSeconds(0.5f);
             
-            // Ganti latar menjadi berita fullscreen
         if (beritaKonteksFullscreen != null) 
         {
             beritaKonteksFullscreen.SetActive(true);
@@ -669,21 +637,17 @@ public class Pengenalan : MonoBehaviour
             // Dan blackscreen (kelopak mata) tetap paling depan saat mau dibuka
             blackScreenPanel.transform.SetAsLastSibling();
             
-            // Siapkan teks dialog ke-3 di belakang layar
             UpdateTeksUI();
             
-            // Buka mata perlahan menampilkan scene baru
             yield return StartCoroutine(FadeBlackScreen(1f, 0f, 0.4f));
             blackScreenPanel.SetActive(false);
         }
         else
         {
-            // Fallback jika tidak ada black screen
             if (beritaKonteksFullscreen != null) beritaKonteksFullscreen.SetActive(true);
             UpdateTeksUI();
         }
 
-        // Fade in teks dialog baru
         yield return StartCoroutine(FadeTeks(0f, 1f, durasiTransisiTeks));
 
         sedangTransisiTeks = false;
@@ -715,7 +679,6 @@ public class Pengenalan : MonoBehaviour
             yield return null;
         }
 
-        // Pastikan nilai mencapai akhir secara akurat
         if (blinkMaterial != null)
         {
             blinkMaterial.SetFloat("_Blink", nilaiAkhir);
@@ -740,7 +703,7 @@ public class Pengenalan : MonoBehaviour
             if (bubbleNamePanel != null) 
             {
                 bubbleNamePanel.SetActive(true);
-                bubbleNamePanel.transform.SetAsLastSibling(); // Pastikan UI Dialog selalu paling depan
+                bubbleNamePanel.transform.SetAsLastSibling();
             }
             
             // Animasi popup khusus untuk nama karakter (hanya di awal dialog)
@@ -749,7 +712,6 @@ public class Pengenalan : MonoBehaviour
                 StartCoroutine(PopupAwalObjek(panelNamaKarakter.transform, durasiTransisiTeks));
             }
             
-            // Set transisi teks
             sedangTransisiTeks = true;
             
             // PENTING: Update teks dulu dengan data index 0 sebelum di-fade in
@@ -764,7 +726,6 @@ public class Pengenalan : MonoBehaviour
                 if (cg != null) cg.alpha = 1f;
             }
             
-            // Fade in teks pertama
             yield return StartCoroutine(FadeTeks(0f, 1f, durasiTransisiTeks));
             
             sedangTransisiTeks = false;
@@ -809,7 +770,7 @@ public class Pengenalan : MonoBehaviour
                 StartCoroutine(TransisiTeksBerikutnya());
             }
         }
-        else // Jika dialog sudah habis
+        else
         {
             StartCoroutine(SelesaikanDialog());
         }
@@ -819,7 +780,6 @@ public class Pengenalan : MonoBehaviour
     {
         sedangTransisiTeks = true;
         // Dialog masih berlanjut normal, jadi jangan kunci pencarian dulu
-        // sedangMencariBarang tidak diaktifkan di sini
 
         // Fade out keseluruhan panel dialog agar benar-benar hilang sebelum layar berkedip
         if (bubbleNamePanel != null)
@@ -831,32 +791,27 @@ public class Pengenalan : MonoBehaviour
             yield return StartCoroutine(FadeTeks(1f, 0f, durasiTransisiTeks));
         }
 
-        // Transisi Mata Tertutup (Blink)
         if (blackScreenPanel != null)
         {
             blackScreenPanel.SetActive(true);
             blackScreenPanel.transform.SetAsLastSibling();
             
-            // Tutup mata perlahan
             yield return StartCoroutine(FadeBlackScreen(0f, 1f, 0.25f));
             
-            // Saat mata tertutup rapat, nyalakan panel kasur
             yield return new WaitForSeconds(0.5f);
             if (panelKasur != null) panelKasur.SetActive(true);
             
-            // Buka mata perlahan
             yield return StartCoroutine(FadeBlackScreen(1f, 0f, 0.4f));
             blackScreenPanel.SetActive(false);
         }
         else
         {
-            // Fallback
             if (panelKasur != null) panelKasur.SetActive(true);
         }
 
         // Ubah ke teks dialog indeks ke-5 (baris ke-6)
         UpdateTeksUI();
-        SetTeksAlpha(0f); // Reset alpha komponen sebelum di-fade in
+        SetTeksAlpha(0f);
         
         // Memunculkan kembali bubble name dengan animasi popup seperti saat dialog awal
         if (panelNamaKarakter != null)
@@ -869,7 +824,6 @@ public class Pengenalan : MonoBehaviour
             if (cg != null) cg.alpha = 1f;
         }
 
-        // Fade in teks dialog baru
         yield return StartCoroutine(FadeTeks(0f, 1f, durasiTransisiTeks));
 
         sedangTransisiTeks = false;
@@ -890,26 +844,22 @@ public class Pengenalan : MonoBehaviour
             yield return StartCoroutine(FadeTeks(1f, 0f, durasiTransisiTeks));
         }
         
-        // Kunci dialog dan izinkan player menggeser baju
         sedangMencariBarang = true;
         DraggableUI.canDrag = true;
         
         sedangTransisiTeks = false;
     }
 
-    // Dipanggil saat item (Remote TV) berhasil diklik
     public void BarangDitemukan()
     {
         if (sedangMencariBarang)
         {
             sedangMencariBarang = false;
-            DraggableUI.canDrag = false; // Kunci lagi bajunya agar tidak bisa digeser
+            DraggableUI.canDrag = false;
             
-            // Lanjut tampilkan dialog ke-9 (indeks 8)
             UpdateTeksUI();
-            SetTeksAlpha(0f); // Reset komponen
+            SetTeksAlpha(0f);
             
-            // Munculkan kembali nama dan background dialog
             if (panelNamaKarakter != null)
             {
                 StartCoroutine(PopupAwalObjek(panelNamaKarakter.transform, durasiTransisiTeks));
@@ -928,16 +878,13 @@ public class Pengenalan : MonoBehaviour
     {
         sedangTransisiTeks = true;
 
-        // Fade out teks (dialog ke-9)
         yield return StartCoroutine(FadeTeks(1f, 0f, durasiTransisiTeks));
 
-        // Transisi Mata Tertutup (Blink)
         if (blackScreenPanel != null)
         {
             blackScreenPanel.SetActive(true);
             blackScreenPanel.transform.SetAsLastSibling();
             
-            // Tutup mata perlahan
             yield return StartCoroutine(FadeBlackScreen(0f, 1f, 0.25f));
             
             yield return new WaitForSeconds(0.5f);
@@ -945,7 +892,6 @@ public class Pengenalan : MonoBehaviour
             // Matikan panel kasur, sehingga layar belakangnya (Blank Monitor) terlihat kembali
             if (panelKasur != null) panelKasur.SetActive(false);
             
-            // Buka mata perlahan
             yield return StartCoroutine(FadeBlackScreen(1f, 0f, 0.4f));
             blackScreenPanel.SetActive(false);
         }
@@ -954,7 +900,6 @@ public class Pengenalan : MonoBehaviour
             if (panelKasur != null) panelKasur.SetActive(false);
         }
 
-        // Lanjut ke indeks dialog berikutnya
         indeksDialogSaatIni++;
         
         if (indeksDialogSaatIni < arrayDialogAktif.Length)
@@ -974,13 +919,10 @@ public class Pengenalan : MonoBehaviour
     {
         sedangTransisiTeks = true;
 
-        // Fade out teks sebelumnya
         yield return StartCoroutine(FadeTeks(1f, 0f, durasiTransisiTeks));
 
-        // Ubah teks
         UpdateTeksUI();
 
-        // Fade in teks baru
         yield return StartCoroutine(FadeTeks(0f, 1f, durasiTransisiTeks));
 
         sedangTransisiTeks = false;
@@ -997,7 +939,6 @@ public class Pengenalan : MonoBehaviour
         }
         else
         {
-            // Fallback
             yield return StartCoroutine(FadeTeks(1f, 0f, durasiTransisiTeks));
         }
 
@@ -1024,7 +965,6 @@ public class Pengenalan : MonoBehaviour
 
     void UpdateTeksUI()
     {
-        // Update teks UI dengan data dari inspector
         if (textNamaKarakter != null) textNamaKarakter.text = arrayDialogAktif[indeksDialogSaatIni].namaKarakter;
         if (textIsiDialog != null) textIsiDialog.text = arrayDialogAktif[indeksDialogSaatIni].teksDialog;
     }
@@ -1071,11 +1011,9 @@ public class Pengenalan : MonoBehaviour
         {
             float progress = (Time.time - waktuMulai) / durasi;
             
-            // Alpha fade (memudar)
             float currentAlpha = Mathf.Lerp(alphaAwal, alphaAkhir, Mathf.Sin(progress * Mathf.PI * 0.5f));
             SetTeksAlpha(currentAlpha);
             
-            // Animasi Popup Scale
             if (targetScale != null)
             {
                 float scale = 1f;
@@ -1083,14 +1021,13 @@ public class Pengenalan : MonoBehaviour
                 {
                     // Membesar dari 0.2 ke 1.0 dengan efek membal (Overshoot / Ease Out Back)
                     float t = progress - 1f;
-                    float s = 2.0f; // Tingkat pantulan/bounce
+                    float s = 2.0f;
                     float easeOutBack = (t * t * ((s + 1f) * t + s) + 1f);
                     
                     scale = Mathf.Lerp(0.2f, 1f, easeOutBack);
                 }
                 else
                 {
-                    // Mengecil dengan cepat dari 1.0 ke 0.2
                     float easeIn = progress * progress * progress; 
                     scale = Mathf.Lerp(1f, 0.2f, easeIn);
                 }
@@ -1135,7 +1072,6 @@ public class Pengenalan : MonoBehaviour
             float scale = Mathf.Lerp(0.2f, 1f, easeOutBack);
             obj.localScale = new Vector3(scale, scale, 1f);
             
-            // Fade-in untuk kotak nama dan teksnya
             float currentAlpha = Mathf.Lerp(0f, 1f, progress);
             cg.alpha = currentAlpha;
             if (textNamaKarakter != null)
@@ -1198,7 +1134,6 @@ public class Pengenalan : MonoBehaviour
             canvasGroup = objekToFade.AddComponent<CanvasGroup>();
         }
 
-        // Set alpha awal menjadi penuh (1)
         canvasGroup.alpha = 1f;
 
         float waktuMulai = Time.time;
@@ -1210,7 +1145,6 @@ public class Pengenalan : MonoBehaviour
             yield return null;
         }
 
-        // Pastikan alpha benar-benar 0 di akhir
         canvasGroup.alpha = 0f;
     }
     // Mengontrol intensitas efek Old TV langsung melalui property _Intensity pada material
@@ -1234,7 +1168,7 @@ public class Pengenalan : MonoBehaviour
         {
             float progress = (Time.time - waktuMulai) / durasi;
             float t = progress - 1f;
-            float s = 2.0f; // Efek pantulan (overshoot bounce)
+            float s = 2.0f;
             float easeOutBack = (t * t * ((s + 1f) * t + s) + 1f);
             
             float scale = Mathf.Lerp(0.2f, 1f, easeOutBack);
@@ -1284,7 +1218,6 @@ public class Pengenalan : MonoBehaviour
 
         sedangMelihatDetail = true;
 
-        // Sembunyikan tombol Next sementara saat melihat berita
         if (tombolNext != null) tombolNext.SetActive(false);
 
         // Simpan posisi desain asli kiri di Inspector jika belum tersimpan
@@ -1300,7 +1233,6 @@ public class Pengenalan : MonoBehaviour
             }
         }
 
-        // Aktifkan panel latar gelap
         if (panelDetailKoranLatar != null)
         {
             panelDetailKoranLatar.SetActive(true);
@@ -1309,7 +1241,6 @@ public class Pengenalan : MonoBehaviour
             if (cgLatar == null) cgLatar = panelDetailKoranLatar.AddComponent<CanvasGroup>();
             cgLatar.alpha = 1f;
 
-            // Tambahkan event klik latar untuk menutup berita
             Button btnLatar = panelDetailKoranLatar.GetComponent<Button>();
             if (btnLatar == null) btnLatar = panelDetailKoranLatar.AddComponent<Button>();
             btnLatar.onClick.RemoveAllListeners();
@@ -1325,14 +1256,12 @@ public class Pengenalan : MonoBehaviour
             }
         }
 
-        // Sembunyikan teks berita terlebih dahulu
         if (data.grupTeksBerita != null)
         {
             data.grupTeksBerita.alpha = 0f;
             data.grupTeksBerita.gameObject.SetActive(false);
         }
 
-        // Letakkan poster di tengah layar terlebih dahulu
         data.posterDetail.anchoredPosition = Vector2.zero;
         data.posterDetail.localScale = new Vector3(0.2f, 0.2f, 1f);
 
@@ -1340,7 +1269,6 @@ public class Pengenalan : MonoBehaviour
         if (cgPoster == null) cgPoster = data.posterDetail.gameObject.AddComponent<CanvasGroup>();
         cgPoster.alpha = 0f;
 
-        // 1. Animasi Popup Muncul di Tengah
         float durasiPopup = 0.35f;
         float waktuMulai = Time.time;
         while (Time.time < waktuMulai + durasiPopup)
@@ -1376,7 +1304,6 @@ public class Pengenalan : MonoBehaviour
         }
         data.posterDetail.anchoredPosition = targetKiri;
 
-        // 4. Animasi Munculkan Teks di Sebelah Kanan
         if (data.grupTeksBerita != null)
         {
             data.grupTeksBerita.gameObject.SetActive(true);

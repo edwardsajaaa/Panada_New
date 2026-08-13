@@ -35,7 +35,7 @@ public class PlayerMovementUI : MonoBehaviour
     public Animator animatorKarakter;
 
     private RectTransform rectTransform;
-    private bool menghadapKanan; // Akan diatur di Start
+    private bool menghadapKanan;
 
     // Komponen untuk trik sinkronisasi animasi 2D ke UI
     private SpriteRenderer dummySpriteRenderer;
@@ -46,7 +46,6 @@ public class PlayerMovementUI : MonoBehaviour
         // Atur arah hadap awal berdasarkan centang di Inspector
         menghadapKanan = !gambarBawaanHadapKiri;
 
-        // Komponen wajib untuk objek UI
         rectTransform = GetComponent<RectTransform>();
         uiImage = GetComponent<UnityEngine.UI.Image>();
         dummySpriteRenderer = GetComponent<SpriteRenderer>();
@@ -64,16 +63,14 @@ public class PlayerMovementUI : MonoBehaviour
         if (SistemBlokirGerak.SedangBukaUI())
         {
             if (animatorKarakter != null) animatorKarakter.SetBool("isWalking", false);
-            return; // Berhenti memproses input di bawah
+            return;
         }
 
         if (!abaikanInput)
         {
-            // Cek apakah tombol lari ditekan
             bool sedangLari = Input.GetKey(tombolLari);
             float kecepatanSaatIni = sedangLari ? kecepatanLari : kecepatanJalan;
 
-            // Ambil input A/D atau Panah Kiri/Kanan
             float inputX = Input.GetAxisRaw("Horizontal");
             
             if (balikArahKiriKanan) inputX = -inputX;
@@ -83,7 +80,6 @@ public class PlayerMovementUI : MonoBehaviour
             {
                 Vector2 posBaru = rectTransform.anchoredPosition + new Vector2(inputX * kecepatanSaatIni * Time.deltaTime, 0f);
                 
-                // Batasi pergerakan agar tidak keluar layar
                 if (gunakanBatas)
                 {
                     posBaru.x = Mathf.Clamp(posBaru.x, batasKiri, batasKanan);
@@ -92,19 +88,17 @@ public class PlayerMovementUI : MonoBehaviour
                 rectTransform.anchoredPosition = posBaru;
             }
 
-            // --- MENGATUR ANIMASI ---
             if (animatorKarakter != null)
             {
                 bool sedangBerjalan = Mathf.Abs(inputX) > 0.01f;
                 animatorKarakter.SetBool("isWalking", sedangBerjalan);
 
                 if (sedangBerjalan && sedangLari)
-                    animatorKarakter.speed = 1.6f; // Putar animasi jalan lebih cepat saat lari
+                    animatorKarakter.speed = 1.6f;
                 else
                     animatorKarakter.speed = 1f;
             }
 
-            // Logika membalik gambar karakter saat berbelok
             if (inputX > 0 && !menghadapKanan)
             {
                 BalikArah();
@@ -123,7 +117,6 @@ public class PlayerMovementUI : MonoBehaviour
             {
                 uiImage.sprite = dummySpriteRenderer.sprite;
                 
-                // SetNativeSize mengembalikan proporsi asli gambar (tidak gepeng)
                 if (pertahankanProporsiAsli)
                 {
                     uiImage.SetNativeSize();

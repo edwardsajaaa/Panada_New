@@ -24,7 +24,6 @@ public class ClickableItem : MonoBehaviour, IPointerClickHandler
     {
         if (!sudahDiklik && imageTarget != null)
         {
-            // Efek kedap-kedip menggunakan fungsi Sin (berkisar antara alphaMinimum hingga 1)
             float alpha = Mathf.Lerp(alphaMinimum, 1f, (Mathf.Sin(Time.time * kecepatanKedip) + 1f) / 2f);
             Color c = imageTarget.color;
             c.a = alpha;
@@ -38,7 +37,6 @@ public class ClickableItem : MonoBehaviour, IPointerClickHandler
         {
             sudahDiklik = true;
             
-            // Kembalikan opasitas menjadi 100% (berhenti berkedip)
             if (imageTarget != null)
             {
                 Color c = imageTarget.color;
@@ -46,7 +44,6 @@ public class ClickableItem : MonoBehaviour, IPointerClickHandler
                 imageTarget.color = c;
             }
 
-            // Jalankan fungsi apapun yang didaftarkan di Inspector
             onClick.Invoke();
         }
     }

@@ -58,7 +58,6 @@ public class PopupInteraksi : MonoBehaviour
 
     void Start()
     {
-        // Cari kamera aktif di scene
         if (Camera.main != null)
         {
             cam = Camera.main;
@@ -123,7 +122,6 @@ public class PopupInteraksi : MonoBehaviour
         bool dalamAreaOtomatis = false;
         Vector3 titikPusat = pusatInteraksi != null ? pusatInteraksi.position : transform.position;
 
-        // Mendeteksi jarak pemain
         if (modeUICanvas)
         {
             if (playerTransform != null)
@@ -153,7 +151,6 @@ public class PopupInteraksi : MonoBehaviour
 
         bool terpicu = false;
 
-        // Logika memicu event
         if (sedangAktif)
         {
             if (pemicuOtomatis && !sudahOtomatis && dalamAreaOtomatis)
@@ -171,29 +168,25 @@ public class PopupInteraksi : MonoBehaviour
             sudahOtomatis = false;
         }
 
-        // Jika terpicu, jalankan event-nya!
         if (terpicu)
         {
             if (gunakanTransisiPindahRuang && TransisiRuangan.Instance != null)
             {
-                // Gunakan animasi transisi pixel dari TransisiRuangan
                 TransisiRuangan.Instance.Jalankan(saatDiinteraksi);
             }
             else
             {
-                // Jalankan instan tanpa animasi
                 saatDiinteraksi?.Invoke();
             }
         }
 
-        // Terapkan animasi skala atau langsung aktif/nonaktif
         bool harusTampil = sedangAktif && !sembunyikanSementara;
 
         if (gunakanAnimasiSkala)
         {
             if (harusTampil && !popupVisual.activeSelf)
             {
-                popupVisual.SetActive(true); // Nyalakan objek sebelum animasinya mulai membesar
+                popupVisual.SetActive(true);
             }
 
             Vector3 targetSkala = harusTampil ? skalaAsli : Vector3.zero;
@@ -207,14 +200,12 @@ public class PopupInteraksi : MonoBehaviour
         }
         else
         {
-            // Jika tidak pakai animasi, langsung matikan/nyalakan
             if (popupVisual.activeSelf != harusTampil)
             {
                 popupVisual.SetActive(harusTampil);
             }
         }
 
-        // Terapkan gerak mengambang bolak-balik (Bouncing)
         if (harusTampil && popupVisual.activeSelf && tipeGerakTambahan != TipeAnimasiGerak.Diam)
         {
             float offset = Mathf.Sin(Time.time * kecepatanBouncing) * jarakBouncing;

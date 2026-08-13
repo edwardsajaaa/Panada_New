@@ -8,7 +8,6 @@ public class CekKlikUI : MonoBehaviour, IPointerClickHandler
     {
         Debug.Log("🟢 TOMBOL BERHASIL DITEKAN: " + gameObject.name, gameObject);
         
-        // Ubah warna acak untuk memberikan respon visual yang sangat jelas
         Image img = GetComponent<Image>();
         if (img != null)
         {

@@ -19,7 +19,6 @@ public class AnimasiNotifikasiGanda : MonoBehaviour
 
     void OnEnable()
     {
-        // Pastikan keduanya mati dulu
         if (notifPertama != null) notifPertama.SetActive(false);
         if (notifKedua != null) notifKedua.SetActive(false);
         
@@ -28,7 +27,6 @@ public class AnimasiNotifikasiGanda : MonoBehaviour
 
     IEnumerator ProsesNotifGanda()
     {
-        // 1. Munculkan Notif Pertama dengan efek Pop-Up
         if (notifPertama != null)
         {
             notifPertama.SetActive(true);
@@ -40,7 +38,6 @@ public class AnimasiNotifikasiGanda : MonoBehaviour
                 waktu += Time.deltaTime;
                 float progress = waktu / durasiPopupPertama;
                 
-                // Rumus Ease-Out Back (memantul di akhir)
                 float t = progress - 1f;
                 float s = 1.70158f;
                 float easeOutBack = (t * t * ((s + 1f) * t + s) + 1f);
@@ -51,10 +48,8 @@ public class AnimasiNotifikasiGanda : MonoBehaviour
             notifPertama.transform.localScale = skalaAkhirNotifPertama;
         }
 
-        // 2. Jeda sebentar
         yield return new WaitForSeconds(jedaAntarNotif);
 
-        // 3. Munculkan Notif Kedua dengan efek Pop-Up yang lebih besar
         if (notifKedua != null)
         {
             notifKedua.SetActive(true);
@@ -76,7 +71,6 @@ public class AnimasiNotifikasiGanda : MonoBehaviour
             notifKedua.transform.localScale = skalaAkhirNotifKedua;
         }
 
-        // 4. Matikan Notif Pertama saat Notif Kedua sudah aktif sepenuhnya
         if (notifPertama != null)
         {
             notifPertama.SetActive(false);

@@ -38,13 +38,11 @@ public class TransisiRuangan : MonoBehaviour
 
     void Start()
     {
-        // Failsafe: sembunyikan lagi di Start untuk jaga-jaga
         SembunyikanSemua();
     }
 
     void SiapkanKomponen()
     {
-        // GARANSI: Objek ini PASTI punya Canvas sendiri
         Canvas c = GetComponent<Canvas>();
         if (c == null)
             c = gameObject.AddComponent<Canvas>();
@@ -73,7 +71,6 @@ public class TransisiRuangan : MonoBehaviour
             materialTransisi.SetFloat("_Progress", 1f);
         }
 
-        // Pastikan layar menutupi seluruh layar
         RectTransform rt = GetComponent<RectTransform>();
         rt.anchorMin = Vector2.zero;
         rt.anchorMax = Vector2.one;
@@ -87,7 +84,6 @@ public class TransisiRuangan : MonoBehaviour
         }
         // Ukuran dan posisi RawImage menggunakan pengaturan asli dari Inspector Anda
 
-        // Sembunyikan semuanya
         SembunyikanSemua();
     }
 
@@ -131,14 +127,13 @@ public class TransisiRuangan : MonoBehaviour
             materialTransisi.SetFloat("_Progress", progress);
             yield return null;
         }
-        materialTransisi.SetFloat("_Progress", 0f); // Layar 100% gelap
+        materialTransisi.SetFloat("_Progress", 0f);
 
         // ====== TAHAP 2: LAYAR SUDAH GELAP TOTAL, MUNCULKAN RAW IMAGE LOADING ======
         if (rawImageLoading != null)
         {
             rawImageLoading.gameObject.SetActive(true);
 
-            // Restart video dari awal agar tidak stuck
             UnityEngine.Video.VideoPlayer vp = rawImageLoading.GetComponent<UnityEngine.Video.VideoPlayer>();
             if (vp != null)
             {
@@ -147,7 +142,6 @@ public class TransisiRuangan : MonoBehaviour
             }
         }
 
-        // Jeda agar pemain bisa melihat animasi loading
         yield return new WaitForSeconds(jedaDiTengah);
 
         // ====== TAHAP 3: JALANKAN EVENT PERPINDAHAN RUANGAN ======
@@ -173,9 +167,8 @@ public class TransisiRuangan : MonoBehaviour
             materialTransisi.SetFloat("_Progress", progress);
             yield return null;
         }
-        materialTransisi.SetFloat("_Progress", 1f); // Layar 100% jernih
+        materialTransisi.SetFloat("_Progress", 1f);
 
-        // ====== TAHAP 6: SELESAI, SEMBUNYIKAN SEMUANYA ======
         layarTransisi.enabled = false;
         sedangTransisi = false;
     }

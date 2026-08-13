@@ -23,16 +23,14 @@ public class AnimasiSlideshow : MonoBehaviour
 
     void Awake()
     {
-        // Ambil semua objek anak jika fitur otomatis menyala
         if (ambilSemuaAnakOtomatis)
         {
             daftarGambar.Clear();
             foreach (Transform anak in transform)
             {
-                // Abaikan objek yang merupakan teks (mengandung TextMeshPro)
                 if (anak.GetComponent<TMPro.TMP_Text>() != null)
                 {
-                    continue; // Jangan masukkan ke daftar slideshow
+                    continue;
                 }
                 
                 daftarGambar.Add(anak.gameObject);
@@ -40,12 +38,10 @@ public class AnimasiSlideshow : MonoBehaviour
         }
     }
 
-    // Dipanggil setiap kali panel berita / induk dari script ini dinyalakan
     void OnEnable()
     {
         if (daftarGambar.Count > 0)
         {
-            // Sembunyikan seluruh gambar di awal agar tidak numpuk
             foreach (GameObject gambar in daftarGambar)
             {
                 if (gambar != null) gambar.SetActive(false);
@@ -60,40 +56,33 @@ public class AnimasiSlideshow : MonoBehaviour
     {
         while (true)
         {
-            // 1. Nyalakan gambar pada indeks saat ini
             if (daftarGambar[indeksSekarang] != null)
             {
                 daftarGambar[indeksSekarang].SetActive(true);
             }
 
-            // 2. Tunggu selama beberapa detik (Sesuai Waktu Tampil)
             yield return new WaitForSeconds(waktuTampil);
 
-            // 3. Matikan gambar saat ini sebelum pindah ke gambar baru
             if (daftarGambar[indeksSekarang] != null)
             {
                 daftarGambar[indeksSekarang].SetActive(false);
             }
 
-            // 4. Maju ke gambar berikutnya
             indeksSekarang++;
             
-            // 5. Jika sudah mencapai batas gambar terakhir
             if (indeksSekarang >= daftarGambar.Count)
             {
                 if (putarTerusMenerus)
                 {
-                    // Ulangi kembali ke gambar pertama (loop)
                     indeksSekarang = 0;
                 }
                 else
                 {
-                    // Berhenti di gambar terakhir dan pastikan gambar tersebut tetap menyala
                     if (daftarGambar[daftarGambar.Count - 1] != null)
                     {
                         daftarGambar[daftarGambar.Count - 1].SetActive(true);
                     }
-                    break; // Akhiri proses Coroutine
+                    break;
                 }
             }
         }

@@ -32,7 +32,6 @@ public class PengaturanAudioUI : MonoBehaviour
 
     void Start()
     {
-        // Inisialisasi dan muat data saat menu pengaturan dibuka
         MuatDataDanUpdateUI(audioBGM);
         MuatDataDanUpdateUI(audioMain);
         MuatDataDanUpdateUI(audioVoice);
@@ -43,13 +42,10 @@ public class PengaturanAudioUI : MonoBehaviour
     {
         if (string.IsNullOrEmpty(kategori.namaPreferensi)) return;
 
-        // Ambil data dari PlayerPrefs (default 5 jika pemain baru pertama kali main)
         kategori.levelSaatIni = PlayerPrefs.GetInt(kategori.namaPreferensi, 5);
         
-        // Update UI Warna Kotak
         PerbaruiVisualKotak(kategori);
         
-        // Terapkan ke Mixer
         TerapkanVolumeKeMixer(kategori);
     }
 
@@ -57,19 +53,16 @@ public class PengaturanAudioUI : MonoBehaviour
     {
         if (kategori.blokVolume == null || kategori.blokVolume.Length == 0) return;
 
-        // Cek satu per satu ke-5 kotak dari bawah ke atas
         for (int i = 0; i < kategori.blokVolume.Length; i++)
         {
             if (kategori.blokVolume[i] != null)
             {
-                // Jika urutan kotak di bawah level saat ini, NYALAKAN kotaknya!
                 if (i < kategori.levelSaatIni)
                 {
                     kategori.blokVolume[i].gameObject.SetActive(true);
                 }
                 else
                 {
-                    // Jika di atas level, MATIKAN kotaknya (sehingga lubang hitam background terlihat)
                     kategori.blokVolume[i].gameObject.SetActive(false);
                 }
             }
@@ -80,19 +73,14 @@ public class PengaturanAudioUI : MonoBehaviour
     {
         if (masterMixer == null || string.IsNullOrEmpty(kategori.namaParameterMixer)) return;
 
-        // Standar Audio Game Profesional:
-        // Konversi level 0-5 menjadi Decibel (dB) logaritmik untuk Unity AudioMixer
-        float volumeDecibel = -80f; // -80dB artinya MUTE total
+        float volumeDecibel = -80f;
         
         if (kategori.levelSaatIni > 0)
         {
-            // Level 1 = 20%, Level 5 = 100%
             float persentase = (float)kategori.levelSaatIni / 5f;
-            // Rumus Logaritmik Audio: log10(value) * 20
             volumeDecibel = Mathf.Log10(persentase) * 20f;
         }
 
-        // Kirim angka desibel ke AudioMixer
         masterMixer.SetFloat(kategori.namaParameterMixer, volumeDecibel);
     }
 
@@ -100,24 +88,17 @@ public class PengaturanAudioUI : MonoBehaviour
     {
         kategori.levelSaatIni += perubahan;
 
-        // Batasi level agar tidak pernah kurang dari 0 atau lebih dari 5
         kategori.levelSaatIni = Mathf.Clamp(kategori.levelSaatIni, 0, 5);
 
-        // Simpan ke sistem agar tidak reset saat keluar game
         if (!string.IsNullOrEmpty(kategori.namaPreferensi))
         {
             PlayerPrefs.SetInt(kategori.namaPreferensi, kategori.levelSaatIni);
             PlayerPrefs.Save();
         }
 
-        // Langsung Update Visual & Suara saat itu juga
         PerbaruiVisualKotak(kategori);
         TerapkanVolumeKeMixer(kategori);
     }
-
-    // =======================================================
-    // FUNGSI-FUNGSI DI BAWAH INI YANG DIMASUKKAN KE TOMBOL UI
-    // =======================================================
 
     public void TambahBGM()   { UbahVolume(audioBGM, 1); }
     public void KurangiBGM()  { UbahVolume(audioBGM, -1); }

@@ -5,7 +5,7 @@ using UnityEngine.Events;
 public class AnimasiHandphoneKamar : MonoBehaviour
 {
     [Header("Waktu")]
-    public float waktuTunggu = 4.0f; // di set 4 detik sesuai request
+    public float waktuTunggu = 4.0f;
 
     [Header("Visual Yang Muncul (HP & Tombol)")]
     public GameObject[] visualYangMuncul;
@@ -35,7 +35,6 @@ public class AnimasiHandphoneKamar : MonoBehaviour
             sudahSimpanPosisi = true;
         }
 
-        // matiin semua visual pas mulai
         if (visualYangMuncul != null)
         {
             foreach(var obj in visualYangMuncul)
@@ -80,7 +79,6 @@ public class AnimasiHandphoneKamar : MonoBehaviour
         StartCoroutine(ProsesLangsung());
     }
 
-    // Fungsi KHUSUS untuk pesan kedua
     public void JalankanAnimasiPesanKedua()
     {
         if (panelMeja != null && sudahSimpanPosisi)
@@ -124,17 +122,14 @@ public class AnimasiHandphoneKamar : MonoBehaviour
 
     IEnumerator ProsesMulai()
     {
-        // 1. Tunggu beberapa detik
         yield return new WaitForSeconds(waktuTunggu);
 
         // 2. Jalankan zoom meja dan tunggu sampai beres
         if (panelMeja != null)
             yield return StartCoroutine(AnimasiZoomPanel());
 
-        // 3. Jeda 2 detik
         yield return new WaitForSeconds(2f);
 
-        // 4. Nyalain semua object
         AktifkanVisualDanEfek(visualYangMuncul);
 
         if (eventSaatHpMenyala != null) eventSaatHpMenyala.Invoke();
@@ -158,7 +153,6 @@ public class AnimasiHandphoneKamar : MonoBehaviour
         Vector3 offset = target.position - posisiAwal;
         Vector3 posisiAkhir = layarTengah - (offset * rasio);
 
-        // cegah gambar panel jebol/keluar layar hitam (clamping)
         Vector3[] batas = new Vector3[4];
         canvas.GetComponent<RectTransform>().GetWorldCorners(batas);
         float lebarLayar = batas[2].x - batas[0].x;
@@ -178,7 +172,6 @@ public class AnimasiHandphoneKamar : MonoBehaviour
         posisiAkhir.x = Mathf.Clamp(posisiAkhir.x, posisiNetral.x - batasX, posisiNetral.x + batasX);
         posisiAkhir.y = Mathf.Clamp(posisiAkhir.y, posisiNetral.y - batasY, posisiNetral.y + batasY);
 
-        // animasi jalan
         float waktu = 0f;
         while (waktu < durasiZoom)
         {
@@ -204,7 +197,6 @@ public class AnimasiHandphoneKamar : MonoBehaviour
                 {
                     obj.SetActive(true);
                     
-                    // Otomatis nyalakan lagi script kedip jika ada
                     EfekKedipBergantian efek = obj.GetComponentInChildren<EfekKedipBergantian>(true);
                     if (efek != null)
                     {

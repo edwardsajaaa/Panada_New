@@ -60,13 +60,11 @@ public class KetikTeksDialog : MonoBehaviour
     {
         if (percakapan.Length > 0 && teksDialog != null)
         {
-            // Kosongkan teks di awal
             teksDialog.text = ""; 
             if (teksNama != null) teksNama.text = ""; 
             
             sudahMulai = false;
 
-            // Sembunyikan gelembung sepenuhnya di detik ke-0
             if (grupGelembung != null) 
             {
                 grupGelembung.alpha = 0f;
@@ -74,7 +72,6 @@ public class KetikTeksDialog : MonoBehaviour
                 grupGelembung.blocksRaycasts = true;
             }
 
-            // Mulai proses alur animasi yang mulus
             StartCoroutine(AlurDialogMengalir());
         }
     }
@@ -84,7 +81,6 @@ public class KetikTeksDialog : MonoBehaviour
         // 1. Tunggu 3 detik (waktu agar pemain fokus ke berita TV dulu)
         yield return new WaitForSeconds(waktuTungguGelembung);
 
-        // 2. Memunculkan Gelembung perlahan (Fade In)
         if (grupGelembung != null && durasiFadeGelembung > 0)
         {
             float timer = 0;
@@ -94,23 +90,20 @@ public class KetikTeksDialog : MonoBehaviour
                 grupGelembung.alpha = Mathf.Lerp(0f, 1f, timer / durasiFadeGelembung);
                 yield return null;
             }
-            grupGelembung.alpha = 1f; // Pastikan mentok 100%
+            grupGelembung.alpha = 1f;
         }
 
-        // 3. Jeda sedikit agar tidak terkesan terburu-buru
         yield return new WaitForSeconds(jedaSebelumMengetik);
 
-        // 4. Barulah mulai mengetik ceritanya
         sudahMulai = true;
         
-        // Cek apakah harus melompati baris pertama
         int indeksAwal = 0;
         if (lewatiBarisPertamaSetelahDiulang && sudahPernahDitampilkan && percakapan.Length > 1)
         {
-            indeksAwal = 1; // Mulai dari baris kedua
+            indeksAwal = 1;
         }
         
-        sudahPernahDitampilkan = true; // Tandai bahwa dialog ini sudah pernah muncul
+        sudahPernahDitampilkan = true;
         MulaiDialog(indeksAwal);
     }
 
@@ -131,7 +124,6 @@ public class KetikTeksDialog : MonoBehaviour
             }
             else
             {
-                // Lanjut ke kalimat berikutnya
                 LanjutDialog();
             }
         }
@@ -159,9 +151,8 @@ public class KetikTeksDialog : MonoBehaviour
 
     IEnumerator TutupGelembung()
     {
-        sudahMulai = false; // Mencegah pemain mengklik lagi
+        sudahMulai = false;
 
-        // 1. Fade Out Gelembung
         if (grupGelembung != null && durasiFadeGelembung > 0)
         {
             float timer = 0;
@@ -189,13 +180,11 @@ public class KetikTeksDialog : MonoBehaviour
         
         BarisCeritaDialog dataSaatIni = percakapan[indeksKalimat];
         
-        // Perbarui nama karakter
         if (teksNama != null)
         {
             teksNama.text = dataSaatIni.namaKarakter;
         }
         
-        // Memunculkan teks huruf demi huruf
         foreach (char huruf in dataSaatIni.kalimat.ToCharArray())
         {
             teksDialog.text += huruf;

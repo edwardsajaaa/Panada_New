@@ -21,7 +21,6 @@ public class LoadingScreenController : MonoBehaviour
 
     void Awake()
     {
-        // setup singleton
         if (Instance == null)
         {
             Instance = this;
@@ -33,7 +32,6 @@ public class LoadingScreenController : MonoBehaviour
         }
 
         // sembunyiin panel loading tapi jangan di nonaktifin (SetActive false)
-        // soalnya coroutine ga jalan kalau objectnya mati
         if (panelLoading != null)
         {
             CanvasGroup cg = panelLoading.GetComponent<CanvasGroup>();
@@ -44,7 +42,6 @@ public class LoadingScreenController : MonoBehaviour
         }
     }
 
-    // panggil ini buat load scene
     public void MuatScene(string namaSceneTujuan)
     {
         if (!gameObject.activeInHierarchy) gameObject.SetActive(true);
@@ -53,7 +50,6 @@ public class LoadingScreenController : MonoBehaviour
         StartCoroutine(ProsesLoading(namaSceneTujuan));
     }
 
-    // load pakai index
     public void MuatSceneIndex(int indeksScene)
     {
         if (!gameObject.activeInHierarchy) gameObject.SetActive(true);
@@ -62,7 +58,6 @@ public class LoadingScreenController : MonoBehaviour
         StartCoroutine(ProsesLoadingIndex(indeksScene));
     }
 
-    // shortcut load kamar
     public void BukaSceneKamar()
     {
         MuatScene("Kamar");
@@ -96,7 +91,6 @@ public class LoadingScreenController : MonoBehaviour
         // 5. Jalankan Event perpindahan ruangan (Kamar mati, Outdoor nyala) secara instan di balik layar gelap
         eventTengah?.Invoke();
 
-        // Sembunyikan video sebelum layar transisi kembali terbuka
         AturVisibilitasVideo(false);
 
         // 6. Transisi keluar (layar kembali jernih dan menampilkan ruangan baru)
@@ -109,7 +103,6 @@ public class LoadingScreenController : MonoBehaviour
             yield return new WaitForSeconds(0.3f);
         }
 
-        // 7. Selesai, matikan panel loading sepenuhnya
         if (panelLoading != null)
         {
             panelLoading.SetActive(false);
@@ -129,7 +122,7 @@ public class LoadingScreenController : MonoBehaviour
         
         if (materialTransisiPixel != null)
         {
-            yield return StartCoroutine(JalankanTransisiPixel(true)); // Transisi IN (Muncul/Layar Hitam)
+            yield return StartCoroutine(JalankanTransisiPixel(true));
             
             // 2b. MUNCULKAN VIDEO SETELAH LAYAR BENAR-BENAR HITAM SEPENUHNYA!
             AturVisibilitasVideo(true);
@@ -151,9 +144,8 @@ public class LoadingScreenController : MonoBehaviour
 
         if (materialTransisiPixel != null)
         {
-            yield return StartCoroutine(JalankanTransisiPixel(true)); // Transisi IN (Muncul/Layar Hitam)
+            yield return StartCoroutine(JalankanTransisiPixel(true));
             
-            // MUNCULKAN VIDEO SETELAH LAYAR BENAR-BENAR HITAM SEPENUHNYA!
             AturVisibilitasVideo(true);
         }
 
@@ -268,20 +260,17 @@ public class LoadingScreenController : MonoBehaviour
                 animPanel.JalankanUlangAnimasiIn();
             }
 
-            // --- OTOMATISASI & PERBAIKAN VIDEO PLAYER ---
             // Cari semua VideoPlayer di panelLoading (termasuk pada anak seperti RawImage)
             UnityEngine.Video.VideoPlayer[] videoPlayers = panelLoading.GetComponentsInChildren<UnityEngine.Video.VideoPlayer>(true);
             foreach (var vp in videoPlayers)
             {
                 if (vp == null) continue;
 
-                // Pastikan GameObject VideoPlayer aktif
                 if (!vp.gameObject.activeInHierarchy) vp.gameObject.SetActive(true);
 
                 // Periksa apakah VideoPlayer menggunakan Render Mode : Render Texture tetapi Target Texture-nya masih kosong (None)
                 if (vp.renderMode == UnityEngine.Video.VideoRenderMode.RenderTexture && vp.targetTexture == null)
                 {
-                    // Cari RawImage pada objek yang sama
                     RawImage rawImg = vp.GetComponent<RawImage>();
                     if (rawImg != null)
                     {
@@ -305,7 +294,6 @@ public class LoadingScreenController : MonoBehaviour
                 RawImage rImg = vp.GetComponent<RawImage>();
                 if (rImg != null && materialTransisiPixel != null) rImg.enabled = false;
 
-                // Mulai putar video dari awal
                 vp.Stop();
                 vp.Play();
             }
@@ -344,14 +332,11 @@ public class LoadingScreenController : MonoBehaviour
             // Jika progress sudah mencapai 100% (0.9 pada Unity) dan waktu minimal loading sudah terpenuhi
             if (operasi.progress >= 0.9f && (Time.time - waktuMulaiLoading) >= minimalWaktuLoading)
             {
-                // SEMBUNYIKAN VIDEO SEBELUM PINDAH SCENE
                 AturVisibilitasVideo(false);
 
-                // --- LOGIKA LINTAS SCENE (CROSS-SCENE) ---
                 // Agar script ini dan layar loading tidak hancur saat pindah scene:
                 if (panelLoading != null)
                 {
-                    // Cabut panel dari Canvas utamanya agar mandiri
                     panelLoading.transform.SetParent(null);
                     
                     // Beri komponen Canvas sendiri agar tetap terlihat di layar
@@ -360,11 +345,10 @@ public class LoadingScreenController : MonoBehaviour
                     {
                         c = panelLoading.AddComponent<Canvas>();
                         c.renderMode = RenderMode.ScreenSpaceOverlay;
-                        c.sortingOrder = 9999; // Tampil paling depan menutupi segalanya
+                        c.sortingOrder = 9999;
                         panelLoading.AddComponent<UnityEngine.UI.GraphicRaycaster>();
                     }
 
-                    // Bawa Panel ini ke Scene Baru
                     DontDestroyOnLoad(panelLoading);
                     
                     // Jika script ini tidak menempel di panelLoading, bawa juga script ini!

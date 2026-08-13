@@ -19,23 +19,21 @@ public class BGMManager : MonoBehaviour
 
     private AudioSource audioSource1;
     private AudioSource audioSource2;
-    private bool pakaiSource1 = true; // Menandakan source mana yang sedang aktif
+    private bool pakaiSource1 = true;
 
     private Coroutine transisiBerjalan;
 
     void Awake()
     {
-        // Pastikan hanya ada SATU BGMManager di seluruh game
         if (Instance != null && Instance != this)
         {
-            Destroy(gameObject); // Hancurkan duplikat jika pindah ke scene yang juga punya BGMManager
+            Destroy(gameObject);
             return;
         }
 
         Instance = this;
-        DontDestroyOnLoad(gameObject); // Bikin abadi antar scene
+        DontDestroyOnLoad(gameObject);
 
-        // Siapkan 2 AudioSource untuk keperluan crossfade
         audioSource1 = gameObject.AddComponent<AudioSource>();
         audioSource2 = gameObject.AddComponent<AudioSource>();
 
@@ -48,7 +46,6 @@ public class BGMManager : MonoBehaviour
         audioSource1.volume = 0f;
         audioSource2.volume = 0f;
 
-        // Hubungkan ke Mixer BGM jika ada
         if (bgmMixerGroup != null)
         {
             audioSource1.outputAudioMixerGroup = bgmMixerGroup;
@@ -66,10 +63,8 @@ public class BGMManager : MonoBehaviour
         AudioSource sourceAktif = pakaiSource1 ? audioSource1 : audioSource2;
         AudioSource sourceBerikutnya = pakaiSource1 ? audioSource2 : audioSource1;
 
-        // Cegah lagu mengulang (restart) jika ternyata lagunya sama
         if (sourceAktif.clip == laguBaru && sourceAktif.isPlaying)
         {
-            // Jika lagunya sama tapi volumenya diubah, sesuaikan volumenya
             if (sourceAktif.volume != targetVolume)
             {
                 sourceAktif.volume = targetVolume;
@@ -77,16 +72,13 @@ public class BGMManager : MonoBehaviour
             return;
         }
 
-        // Siapkan lagu di source berikutnya
         sourceBerikutnya.clip = laguBaru;
         sourceBerikutnya.volume = 0f;
         sourceBerikutnya.Play();
 
-        // Mulai transisi Crossfade
         if (transisiBerjalan != null) StopCoroutine(transisiBerjalan);
         transisiBerjalan = StartCoroutine(ProsesCrossfade(sourceAktif, sourceBerikutnya, durasiFade, targetVolume));
 
-        // Tukar status source
         pakaiSource1 = !pakaiSource1;
     }
 
@@ -105,7 +97,6 @@ public class BGMManager : MonoBehaviour
         float timer = 0f;
         float volLama = sourceLama.volume;
         
-        // Batasi targetVol maksimal tidak lebih besar dari maxVolume manager
         float volumeAkhir = Mathf.Min(targetVol, maxVolume);
 
         while (timer < durasi)

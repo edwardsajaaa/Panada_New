@@ -10,7 +10,6 @@ public class TutupPanel : MonoBehaviour
 
     void Start()
     {
-        // Jika kolom panel dikosongkan, anggap objek tempat script ini berada adalah panelnya
         if (panelYangDitutup == null)
         {
             panelYangDitutup = this.gameObject;
@@ -19,29 +18,24 @@ public class TutupPanel : MonoBehaviour
 
     void Update()
     {
-        // Deteksi jika pemain menekan tombol keyboard (misal ESC)
         if (Input.GetKeyDown(tombolTutup))
         {
             Tutup();
         }
     }
 
-    // Fungsi ini sengaja dibuat 'public' agar bisa dikaitkan dengan Tombol UI (Button OnClick)
     public void Tutup()
     {
         if (panelYangDitutup != null)
         {
-            // Mengecek apakah panel ini punya efek animasi khusus
             AnimasiPanelFoto efekAnimasi = panelYangDitutup.GetComponent<AnimasiPanelFoto>();
             
             if (efekAnimasi != null)
             {
-                // Putar animasi tutup (Fade Out & Turun)
                 efekAnimasi.TutupDenganAnimasi();
             }
             else
             {
-                // Jika tidak ada animasi, langsung matikan seperti biasa
                 panelYangDitutup.SetActive(false);
             }
         }

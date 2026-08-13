@@ -45,7 +45,6 @@ public class ResponPilihanPesan : MonoBehaviour
 
     void Awake()
     {
-        // Reset status setiap kali scene dimuat
         pernahPilihNantiSaja = false;
     }
 
@@ -60,7 +59,6 @@ public class ResponPilihanPesan : MonoBehaviour
 
     public void KlikNantiSaja()
     {
-        // Catat bahwa pemain pernah menekan Nanti Saja
         pernahPilihNantiSaja = true;
 
         // Siapkan perubahan UI HP di belakang layar (dipindahkan ke saat layar sudah gelap)
@@ -77,17 +75,14 @@ public class ResponPilihanPesan : MonoBehaviour
             }
         }
 
-        // Tutup opsi
         if (panelPilihan != null) panelPilihan.SetActive(false);
 
         if (panelLayarHitam != null)
         {
-            // Gunakan transisi blink (bukan dialog lanjutan)
             StartCoroutine(ProsesBlinkKeNathan(nathanObj, bubleNameObj, false));
         }
         else
         {
-            // Langsung ganti tanpa blink (bukan dialog lanjutan)
             MunculkanNathan(nathanObj, bubleNameObj, false);
         }
     }
@@ -97,7 +92,6 @@ public class ResponPilihanPesan : MonoBehaviour
 
     public void KlikBalasSekarang()
     {
-        // 1. Matikan panel opsi agar tombol menghilang
         if (panelPilihan != null) panelPilihan.SetActive(false);
 
         // 2. Mulai coroutine untuk memunculkan pesan satu per satu
@@ -122,7 +116,6 @@ public class ResponPilihanPesan : MonoBehaviour
                         StartCoroutine(ScrollKeBawah());
                     }
 
-                    // Jeda sebelum pesan berikutnya muncul
                     yield return new WaitForSeconds(jedaAntarPesanBalasan);
                 }
             }
@@ -149,7 +142,6 @@ public class ResponPilihanPesan : MonoBehaviour
         // Tunggu 1 frame agar Layout Group dan Content Size Fitter merefresh ukurannya
         yield return new WaitForEndOfFrame();
         
-        // Paksa scroll menempel di paling bawah (0)
         if (scrollRectPesan != null)
         {
             scrollRectPesan.verticalNormalizedPosition = 0f;
@@ -173,7 +165,6 @@ public class ResponPilihanPesan : MonoBehaviour
             blinkMat.SetFloat("_Blink", 0f);
         }
 
-        // TUTUP MATA
         float waktu = 0f;
         while (waktu < durasiTutupMata)
         {
@@ -183,15 +174,12 @@ public class ResponPilihanPesan : MonoBehaviour
         }
         if (blinkMat != null) blinkMat.SetFloat("_Blink", 1f);
 
-        // JEDA GELAP & PERGANTIAN ADEGAN
         yield return new WaitForSecondsRealtime(jedaGelap);
 
-        // MATIKAN UI TANGAN/HP SAAT LAYAR SEDANG GELAP
         if (panelPesan != null) panelPesan.SetActive(false);
 
         MunculkanNathan(targetNathan, targetBuble, isLanjutan);
 
-        // BUKA MATA
         waktu = 0f;
         while (waktu < durasiBukaMata)
         {
@@ -211,7 +199,6 @@ public class ResponPilihanPesan : MonoBehaviour
 
     void MunculkanNathan(GameObject targetNathan, GameObject targetBuble, bool isLanjutan)
     {
-        // Matikan UI Tangan/HP
         if (panelPesan != null) panelPesan.SetActive(false);
 
         // --- AKTIFKAN PESAN BARU DI SINI (Saat HP sudah disembunyikan) ---
@@ -223,10 +210,8 @@ public class ResponPilihanPesan : MonoBehaviour
             }
         }
 
-        // Matikan HP di meja jika ada
         if (handphoneMeja != null) handphoneMeja.SetActive(false);
 
-        // Munculin char
         if (targetNathan != null) targetNathan.SetActive(true);
 
         if (targetBuble != null) 

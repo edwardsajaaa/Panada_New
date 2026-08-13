@@ -16,7 +16,6 @@ public class ItemMisi : MonoBehaviour
     /// </summary>
     public void TandaiDiinteraksi()
     {
-        // Hanya tambahkan progres JIKA belum pernah dicek sebelumnya
         if (!sudahDicek)
         {
             sudahDicek = true;

@@ -14,7 +14,6 @@ public class OldTVRenderFeature : ScriptableRendererFeature
         public OldTVPass(Material material)
         {
             this.material = material;
-            // Kita pindahkan ke AfterRendering agar dipastikan dieksekusi setelah Canvas UI selesai dirender
             renderPassEvent = RenderPassEvent.AfterRendering;
         }
 
@@ -45,10 +44,8 @@ public class OldTVRenderFeature : ScriptableRendererFeature
             material.SetColor("_ScanlineColor", volume.scanlineColor.value);
             material.SetColor("_NoiseColor", volume.noiseColor.value);
 
-            // Blit ke temporary texture untuk di proses shader
             Blitter.BlitCameraTexture(cmd, cameraColorTarget, tempTexture, material, 0);
             
-            // Kembalikan hasilnya ke layar utama
             Blitter.BlitCameraTexture(cmd, tempTexture, cameraColorTarget);
 
             context.ExecuteCommandBuffer(cmd);
@@ -82,7 +79,6 @@ public class OldTVRenderFeature : ScriptableRendererFeature
     {
         if (material == null) return;
         
-        // Render di Game View DAN Scene View agar tampilannya sama
         if (renderingData.cameraData.cameraType == CameraType.Game ||
             renderingData.cameraData.cameraType == CameraType.SceneView)
         {

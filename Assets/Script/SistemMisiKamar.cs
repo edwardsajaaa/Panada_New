@@ -41,23 +41,19 @@ public class SistemMisiKamar : MonoBehaviour
     {
         if (jumlahSudahDicek >= totalBarangWajib)
         {
-            // Misi selesai, izinkan keluar!
             Debug.Log("Misi selesai! Pintu terbuka.");
             
             if (gunakanTransisi && TransisiRuangan.Instance != null)
             {
-                // Gunakan animasi transisi pixel dari TransisiRuangan
                 TransisiRuangan.Instance.Jalankan(saatBisaKeluar);
             }
             else
             {
-                // Pindah instan tanpa transisi
                 saatBisaKeluar?.Invoke();
             }
         }
         else
         {
-            // Misi belum selesai, tolak!
             int kurang = totalBarangWajib - jumlahSudahDicek;
             Debug.Log($"Pintu terkunci! Masih ada {kurang} barang yang belum dicek.");
             saatBelumBisaKeluar?.Invoke();

@@ -25,9 +25,9 @@ public class InteraksiNPC : MonoBehaviour, IPointerClickHandler
 
     public enum TipeAnimasi
     {
-        MembesarDariKecil,  // Scale dari 0 ke 1
-        MelayanDariBawah,   // Slide naik dari bawah + fade
-        MelayanDariAtas     // Slide turun dari atas + fade
+        MembesarDariKecil,
+        MelayanDariBawah,
+        MelayanDariAtas
     }
 
     [Header("Pengaturan Jarak (Opsional)")]
@@ -48,7 +48,6 @@ public class InteraksiNPC : MonoBehaviour, IPointerClickHandler
 
     void Start()
     {
-        // Cari script PopupInteraksi di objek yang sama
         popup = GetComponent<PopupInteraksi>();
 
         // Pastikan Image di Interact ini bisa di-raycast (diklik) walau transparan
@@ -59,30 +58,25 @@ public class InteraksiNPC : MonoBehaviour, IPointerClickHandler
             // Jika belum ada sprite/gambar, buat transparan agar tidak mengganggu visual
             if (img.sprite == null)
             {
-                img.color = new Color(1, 1, 1, 0); // Transparan tapi tetap bisa diklik
+                img.color = new Color(1, 1, 1, 0);
             }
         }
 
-        // Cari pemain otomatis jika belum diisi
         if (playerTransform == null)
         {
             PlayerMovementUI playerUI = FindAnyObjectByType<PlayerMovementUI>();
             if (playerUI != null) playerTransform = playerUI.transform;
         }
 
-        // Siapkan DialogPopup
         if (dialogPopup != null)
         {
-            // Simpan skala dan posisi asli
             skalaAsli = dialogPopup.transform.localScale;
             dialogRect = dialogPopup.GetComponent<RectTransform>();
             if (dialogRect != null) posisiAsliDialog = dialogRect.anchoredPosition;
 
-            // Pastikan punya CanvasGroup untuk fade
             dialogGroup = dialogPopup.GetComponent<CanvasGroup>();
             if (dialogGroup == null) dialogGroup = dialogPopup.AddComponent<CanvasGroup>();
 
-            // Sembunyikan di awal
             dialogPopup.SetActive(false);
         }
     }
@@ -100,16 +94,14 @@ public class InteraksiNPC : MonoBehaviour, IPointerClickHandler
         }
     }
 
-    // Dipanggil saat pemain mengklik area Interact ini
     public void OnPointerClick(PointerEventData eventData)
     {
         if (dialogPopup == null) return;
 
-        // Cek jarak jika diperlukan
         if (perlucCekJarak && playerTransform != null)
         {
             float jarak = Vector3.Distance(transform.position, playerTransform.position);
-            if (jarak > jarakInteraksi) return; // Terlalu jauh, abaikan klik
+            if (jarak > jarakInteraksi) return;
         }
 
         ToggleDialog();
@@ -131,7 +123,6 @@ public class InteraksiNPC : MonoBehaviour, IPointerClickHandler
         dialogPopup.SetActive(true);
         dialogSedangAktif = true;
         
-        // Sembunyikan balon '?' dari PopupInteraksi jika ada
         if (popup != null) popup.sembunyikanSementara = true;
 
         animasiAktif = StartCoroutine(AnimasiBuka());
@@ -141,7 +132,6 @@ public class InteraksiNPC : MonoBehaviour, IPointerClickHandler
     {
         if (animasiAktif != null) StopCoroutine(animasiAktif);
 
-        // Munculkan kembali balon '?'
         if (popup != null) popup.sembunyikanSementara = false;
 
         animasiAktif = StartCoroutine(AnimasiTutup());
@@ -160,13 +150,12 @@ public class InteraksiNPC : MonoBehaviour, IPointerClickHandler
                 {
                     timer += Time.deltaTime;
                     float t = timer / durasiAnimasi;
-                    // Efek "bounce" halus menggunakan kurva overshooting
-                    float kurva = 1f - Mathf.Pow(1f - t, 3f); // Ease Out Cubic
-                    float skalaKurva = kurva * 1.05f; // Sedikit melampaui lalu kembali
+                    float kurva = 1f - Mathf.Pow(1f - t, 3f);
+                    float skalaKurva = kurva * 1.05f;
                     if (t > 0.8f) skalaKurva = Mathf.Lerp(1.05f, 1f, (t - 0.8f) / 0.2f);
                     
                     dialogPopup.transform.localScale = skalaAsli * skalaKurva;
-                    dialogGroup.alpha = Mathf.Clamp01(t * 2f); // Fade cepat di awal
+                    dialogGroup.alpha = Mathf.Clamp01(t * 2f);
                     yield return null;
                 }
                 break;
@@ -208,7 +197,6 @@ public class InteraksiNPC : MonoBehaviour, IPointerClickHandler
                 break;
         }
 
-        // Pastikan nilai akhir sempurna
         dialogPopup.transform.localScale = skalaAsli;
         dialogGroup.alpha = 1f;
         if (dialogRect != null) dialogRect.anchoredPosition = posisiAsliDialog;
@@ -225,7 +213,7 @@ public class InteraksiNPC : MonoBehaviour, IPointerClickHandler
                 {
                     timer += Time.deltaTime;
                     float t = timer / durasiAnimasi;
-                    float kurva = Mathf.Pow(t, 2f); // Ease In
+                    float kurva = Mathf.Pow(t, 2f);
                     dialogPopup.transform.localScale = Vector3.Lerp(skalaAsli, Vector3.zero, kurva);
                     dialogGroup.alpha = 1f - kurva;
                     yield return null;
@@ -250,7 +238,6 @@ public class InteraksiNPC : MonoBehaviour, IPointerClickHandler
                 break;
         }
 
-        // Matikan dialog sepenuhnya
         dialogPopup.SetActive(false);
         dialogSedangAktif = false;
         if (dialogRect != null) dialogRect.anchoredPosition = posisiAsliDialog;

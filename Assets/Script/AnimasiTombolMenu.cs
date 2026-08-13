@@ -7,23 +7,23 @@ public class AnimasiTombolMenu : MonoBehaviour, IPointerEnterHandler, IPointerEx
 {
     public enum ModeStay
     {
-        Breathing,              // Bernafas (Membesar-mengecil halus)
-        Floating,               // Mengambang (Naik-turun halus)
-        Wobble,                 // Bergoyang miring santai
+        Breathing,
+        Floating,
+        Wobble,
         Spinning,               // Berputar 360 derajat terus-menerus (sangat bagus untuk Logo / Piringan)
-        BreathingDanSpinning,   // Gabungan Bernafas + Berputar 360 derajat
-        Kombinasi,              // Gabungan Breathing + Floating + Wobble
+        BreathingDanSpinning,
+        Kombinasi,
         Diam                    // Diam saja di posisi setelah muncul (tanpa animasi idle)
     }
 
     public enum ModeAnimasiIn
     {
-        PopInBawah,         // Pop-in membesar dari bawah (Default tombol)
+        PopInBawah,
         PopUpMurni,         // Pop-in murni di tempat tanpa geser atau miring
         SlideDariKiri,      // Meluncur masuk dari sisi kiri layar ke kanan
         SlideDariKanan,     // Meluncur masuk dari sisi kanan layar ke kiri
-        SlideDariAtas,      // Meluncur masuk dari atas
-        SlideDariBawah,     // Meluncur masuk dari bawah
+        SlideDariAtas,
+        SlideDariBawah,
         FlipKartu3D,        // Membalik seperti kartu dari tertutup (-90 Y) ke terbuka (0 Y)
         JatuhKartuMeja,     // Melayang lalu jatuh ke atas meja seperti menaruh kartu
         Fade                // Murni memudar halus (alpha 0 -> 1) tanpa perubahan skala/posisi/rotasi
@@ -178,7 +178,6 @@ public class AnimasiTombolMenu : MonoBehaviour, IPointerEnterHandler, IPointerEx
         if (canvasGroup == null) canvasGroup = GetComponent<CanvasGroup>();
         if (canvasGroup == null) canvasGroup = gameObject.AddComponent<CanvasGroup>();
 
-        // Set kondisi awal berdasarkan modeAnimasiIn
         Vector3 skalaMulai = Vector3.zero;
         Vector2 posisiMulai = posisiAwal - new Vector2(0f, geserBawahAwal);
         Quaternion rotasiMulai = rotasiAwal * Quaternion.Euler(0f, 0f, -6f);
@@ -259,7 +258,7 @@ public class AnimasiTombolMenu : MonoBehaviour, IPointerEnterHandler, IPointerEx
             
             // Rumus EaseOutBack untuk efek pantulan pop-in / slide-in yang kenyal dan memukau
             float t = progress - 1f;
-            float s = kekuatanBounceIn; // overshoot amount
+            float s = kekuatanBounceIn;
             float easeOutBack = (t * t * ((s + 1f) * t + s) + 1f);
 
             if (modeAnimasiIn == ModeAnimasiIn.Fade)
@@ -288,7 +287,6 @@ public class AnimasiTombolMenu : MonoBehaviour, IPointerEnterHandler, IPointerEx
             yield return null;
         }
 
-        // Pastikan kembali tepat ke nilai awal
         transform.localScale = skalaAwal;
         if (rectTransform != null) rectTransform.anchoredPosition = posisiAwal;
         transform.localRotation = rotasiAwal;
@@ -339,30 +337,25 @@ public class AnimasiTombolMenu : MonoBehaviour, IPointerEnterHandler, IPointerEx
 
             if (modeStay == ModeStay.Diam)
             {
-                // Diam saja (tanpa gerakan idle setelah muncul)
                 break;
             }
             else if (modeStay == ModeStay.Breathing)
             {
-                // Bernafas membesar-mengecil halus
                 float scaleOffset = sinVal * intensitasSkalaStay;
                 transform.localScale = skalaAwal * (1f + scaleOffset);
             }
             else if (modeStay == ModeStay.Floating)
             {
-                // Mengambang naik-turun halus
                 float posOffset = sinVal * intensitasPosisiStay;
                 if (rectTransform != null) rectTransform.anchoredPosition = posisiAwal + new Vector2(0f, posOffset);
             }
             else if (modeStay == ModeStay.Wobble)
             {
-                // Goyang miring santai
                 float rotOffset = sinVal * intensitasRotasiStay;
                 transform.localRotation = rotasiAwal * Quaternion.Euler(0f, 0f, rotOffset);
             }
             else if (modeStay == ModeStay.Spinning)
             {
-                // Berputar 360 derajat terus-menerus
                 sudutPutaran += Time.deltaTime * kecepatanPutarStay;
                 if (sudutPutaran > 360f) sudutPutaran -= 360f;
                 else if (sudutPutaran < -360f) sudutPutaran += 360f;
@@ -370,7 +363,6 @@ public class AnimasiTombolMenu : MonoBehaviour, IPointerEnterHandler, IPointerEx
             }
             else if (modeStay == ModeStay.BreathingDanSpinning)
             {
-                // Gabungan Bernafas + Berputar 360 derajat
                 float scaleOffset = sinVal * intensitasSkalaStay;
                 transform.localScale = skalaAwal * (1f + scaleOffset);
 
@@ -381,7 +373,6 @@ public class AnimasiTombolMenu : MonoBehaviour, IPointerEnterHandler, IPointerEx
             }
             else if (modeStay == ModeStay.Kombinasi)
             {
-                // Gabungan Breathing + Floating + Wobble
                 float scaleOffset = sinVal * intensitasSkalaStay;
                 float posOffset = Mathf.Sin(t * 0.8f) * intensitasPosisiStay;
                 float rotOffset = Mathf.Sin(t * 0.6f) * intensitasRotasiStay;
@@ -432,7 +423,6 @@ public class AnimasiTombolMenu : MonoBehaviour, IPointerEnterHandler, IPointerEx
 
         sedangDitekan = true;
         StopAllCoroutines();
-        // Efek squash / tekan tombol
         StartCoroutine(TransisiKeTarget(skalaAwal * targetSkalaClick, posisiAwal - new Vector2(0f, 3f), rotasiAwal));
     }
 
@@ -653,7 +643,7 @@ public class AnimasiTombolMenu : MonoBehaviour, IPointerEnterHandler, IPointerEx
         while (Time.time < waktuMulai + durasiAnimasiOut)
         {
             float progress = (Time.time - waktuMulai) / durasiAnimasiOut;
-            float easeIn = progress * progress; // EaseInQuad supaya makin cepat pas keluar
+            float easeIn = progress * progress;
 
             transform.localScale = Vector3.LerpUnclamped(skalaStart, targetSkala, easeIn);
             if (rectTransform != null) rectTransform.anchoredPosition = Vector2.LerpUnclamped(posisiStart, targetPosisi, easeIn);

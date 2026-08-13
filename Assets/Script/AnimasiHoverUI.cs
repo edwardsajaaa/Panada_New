@@ -39,7 +39,6 @@ public class AnimasiHoverUI : MonoBehaviour, IPointerEnterHandler, IPointerExitH
             if (s != null) s.transition = UnityEngine.UI.Selectable.Transition.None;
         }
 
-        // PENGAMANAN KHUSUS UNTUK GAME 2.5D:
         // Jika script ini dipasang pada Sprite 2D biasa (bukan UI Canvas), dilarang keras mengubah urutan Hierarchy
         // karena akan merusak sistem Sorting Layer dan menimpa objek lain!
         if (GetComponent<SpriteRenderer>() != null)

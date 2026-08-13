@@ -46,13 +46,11 @@ public class ItemBaju : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         canvasGroup = GetComponent<CanvasGroup>();
         img = GetComponent<Image>();
         
-        // Simpan posisi awal di tumpukan
         posisiAwal = rectTransform.anchoredPosition;
         
         UpdateVisual();
     }
 
-    // Dipanggil saat baju pertama kali ditarik (Drag)
     public void OnBeginDrag(PointerEventData eventData)
     {
         // Jika sudah ditaruh di area kanan (selesai), kunci mati tidak bisa ditarik
@@ -60,19 +58,16 @@ public class ItemBaju : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
 
         // Tembus raycast agar saat di-drop bisa mendeteksi area di belakangnya
         canvasGroup.blocksRaycasts = false; 
-        canvasGroup.alpha = 0.8f; // Bikin agak transparan saat ditarik
+        canvasGroup.alpha = 0.8f;
     }
 
-    // Dipanggil terus-menerus saat mouse bergerak membawa baju
     public void OnDrag(PointerEventData eventData)
     {
         if (sudahDisimpanSelesai) return;
 
-        // Menggerakkan UI mengikuti mouse
         rectTransform.anchoredPosition += eventData.delta / GetComponentInParent<Canvas>().scaleFactor;
     }
 
-    // Dipanggil saat klik/drag dilepas
     public void OnEndDrag(PointerEventData eventData)
     {
         if (sudahDisimpanSelesai) return;
@@ -85,7 +80,6 @@ public class ItemBaju : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
         {
             if (areaSelesai != null && RectTransformUtility.RectangleContainsScreenPoint(areaSelesai, Input.mousePosition, eventData.pressEventCamera))
             {
-                // Sukses ditaruh di area kanan!
                 sudahDisimpanSelesai = true;
                 
                 // Gunakan titik snap spesifik jika ada, jika tidak kembali ke tengah area selesai
@@ -112,7 +106,6 @@ public class ItemBaju : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
             // Jika baju BELUM HIJAU (merah/kuning), target drop-nya adalah areaLipat (tengah)
             if (areaLipat != null && RectTransformUtility.RectangleContainsScreenPoint(areaLipat, Input.mousePosition, eventData.pressEventCamera))
             {
-                // Sukses masuk area tengah
                 sedangDiArea = true;
                 rectTransform.position = areaLipat.position;
             }
@@ -122,14 +115,12 @@ public class ItemBaju : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
                 sedangDiArea = false;
                 rectTransform.anchoredPosition = posisiAwal;
                 
-                // Reset kembali jadi berantakan (merah)
                 faseSaatIni = 0; 
                 UpdateVisual();
             }
         }
     }
 
-    // Dipanggil saat baju DIKLIK
     public void OnPointerClick(PointerEventData eventData)
     {
         if (sudahDisimpanSelesai) return; // Kalau sudah dikunci di kanan, ga bisa diklik
@@ -145,10 +136,8 @@ public class ItemBaju : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDrag
     [Tooltip("Centang agar ukuran baju otomatis menyesuaikan gambar aslinya (tidak gepeng) saat berganti fase")]
     public bool gunakanUkuranAsliGambar = true;
 
-    // Memperbarui visual sesuai fase saat ini
     void UpdateVisual()
     {
-        // 1. Update warna
         if (warnaFase.Length > faseSaatIni)
         {
             img.color = warnaFase[faseSaatIni];

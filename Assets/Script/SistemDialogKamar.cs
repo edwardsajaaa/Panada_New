@@ -122,7 +122,6 @@ public class SistemDialogKamar : MonoBehaviour
         
         if (jedaAwal > 0f)
         {
-            // Sembunyikan UI sementara menunggu jeda
             if (panelUtamaDialog != null) panelUtamaDialog.SetActive(false);
             if (panelBubleName != null) panelBubleName.SetActive(false);
             
@@ -148,7 +147,6 @@ public class SistemDialogKamar : MonoBehaviour
         if (panelBubleName != null)
         {
             panelBubleName.SetActive(true);
-            // Set durasi standar untuk popup awal
             StartCoroutine(PopupAwalObjek(panelBubleName.transform, 0.3f));
         }
 
@@ -160,7 +158,7 @@ public class SistemDialogKamar : MonoBehaviour
 
     void Update()
     {
-        if (sedangDitutup) return; // Kunci input jika sedang proses tutup
+        if (sedangDitutup) return;
 
         if (Input.GetMouseButtonDown(0))
         {
@@ -168,7 +166,6 @@ public class SistemDialogKamar : MonoBehaviour
             {
                 if (transisiCoroutine != null) StopCoroutine(transisiCoroutine);
                 
-                // Langsung tampilkan semua karakter
                 if (teksIsiDialog != null)
                 {
                     teksIsiDialog.maxVisibleCharacters = teksIsiDialog.text.Length;
@@ -197,7 +194,7 @@ public class SistemDialogKamar : MonoBehaviour
     IEnumerator KetikTeks(string teks)
     {
         sedangTransisi = true;
-        SetTeksAlpha(1f); // Pastikan alpha tidak tembus pandang
+        SetTeksAlpha(1f);
         
         teksIsiDialog.text = teks;
 
@@ -279,7 +276,6 @@ public class SistemDialogKamar : MonoBehaviour
                     MonoBehaviour runner = tempRunner.AddComponent<AnimasiNotifikasiGanda>();
                     runner.StartCoroutine(LoadingScreenRoutine(tempRunner));
                 }
-                // PRIORITAS 2: Blink (untuk urutan normal)
                 else if (transisiBuble == TransisiKeluar.Blink && panelLayarHitam != null)
                 {
                     panelLayarHitam.SetActive(true);
@@ -289,7 +285,6 @@ public class SistemDialogKamar : MonoBehaviour
 
                     blinkRunner.StartCoroutine(BlinkOutRoutine(blinkRunner));
                 }
-                // PRIORITAS 3: LoadingScreenKhusus manual (untuk urutan normal)
                 else if (transisiBuble == TransisiKeluar.LoadingScreenKhusus && panelLoadingScreen != null)
                 {
                     GameObject tempRunner = new GameObject("TempLoadingRunner");
@@ -320,7 +315,6 @@ public class SistemDialogKamar : MonoBehaviour
             blinkMat.SetFloat("_Blink", 0f);
         }
 
-        // 1. TUTUP MATA
         float waktu = 0f;
         while (waktu < durasiTutupMata)
         {
@@ -330,7 +324,6 @@ public class SistemDialogKamar : MonoBehaviour
         }
         if (blinkMat != null) blinkMat.SetFloat("_Blink", 1f);
 
-        // 2. JEDA GELAP & TUKAR OBJEK
         yield return new WaitForSecondsRealtime(jedaGelap);
         
         if (panelBubleName != null) panelBubleName.SetActive(false);
@@ -374,8 +367,6 @@ public class SistemDialogKamar : MonoBehaviour
                 
                 if (tahanLayarHitamSetelahLoading)
                 {
-                    // Karena pindah scene, layar harus TETAP HITAM.
-                    // Hentikan coroutine agar Buka Mata tidak berjalan.
                     yield break;
                 }
                 else
@@ -400,7 +391,6 @@ public class SistemDialogKamar : MonoBehaviour
                 objekNyalaSaatZoomIn.SetActive(false);
             }
 
-            // SNAP INSTAN ZOOM OUT (Saat layar gelap)
             if (panelUntukZoom != null)
             {
                 savedZoomInScale = gunakanPosisiAwalSebagaiZoomIn ? panelUntukZoom.localScale : skalaZoomIn;
@@ -419,7 +409,6 @@ public class SistemDialogKamar : MonoBehaviour
             }
         }
 
-        // 3. BUKA MATA
         waktu = 0f;
         while (waktu < durasiBukaMata)
         {
@@ -448,7 +437,6 @@ public class SistemDialogKamar : MonoBehaviour
         
         if (gunakanLanjutan && oldLayarHitamParent != null)
         {
-            // Kembalikan ke parent asalnya
             panelLayarHitam.transform.SetParent(oldLayarHitamParent);
         }
 
@@ -498,18 +486,16 @@ public class SistemDialogKamar : MonoBehaviour
                 if (anim == null)
                 {
                     anim = obj.gameObject.AddComponent<AnimasiTombolMenu>();
-                    anim.gunakanAnimasiIn = false; // Cegah ter-trigger animasi IN
+                    anim.gunakanAnimasiIn = false;
                     anim.gunakanAnimasiOut = true;
-                    anim.ResetKePosisiAwal(); // Kembalikan ke wujud normal sebelum animasi out
+                    anim.ResetKePosisiAwal();
                 }
                 anim.modeAnimasiOut = transisiObjekLain;
                 anim.durasiAnimasiOut = 0.4f;
-                // Paksa objek animasi turun lalu mati otomatis
                 anim.JalankanAnimasiOut(null, true); 
             }
         }
 
-        // 2. Animasi keluar untuk Buble Name
         if (panelBubleName != null)
         {
             if (transisiBuble == TransisiKeluar.HilangLangsung)
@@ -526,10 +512,8 @@ public class SistemDialogKamar : MonoBehaviour
                 {
                     float progress = (Time.time - waktuMulai) / durasiTutupBuble;
                     
-                    // Fade out selalu jalan
                     cg.alpha = Mathf.Lerp(1f, 0f, progress);
                     
-                    // Scale down cuma kalau mode PopOut
                     if (transisiBuble == TransisiKeluar.PopOut)
                     {
                         float scale = Mathf.Lerp(1f, 0.2f, progress);
@@ -560,7 +544,6 @@ public class SistemDialogKamar : MonoBehaviour
 
         sedangDitutup = false;
 
-        // 4. JALANKAN ZOOM SETELAH TRANSISI SELESAI
         if (!gunakanLanjutan && panelUntukZoom != null && !lewatiAnimasiZoom)
         {
             GameObject tempRunnerObj = new GameObject("TempZoomRunner");
@@ -583,7 +566,6 @@ public class SistemDialogKamar : MonoBehaviour
             yield break;
         }
 
-        // 1. Animasi Zoom Out (Dilewati jika instan)
         if (!zoomOutInstan)
         {
             float waktu = 0f;
@@ -612,7 +594,6 @@ public class SistemDialogKamar : MonoBehaviour
             }
         }
 
-
         yield return new WaitForSecondsRealtime(jedaSebelumZoomInLagi);
 
         float waktuIn = 0f;
@@ -640,7 +621,6 @@ public class SistemDialogKamar : MonoBehaviour
             panelUntukZoom.offsetMax = savedZoomInMax;
         }
 
-  
         if (objekNyalaSaatZoomIn != null)
         {
             objekNyalaSaatZoomIn.SetActive(true);
@@ -661,7 +641,6 @@ public class SistemDialogKamar : MonoBehaviour
         // 0. Matikan Buble Name (dialog bubble) terlebih dahulu
         if (panelBubleName != null) panelBubleName.SetActive(false);
 
-        // 1. Ambil referensi LoadingScreenController dari PixelOverlay
         LoadingScreenController lsc = null;
         if (panelLoadingScreen != null)
         {
@@ -681,7 +660,6 @@ public class SistemDialogKamar : MonoBehaviour
         }
 
         // 3. Aktifkan panelLoading & pastikan CanvasGroup TERLIHAT (alpha=1)
-        //    (LoadingScreenController.Awake() mengeset alpha=0, kita timpa di sini)
         if (panelLSC != null)
         {
             panelLSC.SetActive(true);
@@ -714,8 +692,6 @@ public class SistemDialogKamar : MonoBehaviour
             matTransisi.SetFloat("_Progress", 0f);
         }
 
-        // 7. Layar sudah tertutup sepenuhnya!
-        //    Matikan SEMUA child dari Story KECUALI PixelOverlay
         if (panelStoryUtama != null)
         {
             foreach (Transform child in panelStoryUtama.transform)
@@ -725,18 +701,14 @@ public class SistemDialogKamar : MonoBehaviour
             }
         }
 
-        // Matikan/nyalakan objek tambahan dari array
         if (objekYangIkutMatiLanjutan != null) foreach (var obj in objekYangIkutMatiLanjutan) if (obj != null) obj.SetActive(false);
         if (objekYangDinyalakanLanjutan != null) foreach (var obj in objekYangDinyalakanLanjutan) if (obj != null) obj.SetActive(true);
 
-        // 8. Tampilkan logo / video (nyalakan RawImage)
         foreach (var img in semuaRawImg) if (img != null) img.enabled = true;
 
-        // 9. Tunggu agar logo/video terlihat
         float minWaktu = (lsc != null) ? lsc.minimalWaktuLoading : 1.5f;
         yield return new WaitForSeconds(minWaktu);
 
-        // 10. Sembunyikan video sebelum transisi keluar
         foreach (var img in semuaRawImg) if (img != null) img.enabled = false;
 
         // 11. TRANSISI OUT (Overlay pixel membuka layar ke 3D: _Progress 0 → 1)
@@ -759,7 +731,6 @@ public class SistemDialogKamar : MonoBehaviour
 
         sedangDitutup = false;
 
-        // 13. Bersihkan objek sementara
         if (tempRunner != null) Destroy(tempRunner);
     }
 }

@@ -24,7 +24,6 @@ public class TransisiMenuUI : MonoBehaviour
 
     private bool creditDibukaDariSetting = false;
 
-    // dipanggil pas tombol Setting diklik
     public void BukaPanelSetting()
     {
         StopAllCoroutines();
@@ -61,7 +60,6 @@ public class TransisiMenuUI : MonoBehaviour
         StartCoroutine(ProsesBukaSubPanel(panelKontrol, objekPanelSetting));
     }
 
-    // buat pindah scene pakai loading screen
     public void BukaSceneDenganLoading(string namaScene)
     {
         LoadingScreenController lsc = DapatkanLoadingScreenController();
@@ -76,7 +74,6 @@ public class TransisiMenuUI : MonoBehaviour
         }
     }
 
-    // load scene pakai index build
     public void BukaSceneDenganLoadingIndex(int indeksScene)
     {
         LoadingScreenController lsc = DapatkanLoadingScreenController();
@@ -90,13 +87,11 @@ public class TransisiMenuUI : MonoBehaviour
         }
     }
 
-    // shortcut buat buka kamar
     public void BukaSceneKamar()
     {
         BukaSceneDenganLoading("Kamar");
     }
 
-    // cari controller loading (bisa jadi nonaktif)
     private LoadingScreenController DapatkanLoadingScreenController()
     {
         if (LoadingScreenController.Instance != null) return LoadingScreenController.Instance;
@@ -111,8 +106,6 @@ public class TransisiMenuUI : MonoBehaviour
         return null;
     }
 
-    // dipanggil pas tombol Kembali diklik
-
     public void KembaliKeMainMenu()
     {
         StopAllCoroutines();
@@ -120,12 +113,10 @@ public class TransisiMenuUI : MonoBehaviour
         // Cek apakah kita sedang berada di dalam Sub-Panel (misal: Audio atau Kontrol)
         if (panelAudio != null && panelAudio.activeInHierarchy)
         {
-            // Tutup Audio, kembali ke Setting
             StartCoroutine(ProsesTutupSubPanel(panelAudio, objekPanelSetting));
         }
         else if (panelKontrol != null && panelKontrol.activeInHierarchy)
         {
-            // Tutup Kontrol, kembali ke Setting
             StartCoroutine(ProsesTutupSubPanel(panelKontrol, objekPanelSetting));
         }
         else if (panelCredit != null && panelCredit.activeInHierarchy)
@@ -143,7 +134,6 @@ public class TransisiMenuUI : MonoBehaviour
         }
         else if (panelSetting != null && panelSetting.activeInHierarchy)
         {
-            // Tutup Setting, kembali ke Main Menu
             StartCoroutine(ProsesKembaliKeMainMenu(panelSetting, objekPanelSetting));
         }
         else
@@ -156,7 +146,6 @@ public class TransisiMenuUI : MonoBehaviour
     {
         if (targetPanel == null) yield break;
 
-        // kumpulin semua objek yang mau dihilangin
         System.Collections.Generic.List<GameObject> daftarKeluar = new System.Collections.Generic.List<GameObject>();
         if (objekMainMenu != null)
         {
@@ -166,7 +155,6 @@ public class TransisiMenuUI : MonoBehaviour
         {
             if (anak.gameObject == panelSetting || anak.gameObject == panelCredit || !anak.gameObject.activeInHierarchy) continue;
 
-            // biarin loading screen
             if (LoadingScreenController.Instance != null)
             {
                 if (anak.gameObject == LoadingScreenController.Instance.gameObject || 
@@ -179,7 +167,6 @@ public class TransisiMenuUI : MonoBehaviour
             if (!daftarKeluar.Contains(anak.gameObject)) daftarKeluar.Add(anak.gameObject);
         }
 
-        // play animasi keluar
         foreach (GameObject obj in daftarKeluar)
         {
             if (obj == null || !obj.activeInHierarchy) continue;
@@ -194,10 +181,8 @@ public class TransisiMenuUI : MonoBehaviour
             anim.JalankanAnimasiOut(null, true);
         }
 
-        // tunggu selesai
         yield return new WaitForSeconds(jedaTransisi);
 
-        // pastiin mati semua
         foreach (GameObject obj in daftarKeluar)
         {
             if (obj != null) obj.SetActive(false);
@@ -212,7 +197,6 @@ public class TransisiMenuUI : MonoBehaviour
             if (panelCredit != null) panelCredit.SetActive(false);
         }
 
-        // munculin panel target
         targetPanel.SetActive(true);
         AnimasiTombolMenu[] animAnak = targetPanel.GetComponentsInChildren<AnimasiTombolMenu>(true);
         foreach (var a in animAnak)
@@ -276,11 +260,9 @@ public class TransisiMenuUI : MonoBehaviour
             }
         }
 
-        // tunggu beres
         yield return new WaitForSeconds(jedaTransisi);
         if (targetPanel != null) targetPanel.SetActive(false);
 
-        // idupin menu utama lagi
         System.Collections.Generic.List<GameObject> daftarMasuk = new System.Collections.Generic.List<GameObject>();
         if (objekMainMenu != null)
         {
@@ -290,7 +272,6 @@ public class TransisiMenuUI : MonoBehaviour
         {
             if (anak.gameObject == panelSetting || anak.gameObject == panelCredit) continue;
             
-            // biarin loading screen
             if (LoadingScreenController.Instance != null)
             {
                 if (anak.gameObject == LoadingScreenController.Instance.gameObject || 
@@ -316,7 +297,6 @@ public class TransisiMenuUI : MonoBehaviour
     {
         if (targetSubPanel == null) yield break;
 
-        // play animasi keluar untuk objek utama setting
         if (objekYangDisembunyikan != null)
         {
             foreach (GameObject obj in objekYangDisembunyikan)
@@ -345,7 +325,6 @@ public class TransisiMenuUI : MonoBehaviour
             }
         }
 
-        // munculin sub-panel target
         targetSubPanel.SetActive(true);
         AnimasiTombolMenu[] animAnak = targetSubPanel.GetComponentsInChildren<AnimasiTombolMenu>(true);
         foreach (var a in animAnak)
@@ -357,7 +336,6 @@ public class TransisiMenuUI : MonoBehaviour
 
     IEnumerator ProsesTutupSubPanel(GameObject targetSubPanel, GameObject[] objekYangDimunculkan)
     {
-        // play animasi keluar untuk isi sub-panel
         if (targetSubPanel != null)
         {
             AnimasiTombolMenu[] animAnak = targetSubPanel.GetComponentsInChildren<AnimasiTombolMenu>(true);
@@ -370,7 +348,6 @@ public class TransisiMenuUI : MonoBehaviour
         yield return new WaitForSeconds(jedaTransisi);
         if (targetSubPanel != null) targetSubPanel.SetActive(false);
 
-        // munculin kembali objek utama setting
         if (objekYangDimunculkan != null)
         {
             foreach (GameObject obj in objekYangDimunculkan)
@@ -385,7 +362,6 @@ public class TransisiMenuUI : MonoBehaviour
 
     IEnumerator ProsesBukaCreditDariMainMenuLuar()
     {
-        // 1. Hilangkan objek Main Menu
         System.Collections.Generic.List<GameObject> daftarKeluar = new System.Collections.Generic.List<GameObject>();
         if (objekMainMenu != null)
         {
@@ -416,7 +392,6 @@ public class TransisiMenuUI : MonoBehaviour
                 if (anak.gameObject == panelAudio || anak.gameObject == panelKontrol || anak.gameObject == panelCredit) 
                     continue;
 
-                // Cek apakah anak ini bagian dari objekPanelSetting
                 bool harusDisembunyikan = false;
                 if (objekPanelSetting != null)
                 {
@@ -443,7 +418,6 @@ public class TransisiMenuUI : MonoBehaviour
             }
         }
 
-        // 3. Munculkan Credit Panel
         if (panelCredit != null)
         {
             panelCredit.SetActive(true);
@@ -496,9 +470,8 @@ public class TransisiMenuUI : MonoBehaviour
             if (obj != null) obj.SetActive(false);
         }
         if (panelSetting != null) panelSetting.SetActive(false);
-        if (panelCredit != null) panelCredit.SetActive(false); // pastikan credit panel juga ikut mati
+        if (panelCredit != null) panelCredit.SetActive(false);
 
-        // 2. Munculkan Main Menu lagi
         if (objekMainMenu != null)
         {
             foreach (var o in objekMainMenu)

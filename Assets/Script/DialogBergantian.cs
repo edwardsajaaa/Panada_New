@@ -72,7 +72,6 @@ public class DialogBergantian : MonoBehaviour
         indeks = 0;
         MatikanSemuaGelembung();
 
-        // Sembunyikan balon Interact (?) saat dialog mulai
         if (popupInteraksiNPC != null) popupInteraksiNPC.sembunyikanSementara = true;
 
         // Pindahkan dan hadapkan pemain ke NPC dengan berjalan otomatis
@@ -88,14 +87,14 @@ public class DialogBergantian : MonoBehaviour
     IEnumerator ProsesJalanOtomatis(Transform titik)
     {
         PlayerMovementUI gerakUI = playerTransform.GetComponent<PlayerMovementUI>();
-        float speed = 300f; // Kecepatan default
+        float speed = 300f;
         Animator anim = null;
 
         if (gerakUI != null)
         {
             speed = gerakUI.kecepatanJalan;
             anim = gerakUI.animatorKarakter;
-            gerakUI.abaikanInput = true; // Blokir input pemain
+            gerakUI.abaikanInput = true;
         }
 
         RectTransform playerRect = playerTransform.GetComponent<RectTransform>();
@@ -128,7 +127,6 @@ public class DialogBergantian : MonoBehaviour
 
         if (anim != null) anim.SetBool("isWalking", false);
         
-        // Terakhir, atur arah hadap sesuai pengaturan
         if (gerakUI != null)
         {
             if (arahHadapPemain == ArahHadapPemain.HadapKanan)
@@ -139,13 +137,13 @@ public class DialogBergantian : MonoBehaviour
             {
                 gerakUI.Hadap(false);
             }
-            else if (pusatInteraksi != null) // Mode Otomatis
+            else if (pusatInteraksi != null)
             {
                 bool npcDiKanan = pusatInteraksi.position.x > playerTransform.position.x;
                 gerakUI.Hadap(npcDiKanan);
             }
             
-            gerakUI.abaikanInput = false; // Kembalikan kontrol ke pemain
+            gerakUI.abaikanInput = false;
         }
     }
 
@@ -242,7 +240,6 @@ public class DialogBergantian : MonoBehaviour
         menungguMenjauh = false;
         sedangNgetik = false;
 
-        // Kembalikan balon Interact (?) saat dialog selesai
         if (popupInteraksiNPC != null) popupInteraksiNPC.sembunyikanSementara = false;
 
         gameObject.SetActive(false);

@@ -28,9 +28,9 @@ public class PlayerMovement25D : MonoBehaviour
 
     private Rigidbody rb;
     private Vector3 arahGerak;
-    private bool menghadapKanan = true; // Asumsi default karakter menghadap kanan
+    private bool menghadapKanan = true;
     private Transform camTransform;
-    private bool sedangLari = false; // Status lari saat ini
+    private bool sedangLari = false;
 
     void Start()
     {
@@ -41,7 +41,7 @@ public class PlayerMovement25D : MonoBehaviour
         if (animatorKarakter == null) animatorKarakter = GetComponentInChildren<Animator>();
 
         // Pastikan rigidbody disetel dengan benar untuk game 2.5D
-        rb.freezeRotation = true; // Mencegah karakter jatuh terguling
+        rb.freezeRotation = true;
 
         // Cari referensi kamera agar pergerakan sesuai dengan sudut pandang
         if (Camera.main != null)
@@ -64,13 +64,11 @@ public class PlayerMovement25D : MonoBehaviour
             arahGerak = Vector3.zero;
             sedangLari = false;
             if (animatorKarakter != null) animatorKarakter.SetBool("isWalking", false);
-            return; // Berhenti memproses input
+            return;
         }
 
-        // Cek apakah tombol lari ditekan
         sedangLari = Input.GetKey(tombolLari);
 
-        // Ambil input dari keyboard (W/A/S/D atau Panah)
         float inputX = Input.GetAxisRaw("Horizontal");
 
         if (hanyaKiriKanan)
@@ -102,14 +100,11 @@ public class PlayerMovement25D : MonoBehaviour
             forward.Normalize();
             right.Normalize();
 
-            // Hitung arah gerakan sesungguhnya relatif terhadap layar
             arahGerak = (right * inputX + forward * inputZ).normalized;
         }
 
-        // --- MENGATUR ANIMASI ---
         if (animatorKarakter != null)
         {
-            // Jika ada arah gerak, berarti sedang berjalan/berlari
             bool sedangGerak = arahGerak.sqrMagnitude > 0.01f;
             
             if (percepatAnimasiJalanSaja)
@@ -118,14 +113,14 @@ public class PlayerMovement25D : MonoBehaviour
                 animatorKarakter.SetBool("isWalking", sedangGerak);
                 
                 if (sedangGerak && sedangLari)
-                    animatorKarakter.speed = 1.6f; // Putar animasi 1.6x lebih cepat
+                    animatorKarakter.speed = 1.6f;
                 else
-                    animatorKarakter.speed = 1f;   // Kecepatan normal
+                    animatorKarakter.speed = 1f;
             }
             else
             {
                 // Cara 2: Menggunakan animasi lari terpisah (Butuh parameter bool "isRunning" di Animator)
-                animatorKarakter.speed = 1f; // Pastikan kecepatan tetap normal
+                animatorKarakter.speed = 1f;
                 
                 if (sedangGerak)
                 {
@@ -173,7 +168,6 @@ public class PlayerMovement25D : MonoBehaviour
 
     void FixedUpdate()
     {
-        // Tentukan kecepatan saat ini (Lari atau Jalan)
         float kecepatanSaatIni = sedangLari ? kecepatanLari : kecepatanJalan;
 
         // Terapkan kecepatan pada Rigidbody, biarkan sumbu Y (gravitasi) apa adanya
@@ -187,7 +181,6 @@ public class PlayerMovement25D : MonoBehaviour
 
         if (spriteRendererKarakter != null)
         {
-            // Membalik menggunakan fitur bawaan SpriteRenderer
             spriteRendererKarakter.flipX = !menghadapKanan;
         }
         else
