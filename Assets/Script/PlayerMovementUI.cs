@@ -95,7 +95,6 @@ public class PlayerMovementUI : MonoBehaviour
             if (animatorKarakter != null)
             {
                 bool sedangBerjalan = Mathf.Abs(inputX) > 0.01f;
-                animatorKarakter.SetBool("isWalking", sedangBerjalan);
 
                 if (sedangBerjalan && sedangLari)
                 {
@@ -103,17 +102,20 @@ public class PlayerMovementUI : MonoBehaviour
                     {
                         animatorKarakter.speed = 1.6f;
                         animatorKarakter.SetBool("isRunning", false);
+                        animatorKarakter.SetBool("isWalking", true);
                     }
                     else
                     {
                         animatorKarakter.speed = 1f;
                         animatorKarakter.SetBool("isRunning", true);
+                        animatorKarakter.SetBool("isWalking", false); // Matikan isWalking agar tidak bertabrakan
                     }
                 }
                 else
                 {
                     animatorKarakter.speed = 1f;
                     animatorKarakter.SetBool("isRunning", false);
+                    animatorKarakter.SetBool("isWalking", sedangBerjalan);
                 }
             }
 
