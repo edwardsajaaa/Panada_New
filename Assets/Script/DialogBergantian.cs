@@ -7,8 +7,13 @@ using UnityEngine.Events;
 public class BarisDialogBergantian
 {
     public GameObject gelembungAktif;
-    public TextMeshProUGUI tempatTeksDialog;
+    
+    [Header("Nama Karakter (Opsional)")]
+    public TextMeshProUGUI tempatTeksNama;
+    public string namaKarakter;
 
+    [Header("Dialog")]
+    public TextMeshProUGUI tempatTeksDialog;
     [TextArea(2, 4)]
     public string kalimat;
 }
@@ -207,6 +212,12 @@ public class DialogBergantian : MonoBehaviour
             CanvasGroup cgP = data.gelembungAktif.GetComponentInParent<CanvasGroup>();
             if (cgP != null) cgP.alpha = 1f;
         }
+        
+        if (data.tempatTeksNama != null) 
+        {
+            data.tempatTeksNama.text = data.namaKarakter;
+        }
+
         if (data.tempatTeksDialog != null) data.tempatTeksDialog.text = "";
         proses = StartCoroutine(Ketik(data));
     }
