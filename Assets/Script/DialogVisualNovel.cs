@@ -44,6 +44,16 @@ public class DialogVisualNovel : MonoBehaviour
     [Header("Event Selesai")]
     public UnityEvent saatDialogSelesai;
 
+    [Header("Jarak (Opsional)")]
+    [Tooltip("Centang jika dialog ingin otomatis tertutup saat player menjauh")]
+    public bool tutupSaatMenjauh = true;
+    [Tooltip("Jarak maksimal sebelum dialog tertutup otomatis")]
+    public float jarakMaksimal = 150f;
+    [Tooltip("Transform Player (misal Nathan Outdoor)")]
+    public Transform playerTransform;
+    [Tooltip("Pusat interaksi NPC (biarkan kosong jika jarak dihitung dari NPC langsung)")]
+    public Transform pusatInteraksi;
+
     private int indeks = 0;
     private bool sedangNgetik = false;
     private Coroutine proses;
@@ -64,6 +74,17 @@ public class DialogVisualNovel : MonoBehaviour
     void Update()
     {
         if (!aktif) return;
+
+        // Cek jarak menjauh
+        if (tutupSaatMenjauh && playerTransform != null && popupInteraksiNPC != null)
+        {
+            Transform pusat = pusatInteraksi != null ? pusatInteraksi : popupInteraksiNPC.transform;
+            if (Vector2.Distance(pusat.position, playerTransform.position) > jarakMaksimal)
+            {
+                Tutup();
+                return;
+            }
+        }
 
         // Lanjut dialog bisa pakai F, Spasi, atau Klik Kiri
         if (Input.GetKeyDown(tombolLanjut) || Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0))
