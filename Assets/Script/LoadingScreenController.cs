@@ -14,6 +14,8 @@ public class LoadingScreenController : MonoBehaviour
     public bool transisiKeluarMenuDulu = true;
     public float durasiKeluarMenu = 0.35f;
     public float minimalWaktuLoading = 1.2f;
+    [Tooltip("Lama layar ditahan warna hitam SEBELUM mulai transisi keluar (memberi waktu agar panel baru siap)")]
+    public float jedaSebelumKeluar = 0.5f;
 
     [Header("Efek Transisi Pixel")]
     public Material materialTransisiPixel;
@@ -90,6 +92,9 @@ public class LoadingScreenController : MonoBehaviour
 
         // 5. Jalankan Event perpindahan ruangan (Kamar mati, Outdoor nyala) secara instan di balik layar gelap
         eventTengah?.Invoke();
+
+        // 5b. Jeda tambahan: Tahan layar gelap sebentar agar objek/panel baru sempat ter-render dan tidak kaget
+        yield return new WaitForSeconds(jedaSebelumKeluar);
 
         AturVisibilitasVideo(false);
 
