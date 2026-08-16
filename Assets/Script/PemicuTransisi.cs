@@ -10,14 +10,18 @@ public class PemicuTransisi : MonoBehaviour
     // Fungsi ini dipanggil dari PopupInteraksi (Saat Diinteraksi)
     public void JalankanTransisi()
     {
-        if (TransisiRuangan.Instance != null)
+        // Prioritaskan LoadingScreenController jika ada
+        if (LoadingScreenController.Instance != null)
         {
-            // Minta TransisiRuangan untuk mainkan efeknya, dan jalankan event kita pas layar gelap
+            LoadingScreenController.Instance.TransisiLokalEvent(saatLayarGelap);
+        }
+        else if (TransisiRuangan.Instance != null)
+        {
             TransisiRuangan.Instance.Jalankan(saatLayarGelap);
         }
         else
         {
-            Debug.LogError("PemicuTransisi: Objek dengan script 'TransisiRuangan' belum ditambahkan ke Scene ini! Event langsung dijalankan tanpa animasi.");
+            Debug.LogError("PemicuTransisi: Objek dengan script LoadingScreenController/TransisiRuangan belum ditambahkan ke Scene! Event langsung dijalankan.");
             saatLayarGelap?.Invoke();
         }
     }
