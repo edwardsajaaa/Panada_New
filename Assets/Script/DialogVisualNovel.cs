@@ -23,6 +23,9 @@ public class DialogVisualNovel : MonoBehaviour
     [Tooltip("Objek Buble Dialog Utama (kotak besar di bawah)")]
     public GameObject bubleDialogUtama;
     
+    [Tooltip("Opsional: Masukkan Canvas Induk (Buble Dialog Canvas) agar otomatis nyala/mati")]
+    public GameObject canvasDialogUtama;
+    
     [Tooltip("Teks (TextMeshPro) di dalam Buble Dialog Utama untuk menampilkan isi percakapan")]
     public TextMeshProUGUI tempatTeksDialog;
     
@@ -66,6 +69,8 @@ public class DialogVisualNovel : MonoBehaviour
         indeks = 0;
         
         if (popupInteraksiNPC != null) popupInteraksiNPC.sembunyikanSementara = true;
+        
+        if (canvasDialogUtama != null) canvasDialogUtama.SetActive(true);
         if (bubleDialogUtama != null) bubleDialogUtama.SetActive(true);
         
         Tampilkan(0);
@@ -163,6 +168,7 @@ public class DialogVisualNovel : MonoBehaviour
             if (buble != null) buble.SetActive(false);
         }
         if (bubleDialogUtama != null) bubleDialogUtama.SetActive(false);
+        if (canvasDialogUtama != null) canvasDialogUtama.SetActive(false);
         
         if (popupInteraksiNPC != null) popupInteraksiNPC.sembunyikanSementara = false;
         
