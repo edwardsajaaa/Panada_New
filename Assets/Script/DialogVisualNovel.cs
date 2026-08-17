@@ -43,6 +43,8 @@ public class DialogVisualNovel : MonoBehaviour
     public float kecepatanKetik = 0.04f;
     [Tooltip("Tombol untuk lanjut ke dialog berikutnya")]
     public KeyCode tombolLanjut = KeyCode.F;
+    [Tooltip("Jika dicentang, saat dialog ini dipanggil lagi, ia hanya akan menampilkan baris terakhir saja.")]
+    public bool tampilkanHanyaBarisTerakhirJikaDiulang = true;
 
     [Header("Event Selesai")]
     public UnityEvent saatDialogSelesai;
@@ -61,12 +63,21 @@ public class DialogVisualNovel : MonoBehaviour
     private bool sedangNgetik = false;
     private Coroutine proses;
     private bool aktif = false;
+    private bool sudahPernahSelesai = false;
 
     void OnEnable()
     {
         aktif = true;
         sedangNgetik = false;
-        indeks = 0;
+        
+        if (tampilkanHanyaBarisTerakhirJikaDiulang && sudahPernahSelesai && percakapan.Length > 0)
+        {
+            indeks = percakapan.Length - 1;
+        }
+        else
+        {
+            indeks = 0;
+        }
         
         if (popupInteraksiNPC != null) popupInteraksiNPC.sembunyikanSementara = true;
         
@@ -160,6 +171,7 @@ public class DialogVisualNovel : MonoBehaviour
     void Tutup()
     {
         aktif = false;
+        sudahPernahSelesai = true; // Tandai bahwa dialog ini sudah pernah selesai dibaca
         if (proses != null) StopCoroutine(proses);
         
         // Sembunyikan semua UI percakapan setelah selesai

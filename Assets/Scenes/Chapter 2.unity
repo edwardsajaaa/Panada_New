@@ -256,6 +256,123 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 42155217}
   m_CullTransparentMesh: 1
+--- !u!1 &97891636
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 97891637}
+  - component: {fileID: 97891638}
+  m_Layer: 5
+  m_Name: Data Dialog Paman
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &97891637
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 97891636}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 970331423}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &97891638
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 97891636}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4987bffc90f0524a93b569a43ebcfc4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bubleDialogUtama: {fileID: 1278348271}
+  canvasDialogUtama: {fileID: 1924195446}
+  tempatTeksDialog: {fileID: 1766360858}
+  semuaBubleNama:
+  - {fileID: 1547485099}
+  - {fileID: 118121464}
+  popupInteraksiNPC: {fileID: 404878841}
+  percakapan:
+  - bubleNamaAktif: {fileID: 1547485099}
+    namaKarakter: Nathan
+    teksDialog: Halo paman selamat siang. Sudah lama tidak bertemu
+  - bubleNamaAktif: {fileID: 118121464}
+    namaKarakter: Paman
+    teksDialog: eh Nathan... akhirnya kamu benar benar datang
+  - bubleNamaAktif: {fileID: 118121464}
+    namaKarakter: Paman
+    teksDialog: Sudah lama kami menunggu momen seperti ini.
+  - bubleNamaAktif: {fileID: 1547485099}
+    namaKarakter: Nathan
+    teksDialog: ah iya paman, sebenarnya apa yang terjadi di desa selama beberapa
+      tahun ini?
+  - bubleNamaAktif: {fileID: 118121464}
+    namaKarakter: Paman
+    teksDialog: 'Desa kami yang tercinta... sekarang seperti tubuh yang kehilangan
+      nadinya '
+  - bubleNamaAktif: {fileID: 118121464}
+    namaKarakter: Paman
+    teksDialog: 'Banyak yang pergi, sedikit yang kembali. '
+  - bubleNamaAktif: {fileID: 118121464}
+    namaKarakter: Paman
+    teksDialog: Rumah-rumah kosong, sawah yang terbengkalai, dan pasar yang dahulu
+      ramai kini hanya tinggal kenangan.
+  - bubleNamaAktif: {fileID: 118121464}
+    namaKarakter: Paman
+    teksDialog: Kami membutuhkan perubahan, Nathan. Kami membutuhkanmu.
+  - bubleNamaAktif: {fileID: 118121464}
+    namaKarakter: Paman
+    teksDialog: Tapi kami juga tahu... tidak mudah memilih jalan kembali.
+  - bubleNamaAktif: {fileID: 118121464}
+    namaKarakter: Paman
+    teksDialog: Namun kami tidak bisa memaksamu
+  - bubleNamaAktif: {fileID: 118121464}
+    namaKarakter: Paman
+    teksDialog: Semua kembali ke dalam dirimu untuk memutuskan
+  - bubleNamaAktif: {fileID: 1547485099}
+    namaKarakter: Nathan
+    teksDialog: Baiklah aku mengerti paman dengan masalah yang dihadapi sekarang.
+  - bubleNamaAktif: {fileID: 1547485099}
+    namaKarakter: Nathan
+    teksDialog: Tapi saat ini aku harus pertimbangkan terlebih dahulu
+  - bubleNamaAktif: {fileID: 118121464}
+    namaKarakter: Paman
+    teksDialog: Baiklah, paman mengerti..
+  - bubleNamaAktif: {fileID: 118121464}
+    namaKarakter: Paman
+    teksDialog: masih ada waktu untuk memutuskan. oiya keluargamu sudah menunggumu
+      di rumah
+  - bubleNamaAktif: {fileID: 1547485099}
+    namaKarakter: Nathan
+    teksDialog: Oiya baiklah paman aku permisi dulu kalo gitu
+  kecepatanKetik: 0.04
+  tombolLanjut: 102
+  saatDialogSelesai:
+    m_PersistentCalls:
+      m_Calls: []
+  tutupSaatMenjauh: 1
+  jarakMaksimal: 150
+  playerTransform: {fileID: 1691113739}
+  pusatInteraksi: {fileID: 1691113739}
 --- !u!1 &118121464
 GameObject:
   m_ObjectHideFlags: 0
@@ -332,6 +449,76 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 118121464}
   m_CullTransparentMesh: 1
+--- !u!1 &313976309
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 313976310}
+  - component: {fileID: 313976311}
+  m_Layer: 5
+  m_Name: Data Dialog Keluarga
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &313976310
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 313976309}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 970331423}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &313976311
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 313976309}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e4987bffc90f0524a93b569a43ebcfc4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bubleDialogUtama: {fileID: 1278348271}
+  canvasDialogUtama: {fileID: 1924195446}
+  tempatTeksDialog: {fileID: 1766360858}
+  semuaBubleNama:
+  - {fileID: 1547485099}
+  popupInteraksiNPC: {fileID: 404878841}
+  percakapan:
+  - bubleNamaAktif: {fileID: 1547485099}
+    namaKarakter: Nathan
+    teksDialog: Ya, itu aku sebelum merantau ke kota
+  - bubleNamaAktif: {fileID: 1547485099}
+    namaKarakter: Nathan
+    teksDialog: sudah sangat lama ya..
+  kecepatanKetik: 0.04
+  tombolLanjut: 102
+  saatDialogSelesai:
+    m_PersistentCalls:
+      m_Calls: []
+  tutupSaatMenjauh: 1
+  jarakMaksimal: 150
+  playerTransform: {fileID: 1691113739}
+  pusatInteraksi: {fileID: 1691113739}
 --- !u!1 &404878837
 GameObject:
   m_ObjectHideFlags: 0
@@ -701,6 +888,8 @@ RectTransform:
   - {fileID: 1300075938}
   - {fileID: 1924195447}
   - {fileID: 1733889011}
+  - {fileID: 97891637}
+  - {fileID: 313976310}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -2367,7 +2556,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1924195447}
   - component: {fileID: 1924195450}
-  - component: {fileID: 1924195451}
   m_Layer: 5
   m_Name: Buble Dialog Canvas
   m_TagString: Untagged
@@ -2405,86 +2593,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1924195446}
   m_CullTransparentMesh: 1
---- !u!114 &1924195451
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1924195446}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e4987bffc90f0524a93b569a43ebcfc4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  bubleDialogUtama: {fileID: 1278348271}
-  tempatTeksDialog: {fileID: 1766360858}
-  semuaBubleNama:
-  - {fileID: 1547485099}
-  - {fileID: 118121464}
-  popupInteraksiNPC: {fileID: 404878841}
-  percakapan:
-  - bubleNamaAktif: {fileID: 1547485099}
-    namaKarakter: Nathan
-    teksDialog: Halo paman selamat siang. Sudah lama tidak bertemu
-  - bubleNamaAktif: {fileID: 118121464}
-    namaKarakter: Paman
-    teksDialog: eh Nathan... akhirnya kamu benar benar datang
-  - bubleNamaAktif: {fileID: 118121464}
-    namaKarakter: Paman
-    teksDialog: Sudah lama kami menunggu momen seperti ini.
-  - bubleNamaAktif: {fileID: 1547485099}
-    namaKarakter: Nathan
-    teksDialog: ah iya paman, sebenarnya apa yang terjadi di desa selama beberapa
-      tahun ini?
-  - bubleNamaAktif: {fileID: 118121464}
-    namaKarakter: Paman
-    teksDialog: 'Desa kami yang tercinta... sekarang seperti tubuh yang kehilangan
-      nadinya '
-  - bubleNamaAktif: {fileID: 118121464}
-    namaKarakter: Paman
-    teksDialog: 'Banyak yang pergi, sedikit yang kembali. '
-  - bubleNamaAktif: {fileID: 118121464}
-    namaKarakter: Paman
-    teksDialog: Rumah-rumah kosong, sawah yang terbengkalai, dan pasar yang dahulu
-      ramai kini hanya tinggal kenangan.
-  - bubleNamaAktif: {fileID: 118121464}
-    namaKarakter: Paman
-    teksDialog: Kami membutuhkan perubahan, Nathan. Kami membutuhkanmu.
-  - bubleNamaAktif: {fileID: 118121464}
-    namaKarakter: Paman
-    teksDialog: Tapi kami juga tahu... tidak mudah memilih jalan kembali.
-  - bubleNamaAktif: {fileID: 118121464}
-    namaKarakter: Paman
-    teksDialog: Namun kami tidak bisa memaksamu
-  - bubleNamaAktif: {fileID: 118121464}
-    namaKarakter: Paman
-    teksDialog: Semua kembali ke dalam dirimu untuk memutuskan
-  - bubleNamaAktif: {fileID: 1547485099}
-    namaKarakter: Nathan
-    teksDialog: Baiklah aku mengerti paman dengan masalah yang dihadapi sekarang.
-  - bubleNamaAktif: {fileID: 1547485099}
-    namaKarakter: Nathan
-    teksDialog: Tapi saat ini aku harus pertimbangkan terlebih dahulu
-  - bubleNamaAktif: {fileID: 118121464}
-    namaKarakter: Paman
-    teksDialog: Baiklah, paman mengerti..
-  - bubleNamaAktif: {fileID: 118121464}
-    namaKarakter: Paman
-    teksDialog: masih ada waktu untuk memutuskan. oiya keluargamu sudah menunggumu
-      di rumah
-  - bubleNamaAktif: {fileID: 1547485099}
-    namaKarakter: Nathan
-    teksDialog: Oiya baiklah paman aku permisi dulu kalo gitu
-  kecepatanKetik: 0.04
-  tombolLanjut: 102
-  saatDialogSelesai:
-    m_PersistentCalls:
-      m_Calls: []
-  tutupSaatMenjauh: 1
-  jarakMaksimal: 150
-  playerTransform: {fileID: 1691113739}
-  pusatInteraksi: {fileID: 1691113739}
 --- !u!1 &2020616223
 GameObject:
   m_ObjectHideFlags: 0
