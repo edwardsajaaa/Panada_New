@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(RectTransform))]
 public class EfekSlideUI : MonoBehaviour
@@ -13,6 +14,12 @@ public class EfekSlideUI : MonoBehaviour
     public float durasiAnimasi = 0.8f;
     [Tooltip("Jarak slide (seberapa jauh dari bawah sebelum naik ke atas)")]
     public float jarakGeser = 1000f;
+
+    [Header("Event Animasi (Opsional)")]
+    [Tooltip("Dipanggil tepat setelah animasi Slide In (masuk) selesai")]
+    public UnityEvent saatSlideInSelesai;
+    [Tooltip("Dipanggil tepat setelah animasi Slide Out (menyingkir) selesai")]
+    public UnityEvent saatSlideOutSelesai;
 
     private RectTransform rectTransform;
     private Vector2 posisiAsli;
@@ -70,6 +77,8 @@ public class EfekSlideUI : MonoBehaviour
         }
 
         rectTransform.anchoredPosition = posisiAsli;
+        
+        saatSlideInSelesai?.Invoke();
     }
 
     IEnumerator ProsesSlideOut()
@@ -88,5 +97,7 @@ public class EfekSlideUI : MonoBehaviour
 
         rectTransform.anchoredPosition = posisiTujuan;
         canvasGroup.alpha = 0f; // Sembunyikan sepenuhnya setelah turun
+        
+        saatSlideOutSelesai?.Invoke();
     }
 }
