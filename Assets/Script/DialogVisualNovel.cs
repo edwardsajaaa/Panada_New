@@ -43,8 +43,12 @@ public class DialogVisualNovel : MonoBehaviour
     public float kecepatanKetik = 0.04f;
     [Tooltip("Tombol untuk lanjut ke dialog berikutnya")]
     public KeyCode tombolLanjut = KeyCode.F;
-    [Tooltip("Jika dicentang, saat dialog ini dipanggil lagi, ia hanya akan menampilkan baris terakhir saja.")]
-    public bool tampilkanHanyaBarisTerakhirJikaDiulang = true;
+    
+    [Header("Pengaturan Pengulangan")]
+    [Tooltip("Centang jika dialog ingin melompat ke baris tertentu saat pemain mengajak ngobrol untuk kedua kalinya.")]
+    public bool lompatKeDialogSpesifikJikaDiulang = true;
+    [Tooltip("Nomor Element (Indeks) yang mau ditampilkan saat ngobrol kedua kali (misal: isi 14 untuk Element 14)")]
+    public int indeksLompatan = 14;
 
     [Header("Event Selesai")]
     public UnityEvent saatDialogSelesai;
@@ -70,9 +74,10 @@ public class DialogVisualNovel : MonoBehaviour
         aktif = true;
         sedangNgetik = false;
         
-        if (tampilkanHanyaBarisTerakhirJikaDiulang && sudahPernahSelesai && percakapan.Length > 0)
+        if (lompatKeDialogSpesifikJikaDiulang && sudahPernahSelesai && percakapan.Length > 0)
         {
-            indeks = percakapan.Length - 1;
+            // Pastikan indeks lompatan tidak error / melebihi jumlah percakapan
+            indeks = Mathf.Clamp(indeksLompatan, 0, percakapan.Length - 1);
         }
         else
         {
