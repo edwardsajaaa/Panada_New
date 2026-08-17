@@ -5,6 +5,8 @@ using System.Collections;
 public class EfekFadeUI : MonoBehaviour
 {
     [Header("Pengaturan Fade")]
+    [Tooltip("Centang jika ingin animasi langsung jalan pas objek ini aktif. Hilangkan centang jika ingin memanggilnya manual lewat script/Event")]
+    public bool mulaiOtomatis = true;
     [Tooltip("Waktu tunggu sebelum mulai muncul (harus sama dengan durasi gelap layar transisi)")]
     public float jedaSebelumMuncul = 1f;
     [Tooltip("Berapa lama proses fade-in berlangsung")]
@@ -22,6 +24,14 @@ public class EfekFadeUI : MonoBehaviour
     {
         // Langsung bikin transparan di frame pertama
         canvasGroup.alpha = 0f;
+        if (mulaiOtomatis) 
+        {
+            MulaiFadeIn();
+        }
+    }
+
+    public void MulaiFadeIn()
+    {
         StartCoroutine(ProsesFadeIn());
     }
 

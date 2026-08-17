@@ -5,6 +5,8 @@ using System.Collections;
 public class EfekSlideUI : MonoBehaviour
 {
     [Header("Pengaturan Animasi")]
+    [Tooltip("Centang jika ingin animasi langsung jalan pas objek ini aktif. Hilangkan centang jika ingin memanggilnya manual lewat script/Event")]
+    public bool mulaiOtomatis = true;
     [Tooltip("Waktu tunggu sebelum mulai animasi slide (misal nunggu BlackPanel selesai fade)")]
     public float jedaSebelumMuncul = 1.5f;
     [Tooltip("Lama proses slide berlangsung")]
@@ -30,6 +32,14 @@ public class EfekSlideUI : MonoBehaviour
         // Langsung sembunyikan di bawah layar
         rectTransform.anchoredPosition = new Vector2(posisiAsli.x, posisiAsli.y - jarakGeser);
         canvasGroup.alpha = 0f;
+        if (mulaiOtomatis)
+        {
+            MulaiSlideIn();
+        }
+    }
+
+    public void MulaiSlideIn()
+    {
         StartCoroutine(ProsesSlideIn());
     }
 

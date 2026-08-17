@@ -15,6 +15,9 @@ public class BarisDialogVN
     [Tooltip("Isi percakapannya")]
     [TextArea(2, 4)]
     public string teksDialog;
+
+    [Tooltip("Opsional: Event yang dipanggil tepat saat dialog ini muncul (cocok untuk trigger animasi/suara)")]
+    public UnityEvent saatBarisMulai;
 }
 
 public class DialogVisualNovel : MonoBehaviour
@@ -194,6 +197,9 @@ public class DialogVisualNovel : MonoBehaviour
     void Tampilkan(int i)
     {
         var data = percakapan[i];
+
+        // Panggil event spesifik baris ini jika ada
+        data.saatBarisMulai?.Invoke();
 
         // 1. Sembunyikan semua buble nama dulu
         foreach (var buble in semuaBubleNama)
