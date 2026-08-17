@@ -70,10 +70,17 @@ public class LoadingScreenController : MonoBehaviour
     {
         if (!gameObject.activeInHierarchy) gameObject.SetActive(true);
         StopAllCoroutines();
-        StartCoroutine(ProsesTransisiLokal(eventDitengahTransisi));
+        StartCoroutine(ProsesTransisiLokal(eventDitengahTransisi, minimalWaktuLoading));
     }
 
-    IEnumerator ProsesTransisiLokal(UnityEngine.Events.UnityEvent eventTengah)
+    public void TransisiLokalEventDenganDurasi(UnityEngine.Events.UnityEvent eventDitengahTransisi, float durasiGelap)
+    {
+        if (!gameObject.activeInHierarchy) gameObject.SetActive(true);
+        StopAllCoroutines();
+        StartCoroutine(ProsesTransisiLokal(eventDitengahTransisi, durasiGelap));
+    }
+
+    IEnumerator ProsesTransisiLokal(UnityEngine.Events.UnityEvent eventTengah, float durasiTahanLayarGelap)
     {
         // 1. Siapkan panel dan mulai putar video di belakang layar (tersembunyi dulu)
         AktifkanPanelDanMulaiGif();
@@ -87,8 +94,8 @@ public class LoadingScreenController : MonoBehaviour
             AturVisibilitasVideo(true);
         }
 
-        // 4. Tahan layar loading agar pemain bisa melihat animasi GIF/Video-nya
-        yield return new WaitForSeconds(minimalWaktuLoading);
+        // 4. Tahan layar loading agar pemain bisa melihat animasi GIF/Video-nya atau untuk jeda cerita
+        yield return new WaitForSeconds(durasiTahanLayarGelap);
 
         // 5. Jalankan Event perpindahan ruangan (Kamar mati, Outdoor nyala) secara instan di balik layar gelap
         eventTengah?.Invoke();
