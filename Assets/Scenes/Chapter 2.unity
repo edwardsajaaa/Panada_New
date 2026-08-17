@@ -272,7 +272,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &97891637
 RectTransform:
   m_ObjectHideFlags: 0
@@ -366,15 +366,13 @@ MonoBehaviour:
     teksDialog: Oiya baiklah paman aku permisi dulu kalo gitu
   kecepatanKetik: 0.04
   tombolLanjut: 102
-  lompatKeDialogSpesifikJikaDiulang: 1
-  indeksLompatan: 14
   saatDialogSelesai:
     m_PersistentCalls:
       m_Calls: []
   tutupSaatMenjauh: 1
   jarakMaksimal: 150
   playerTransform: {fileID: 1691113739}
-  pusatInteraksi: {fileID: 0}
+  pusatInteraksi: {fileID: 1691113739}
 --- !u!1 &118121464
 GameObject:
   m_ObjectHideFlags: 0
@@ -467,7 +465,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &313976310
 RectTransform:
   m_ObjectHideFlags: 0
@@ -514,8 +512,6 @@ MonoBehaviour:
     teksDialog: sudah sangat lama ya..
   kecepatanKetik: 0.04
   tombolLanjut: 102
-  lompatKeDialogSpesifikJikaDiulang: 1
-  indeksLompatan: 14
   saatDialogSelesai:
     m_PersistentCalls:
       m_Calls: []
@@ -622,7 +618,7 @@ MonoBehaviour:
   saatDiinteraksi:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 97891636}
+      - m_Target: {fileID: 1924195446}
         m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
         m_MethodName: SetActive
         m_Mode: 6
@@ -2042,7 +2038,7 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 1
         m_CallState: 2
-      - m_Target: {fileID: 313976309}
+      - m_Target: {fileID: 1924195446}
         m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
         m_MethodName: SetActive
         m_Mode: 6
