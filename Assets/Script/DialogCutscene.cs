@@ -33,6 +33,8 @@ public class DialogCutscene : MonoBehaviour
     public float kecepatanKetikBawaan = 0.03f;
     [Tooltip("Waktu tunggu sebelum dialog pertama dimulai")]
     public float jedaAwal = 1f;
+    [Tooltip("Waktu tunggu setelah selesai ngetik sebelum otomatis lanjut ke baris berikutnya (Isi 0 jika ingin pemain harus KLIK manual)")]
+    public float jedaAutoLanjut = 0f;
 
     [Header("Data Percakapan")]
     public BarisDialogCutscene[] percakapan;
@@ -64,6 +66,7 @@ public class DialogCutscene : MonoBehaviour
     private bool aktif = false;
     private bool kunciInput = false;
     private float antiSpamTimer = 0f;
+    private float timerAutoLanjut = 0f;
     private Coroutine prosesKetik;
     private Material blinkMat;
 
@@ -117,6 +120,17 @@ public class DialogCutscene : MonoBehaviour
             return;
         }
 
+        // --- Fitur Auto Lanjut Tanpa Klik ---
+        if (!sedangNgetik && jedaAutoLanjut > 0f)
+        {
+            timerAutoLanjut -= Time.deltaTime;
+            if (timerAutoLanjut <= 0f)
+            {
+                LanjutDialog();
+                return; // Langsung return agar tidak bentrok dengan klik
+            }
+        }
+
         if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space))
         {
             antiSpamTimer = 0.2f;
@@ -126,6 +140,7 @@ public class DialogCutscene : MonoBehaviour
                 if (prosesKetik != null) StopCoroutine(prosesKetik);
                 teksIsiDialog.text = percakapan[indeks].kalimat;
                 sedangNgetik = false;
+                timerAutoLanjut = jedaAutoLanjut; // Reset timer auto
             }
             else
             {
@@ -192,6 +207,7 @@ public class DialogCutscene : MonoBehaviour
         }
 
         sedangNgetik = false;
+        timerAutoLanjut = jedaAutoLanjut; // Mulai hitung mundur auto-lanjut
     }
 
     void LanjutDialog()
