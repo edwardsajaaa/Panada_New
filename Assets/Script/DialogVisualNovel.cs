@@ -102,7 +102,7 @@ public class DialogVisualNovel : MonoBehaviour
             Transform pusat = pusatInteraksi != null ? pusatInteraksi : popupInteraksiNPC.transform;
             if (Vector2.Distance(pusat.position, playerTransform.position) > jarakMaksimal)
             {
-                Tutup();
+                Tutup(false); // Batal di tengah jalan, jangan ditandai selesai
                 return;
             }
         }
@@ -127,7 +127,7 @@ public class DialogVisualNovel : MonoBehaviour
                 }
                 else
                 {
-                    Tutup();
+                    Tutup(true); // Selesai secara normal sampai akhir
                 }
             }
         }
@@ -173,10 +173,15 @@ public class DialogVisualNovel : MonoBehaviour
         sedangNgetik = false;
     }
 
-    void Tutup()
+    void Tutup(bool selesaiNormal = false)
     {
         aktif = false;
-        sudahPernahSelesai = true; // Tandai bahwa dialog ini sudah pernah selesai dibaca
+        
+        if (selesaiNormal)
+        {
+            sudahPernahSelesai = true; // Tandai bahwa dialog ini sudah pernah selesai dibaca
+        }
+        
         if (proses != null) StopCoroutine(proses);
         
         // Sembunyikan semua UI percakapan setelah selesai
