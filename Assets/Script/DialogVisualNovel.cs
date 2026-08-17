@@ -6,10 +6,7 @@ using UnityEngine.Events;
 [System.Serializable]
 public class BarisDialogVN
 {
-    [Tooltip("Masukkan objek Buble Name (kiri atau kanan) yang mau dinyalakan")]
-    public GameObject bubleNamaAktif;
-    
-    [Tooltip("Nama karakter yang muncul di buble tersebut (misal: Nathan)")]
+    [Tooltip("Nama karakter yang muncul di buble tersebut (misal: Nathan atau Paman)")]
     public string namaKarakter;
 
     [Tooltip("Isi percakapannya")]
@@ -29,8 +26,12 @@ public class DialogVisualNovel : MonoBehaviour
     [Tooltip("Teks (TextMeshPro) di dalam Buble Dialog Utama untuk menampilkan isi percakapan")]
     public TextMeshProUGUI tempatTeksDialog;
     
-    [Tooltip("Masukkan semua objek Buble Name yang ada (Kiri & Kanan), agar script bisa otomatis menyembunyikan yang tidak dipakai")]
-    public GameObject[] semuaBubleNama;
+    [Header("Referensi Buble Nama")]
+    [Tooltip("Masukkan SATU objek Buble Name yang mau dipakai secara universal")]
+    public GameObject bubleNamaUtama;
+    
+    [Tooltip("Masukkan komponen Teks (TextMeshPro) yang ada di DALAM Buble Name Utama")]
+    public TextMeshProUGUI teksNamaUtama;
 
     [Header("NPC (Opsional)")]
     [Tooltip("Masukkan script PopupInteraksi milik NPC agar balon '?' disembunyikan otomatis saat ngobrol")]
@@ -158,23 +159,17 @@ public class DialogVisualNovel : MonoBehaviour
     {
         var data = percakapan[i];
 
-        // 1. Sembunyikan semua buble nama dulu
-        foreach (var buble in semuaBubleNama)
+        // Ganti teks nama sesuai karakter yang ngomong (seperti script lama)
+        if (teksNamaUtama != null)
         {
-            if (buble != null) buble.SetActive(false);
+            teksNamaUtama.text = data.namaKarakter;
         }
 
-        // 2. Nyalakan buble nama yang sesuai giliran
-        if (data.bubleNamaAktif != null)
+        // Tampilkan/Sembunyikan Buble Nama tergantung apakah namanya diisi atau kosong
+        if (bubleNamaUtama != null)
         {
-            data.bubleNamaAktif.SetActive(true);
-            
-            // Otomatis cari komponen teks di dalam buble nama tersebut dan ubah namanya
-            TextMeshProUGUI teksNama = data.bubleNamaAktif.GetComponentInChildren<TextMeshProUGUI>();
-            if (teksNama != null)
-            {
-                teksNama.text = data.namaKarakter;
-            }
+            bool adaNama = !string.IsNullOrEmpty(data.namaKarakter) && data.namaKarakter.Trim() != "";
+            bubleNamaUtama.SetActive(adaNama);
         }
 
         // 3. Mulai ngetik isi dialog
@@ -206,10 +201,7 @@ public class DialogVisualNovel : MonoBehaviour
         if (proses != null) StopCoroutine(proses);
         
         // Sembunyikan semua UI percakapan setelah selesai
-        foreach (var buble in semuaBubleNama)
-        {
-            if (buble != null) buble.SetActive(false);
-        }
+        if (bubleNamaUtama != null) bubleNamaUtama.SetActive(false);
         if (bubleDialogUtama != null) bubleDialogUtama.SetActive(false);
         if (canvasDialogUtama != null) canvasDialogUtama.SetActive(false);
         
