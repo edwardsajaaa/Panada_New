@@ -43,6 +43,11 @@ public class EfekSlideUI : MonoBehaviour
         StartCoroutine(ProsesSlideIn());
     }
 
+    public void MulaiSlideOut()
+    {
+        StartCoroutine(ProsesSlideOut());
+    }
+
     IEnumerator ProsesSlideIn()
     {
         // Tunggu sesuai jeda yang diatur
@@ -65,5 +70,23 @@ public class EfekSlideUI : MonoBehaviour
         }
 
         rectTransform.anchoredPosition = posisiAsli;
+    }
+
+    IEnumerator ProsesSlideOut()
+    {
+        float waktu = 0f;
+        Vector2 posisiMulai = rectTransform.anchoredPosition;
+        Vector2 posisiTujuan = new Vector2(posisiAsli.x, posisiAsli.y - jarakGeser);
+
+        while (waktu < durasiAnimasi)
+        {
+            waktu += Time.deltaTime;
+            float t = Mathf.SmoothStep(0f, 1f, waktu / durasiAnimasi);
+            rectTransform.anchoredPosition = Vector2.Lerp(posisiMulai, posisiTujuan, t);
+            yield return null;
+        }
+
+        rectTransform.anchoredPosition = posisiTujuan;
+        canvasGroup.alpha = 0f; // Sembunyikan sepenuhnya setelah turun
     }
 }
