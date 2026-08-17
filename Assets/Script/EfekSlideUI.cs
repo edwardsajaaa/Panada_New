@@ -5,14 +5,18 @@ using UnityEngine.Events;
 [RequireComponent(typeof(RectTransform))]
 public class EfekSlideUI : MonoBehaviour
 {
+    public enum ArahSlide { Bawah, Atas, Kiri, Kanan }
+
     [Header("Pengaturan Animasi")]
     [Tooltip("Centang jika ingin animasi langsung jalan pas objek ini aktif. Hilangkan centang jika ingin memanggilnya manual lewat script/Event")]
     public bool mulaiOtomatis = true;
-    [Tooltip("Waktu tunggu sebelum mulai animasi slide (misal nunggu BlackPanel selesai fade)")]
-    public float jedaSebelumMuncul = 1.5f;
+    [Tooltip("Dari arah mana objek ini akan muncul?")]
+    public ArahSlide arahMuncul = ArahSlide.Bawah;
+    [Tooltip("Waktu tunggu sebelum mulai animasi slide")]
+    public float jedaSebelumMuncul = 0f;
     [Tooltip("Lama proses slide berlangsung")]
     public float durasiAnimasi = 0.8f;
-    [Tooltip("Jarak slide (seberapa jauh dari bawah sebelum naik ke atas)")]
+    [Tooltip("Jarak slide (seberapa jauh dari posisinya sebelum muncul)")]
     public float jarakGeser = 1000f;
 
     [Header("Event Animasi (Opsional)")]
@@ -36,13 +40,26 @@ public class EfekSlideUI : MonoBehaviour
 
     void OnEnable()
     {
-        // Langsung sembunyikan di bawah layar
-        rectTransform.anchoredPosition = new Vector2(posisiAsli.x, posisiAsli.y - jarakGeser);
+        // Langsung sembunyikan di posisi sembunyinya
+        rectTransform.anchoredPosition = DapatkanPosisiSembunyi();
         canvasGroup.alpha = 0f;
         if (mulaiOtomatis)
         {
             MulaiSlideIn();
         }
+    }
+
+    Vector2 DapatkanPosisiSembunyi()
+    {
+        Vector2 pos = posisiAsli;
+        switch (arahMuncul)
+        {
+            case ArahSlide.Bawah: pos.y -= jarakGeser; break;
+            case ArahSlide.Atas: pos.y += jarakGeser; break;
+            case ArahSlide.Kiri: pos.x -= jarakGeser; break;
+            case ArahSlide.Kanan: pos.x += jarakGeser; break;
+        }
+        return pos;
     }
 
     public void MulaiSlideIn()
@@ -85,7 +102,7 @@ public class EfekSlideUI : MonoBehaviour
     {
         float waktu = 0f;
         Vector2 posisiMulai = rectTransform.anchoredPosition;
-        Vector2 posisiTujuan = new Vector2(posisiAsli.x, posisiAsli.y - jarakGeser);
+        Vector2 posisiTujuan = DapatkanPosisiSembunyi();
 
         while (waktu < durasiAnimasi)
         {
