@@ -112,8 +112,10 @@ public class DialogVisualNovel : MonoBehaviour
     IEnumerator ProsesMulaiDialog()
     {
         // Pastikan UI mati dulu selama masa jeda
-        if (bubleNamaKiri != null) bubleNamaKiri.SetActive(false);
-        if (bubleNamaKanan != null) bubleNamaKanan.SetActive(false);
+        foreach (var buble in semuaBubleNama)
+        {
+            if (buble != null) buble.SetActive(false);
+        }
         if (bubleDialogUtama != null) bubleDialogUtama.SetActive(false);
         
         if (jedaAwal > 0)
