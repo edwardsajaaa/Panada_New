@@ -42,6 +42,8 @@ public class DialogVisualNovel : MonoBehaviour
     [Header("Pengaturan")]
     [Tooltip("Waktu tunggu (detik) sebelum dialog pertama kali muncul (cocok untuk nunggu transisi)")]
     public float jedaAwal = 0f;
+    [Tooltip("Waktu tunggu (detik) antar klik agar pemain tidak tidak sengaja men-spam tombol dan meloncati banyak dialog")]
+    public float waktuAntiSpam = 0.25f;
     public float kecepatanKetik = 0.04f;
     [Tooltip("Tombol untuk lanjut ke dialog berikutnya")]
     public KeyCode tombolLanjut = KeyCode.F;
@@ -70,6 +72,7 @@ public class DialogVisualNovel : MonoBehaviour
     private Coroutine proses;
     private bool aktif = false;
     private bool sudahPernahSelesai = false;
+    private float cooldownKlik = 0f;
 
     void Awake()
     {
@@ -92,6 +95,7 @@ public class DialogVisualNovel : MonoBehaviour
     {
         aktif = true;
         sedangNgetik = false;
+        cooldownKlik = waktuAntiSpam; // Beri jeda sebentar di awal agar tidak langsung terklik
         
         if (lompatKeDialogSpesifikJikaDiulang && sudahPernahSelesai && percakapan.Length > 0)
         {
@@ -151,15 +155,24 @@ public class DialogVisualNovel : MonoBehaviour
             }
         }
 
+        // Kurangi timer cooldown
+        if (cooldownKlik > 0f) cooldownKlik -= Time.deltaTime;
+
         // Lanjut dialog bisa pakai F, Spasi, atau Klik Kiri
         if (Input.GetKeyDown(tombolLanjut) || Input.GetKeyDown(KeyCode.Space) || Input.GetMouseButtonDown(0))
         {
+            // Cegah spam klik
+            if (cooldownKlik > 0f) return;
+
             if (sedangNgetik)
             {
                 // Kalau teks masih jalan, langsung munculin semua teksnya (skip ngetik)
                 if (proses != null) StopCoroutine(proses);
                 tempatTeksDialog.text = percakapan[indeks].teksDialog;
                 sedangNgetik = false;
+                
+                // Beri sedikit jeda agar pemain bisa baca teks yang baru saja dimunculkan penuh
+                cooldownKlik = waktuAntiSpam;
             }
             else
             {
@@ -168,6 +181,7 @@ public class DialogVisualNovel : MonoBehaviour
                 {
                     indeks++;
                     Tampilkan(indeks);
+                    cooldownKlik = waktuAntiSpam;
                 }
                 else
                 {
