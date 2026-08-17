@@ -69,6 +69,23 @@ public class DialogVisualNovel : MonoBehaviour
     private bool aktif = false;
     private bool sudahPernahSelesai = false;
 
+    void Awake()
+    {
+        if (playerTransform == null)
+        {
+            PlayerMovementUI playerUI = FindAnyObjectByType<PlayerMovementUI>();
+            if (playerUI != null)
+            {
+                playerTransform = playerUI.transform;
+            }
+            else
+            {
+                GameObject p = GameObject.FindGameObjectWithTag("Player");
+                if (p != null) playerTransform = p.transform;
+            }
+        }
+    }
+
     void OnEnable()
     {
         aktif = true;
