@@ -6,6 +6,9 @@ using UnityEngine.Events;
 [System.Serializable]
 public class BarisDialogVN
 {
+    [Tooltip("Centang jika NPC yang ngomong (Buble Kanan). Hilangkan centang jika Player yang ngomong (Buble Kiri)")]
+    public bool npcYangBicara = false;
+    
     [Tooltip("Nama karakter yang muncul di buble tersebut (misal: Nathan atau Paman)")]
     public string namaKarakter;
 
@@ -26,12 +29,14 @@ public class DialogVisualNovel : MonoBehaviour
     [Tooltip("Teks (TextMeshPro) di dalam Buble Dialog Utama untuk menampilkan isi percakapan")]
     public TextMeshProUGUI tempatTeksDialog;
     
-    [Header("Referensi Buble Nama")]
-    [Tooltip("Masukkan SATU objek Buble Name yang mau dipakai secara universal")]
-    public GameObject bubleNamaUtama;
+    [Header("Referensi Buble Nama (Kiri & Kanan)")]
+    [Tooltip("Buble Name untuk Player (kiri)")]
+    public GameObject bubleNamaKiri;
+    public TextMeshProUGUI teksNamaKiri;
     
-    [Tooltip("Masukkan komponen Teks (TextMeshPro) yang ada di DALAM Buble Name Utama")]
-    public TextMeshProUGUI teksNamaUtama;
+    [Tooltip("Buble Name untuk NPC (kanan)")]
+    public GameObject bubleNamaKanan;
+    public TextMeshProUGUI teksNamaKanan;
 
     [Header("NPC (Opsional)")]
     [Tooltip("Masukkan script PopupInteraksi milik NPC agar balon '?' disembunyikan otomatis saat ngobrol")]
@@ -159,17 +164,24 @@ public class DialogVisualNovel : MonoBehaviour
     {
         var data = percakapan[i];
 
-        // Ganti teks nama sesuai karakter yang ngomong (seperti script lama)
-        if (teksNamaUtama != null)
-        {
-            teksNamaUtama.text = data.namaKarakter;
-        }
+        // Matikan dua-duanya dulu tiap ganti baris
+        if (bubleNamaKiri != null) bubleNamaKiri.SetActive(false);
+        if (bubleNamaKanan != null) bubleNamaKanan.SetActive(false);
 
-        // Tampilkan/Sembunyikan Buble Nama tergantung apakah namanya diisi atau kosong
-        if (bubleNamaUtama != null)
+        // Nyalakan yang sesuai dengan giliran bicara
+        bool adaNama = !string.IsNullOrEmpty(data.namaKarakter) && data.namaKarakter.Trim() != "";
+        if (adaNama)
         {
-            bool adaNama = !string.IsNullOrEmpty(data.namaKarakter) && data.namaKarakter.Trim() != "";
-            bubleNamaUtama.SetActive(adaNama);
+            if (data.npcYangBicara) // Jika NPC (Kanan)
+            {
+                if (bubleNamaKanan != null) bubleNamaKanan.SetActive(true);
+                if (teksNamaKanan != null) teksNamaKanan.text = data.namaKarakter;
+            }
+            else // Jika Player (Kiri)
+            {
+                if (bubleNamaKiri != null) bubleNamaKiri.SetActive(true);
+                if (teksNamaKiri != null) teksNamaKiri.text = data.namaKarakter;
+            }
         }
 
         // 3. Mulai ngetik isi dialog
@@ -201,7 +213,8 @@ public class DialogVisualNovel : MonoBehaviour
         if (proses != null) StopCoroutine(proses);
         
         // Sembunyikan semua UI percakapan setelah selesai
-        if (bubleNamaUtama != null) bubleNamaUtama.SetActive(false);
+        if (bubleNamaKiri != null) bubleNamaKiri.SetActive(false);
+        if (bubleNamaKanan != null) bubleNamaKanan.SetActive(false);
         if (bubleDialogUtama != null) bubleDialogUtama.SetActive(false);
         if (canvasDialogUtama != null) canvasDialogUtama.SetActive(false);
         
