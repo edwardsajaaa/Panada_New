@@ -41,14 +41,29 @@ public class KameraParallaxUI : MonoBehaviour
     {
         if (player == null || grupMap == null) return;
 
-        kameraPosisiX = player.anchoredPosition.x;
         posisiAwalGrupY = grupMap.anchoredPosition.y;
 
+        // Simpan posisi awal layer parallax sebelum digeser
         foreach (var layer in layerParallax)
         {
             if (layer.objekLatar != null)
             {
                 layer.posisiAwalX = layer.objekLatar.anchoredPosition.x;
+            }
+        }
+        
+        // Langsung paskan (snap) kamera ke posisi target yang dibatasi saat awal game,
+        // supaya tidak terjadi efek 'kamera terseret dari luar map' di detik pertama.
+        kameraPosisiX = Mathf.Clamp(player.anchoredPosition.x, batasKiriKamera, batasKananKamera);
+        
+        // Langsung terapkan posisi agar frame pertama langsung benar
+        grupMap.anchoredPosition = new Vector2(-kameraPosisiX, posisiAwalGrupY);
+        foreach (var layer in layerParallax)
+        {
+            if (layer.objekLatar != null)
+            {
+                float geserX = -kameraPosisiX * layer.kecepatanParallax;
+                layer.objekLatar.anchoredPosition = new Vector2(layer.posisiAwalX + geserX, layer.objekLatar.anchoredPosition.y);
             }
         }
     }
