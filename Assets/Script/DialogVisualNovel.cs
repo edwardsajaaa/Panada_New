@@ -106,7 +106,7 @@ public class DialogVisualNovel : MonoBehaviour
         if (canvasDialogUtama != null) canvasDialogUtama.SetActive(true);
         if (bubleDialogUtama != null) bubleDialogUtama.SetActive(true);
         
-        Tampilkan(0);
+        Tampilkan(indeks);
     }
 
     void Update()
