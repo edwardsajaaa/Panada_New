@@ -56,7 +56,7 @@ public class DialogVisualNovel : MonoBehaviour
     [Header("Jarak (Opsional)")]
     [Tooltip("Centang jika dialog ingin otomatis tertutup saat player menjauh")]
     public bool tutupSaatMenjauh = true;
-    [Tooltip("Jarak maksimal sebelum dialog tertutup otomatis")]
+    [Tooltip("Jika NPC diisi, jarak akan otomatis mengikuti NPC. Jika kosong, angka ini yang dipakai.")]
     public float jarakMaksimal = 150f;
     [Tooltip("Transform Player (misal Nathan Outdoor)")]
     public Transform playerTransform;
@@ -97,10 +97,14 @@ public class DialogVisualNovel : MonoBehaviour
         if (!aktif) return;
 
         // Cek jarak menjauh
-        if (tutupSaatMenjauh && playerTransform != null && popupInteraksiNPC != null)
+        if (tutupSaatMenjauh && playerTransform != null)
         {
-            Transform pusat = pusatInteraksi != null ? pusatInteraksi : popupInteraksiNPC.transform;
-            if (Vector2.Distance(pusat.position, playerTransform.position) > jarakMaksimal)
+            Transform pusat = pusatInteraksi != null ? pusatInteraksi : (popupInteraksiNPC != null ? popupInteraksiNPC.transform : transform);
+            
+            // Otomatis pakai jarak interaksi NPC (+ buffer kecil), kalau NPC kosong baru pakai jarakMaksimal
+            float batasJarak = popupInteraksiNPC != null ? popupInteraksiNPC.jarakInteraksi + 0.1f : jarakMaksimal;
+            
+            if (Vector2.Distance(pusat.position, playerTransform.position) > batasJarak)
             {
                 Tutup(false); // Batal di tengah jalan, jangan ditandai selesai
                 return;
