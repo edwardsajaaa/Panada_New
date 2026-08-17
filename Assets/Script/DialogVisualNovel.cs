@@ -40,6 +40,8 @@ public class DialogVisualNovel : MonoBehaviour
     public BarisDialogVN[] percakapan;
     
     [Header("Pengaturan")]
+    [Tooltip("Waktu tunggu (detik) sebelum dialog pertama kali muncul (cocok untuk nunggu transisi)")]
+    public float jedaAwal = 0f;
     public float kecepatanKetik = 0.04f;
     [Tooltip("Tombol untuk lanjut ke dialog berikutnya")]
     public KeyCode tombolLanjut = KeyCode.F;
@@ -103,6 +105,25 @@ public class DialogVisualNovel : MonoBehaviour
         
         if (popupInteraksiNPC != null) popupInteraksiNPC.sembunyikanSementara = true;
         
+        // Mulai proses dengan jeda jika ada
+        StartCoroutine(ProsesMulaiDialog());
+    }
+
+    IEnumerator ProsesMulaiDialog()
+    {
+        // Pastikan UI mati dulu selama masa jeda
+        if (bubleNamaKiri != null) bubleNamaKiri.SetActive(false);
+        if (bubleNamaKanan != null) bubleNamaKanan.SetActive(false);
+        if (bubleDialogUtama != null) bubleDialogUtama.SetActive(false);
+        
+        if (jedaAwal > 0)
+        {
+            yield return new WaitForSeconds(jedaAwal);
+        }
+        
+        // Kalau keburu dimatikan pas lagi nunggu jeda, batalkan
+        if (!aktif) yield break;
+
         if (canvasDialogUtama != null) canvasDialogUtama.SetActive(true);
         if (bubleDialogUtama != null) bubleDialogUtama.SetActive(true);
         
