@@ -64,11 +64,21 @@ public class EfekSlideUI : MonoBehaviour
 
     public void MulaiSlideIn()
     {
+        if (!gameObject.activeInHierarchy) 
+        {
+            gameObject.SetActive(true);
+            if (!gameObject.activeInHierarchy) return; // Jika parent mati, batalkan agar tidak error
+        }
         StartCoroutine(ProsesSlideIn());
     }
 
     public void MulaiSlideOut()
     {
+        if (!gameObject.activeInHierarchy) 
+        {
+            gameObject.SetActive(true);
+            if (!gameObject.activeInHierarchy) return;
+        }
         StartCoroutine(ProsesSlideOut());
     }
 

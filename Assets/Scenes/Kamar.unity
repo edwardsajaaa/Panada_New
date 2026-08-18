@@ -578,11 +578,7 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1641427575}
-  - {fileID: 318700197}
-  - {fileID: 930033325}
-  - {fileID: 684507693}
+  m_Children: []
   m_Father: {fileID: 719950350}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -1503,6 +1499,18 @@ MonoBehaviour:
   saatDiinteraksi:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 2054701288}
+        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+        m_MethodName: SetActive
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 719950346}
         m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
         m_MethodName: SetActive
@@ -1526,18 +1534,6 @@ MonoBehaviour:
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 1
-        m_CallState: 2
-      - m_Target: {fileID: 2054701288}
-        m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
-        m_MethodName: SetActive
-        m_Mode: 6
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
         m_CallState: 2
   popupVisual: {fileID: 929400878}
   playerTransform: {fileID: 1658101436}
@@ -2940,13 +2936,14 @@ GameObject:
   - component: {fileID: 272911840}
   - component: {fileID: 272911839}
   - component: {fileID: 272911843}
+  - component: {fileID: 272911844}
   m_Layer: 5
   m_Name: Story
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &272911839
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3065,6 +3062,19 @@ MonoBehaviour:
   eventSaatHpMenyala:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &272911844
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 272911838}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0958ee8b040b50e49b1eac0221e31845, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objekKebalikan: {fileID: 1295117454}
 --- !u!1 &274149317
 GameObject:
   m_ObjectHideFlags: 0
@@ -3814,7 +3824,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 28573567}
+  m_Father: {fileID: 719950350}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -6372,7 +6382,7 @@ RectTransform:
   m_Children:
   - {fileID: 522569746}
   - {fileID: 558506591}
-  m_Father: {fileID: 28573567}
+  m_Father: {fileID: 719950350}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -6943,13 +6953,15 @@ GameObject:
   - component: {fileID: 719950348}
   - component: {fileID: 719950347}
   - component: {fileID: 719950352}
+  - component: {fileID: 719950353}
+  - component: {fileID: 719950354}
   m_Layer: 5
   m_Name: NaikPesawat
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &719950347
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7026,6 +7038,10 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 28573567}
+  - {fileID: 1641427575}
+  - {fileID: 318700197}
+  - {fileID: 930033325}
+  - {fileID: 684507693}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -7051,6 +7067,7 @@ MonoBehaviour:
   namaKarakter: Nathan
   kecepatanKetikBawaan: 0.03
   jedaAwal: 1
+  jedaAutoLanjut: 0
   percakapan:
   - kalimat: Terakhir kali aku lihat langit sesenja ini...
     kecepatanKetikKhusus: 0
@@ -7069,6 +7086,18 @@ MonoBehaviour:
     aksiSaatKalimatMulai:
       m_PersistentCalls:
         m_Calls:
+        - m_Target: {fileID: 28573566}
+          m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_MethodName: SetActive
+          m_Mode: 6
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
         - m_Target: {fileID: 1641427574}
           m_TargetAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_MethodName: SetActive
@@ -7140,7 +7169,56 @@ MonoBehaviour:
   durasiFadeOutTeksPenutup: 1.5
   saatSemuaSelesai:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 719950353}
+        m_TargetAssemblyTypeName: TransisiMenuUI, Assembly-CSharp
+        m_MethodName: BukaSceneDenganLoading
+        m_Mode: 5
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: Chapter 2
+          m_BoolArgument: 0
+        m_CallState: 2
+--- !u!114 &719950353
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 719950346}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dee553b7a8aa7c34498cccb023d41af3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objekMainMenu: []
+  panelSetting: {fileID: 0}
+  objekPanelSetting: []
+  panelCredit: {fileID: 0}
+  objekPanelCredit: []
+  panelAudio: {fileID: 0}
+  panelKontrol: {fileID: 0}
+  jedaTransisi: 0.35
+--- !u!114 &719950354
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 719950346}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6f63c054d92f3874286b459b3cf4f746, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  laguBGM: {fileID: 0}
+  durasiFade: 2
+  volumeKhusus: 1
+  putarOtomatisSaatMulai: 1
+  jadikanHening: 0
 --- !u!1 &729520207
 GameObject:
   m_ObjectHideFlags: 0
@@ -8811,13 +8889,13 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 930033324}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1334115386}
-  m_Father: {fileID: 28573567}
+  m_Father: {fileID: 719950350}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -9352,12 +9430,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   percakapan:
   - gelembungAktif: {fileID: 1281754152}
+    tempatTeksNama: {fileID: 0}
+    namaKarakter: 
     tempatTeksDialog: {fileID: 1012194284}
     kalimat: Eh mau kemana nathan?
   - gelembungAktif: {fileID: 1955420559}
+    tempatTeksNama: {fileID: 0}
+    namaKarakter: 
     tempatTeksDialog: {fileID: 1264300210}
     kalimat: Pulang kampung ka
   - gelembungAktif: {fileID: 1281754152}
+    tempatTeksNama: {fileID: 0}
+    namaKarakter: 
     tempatTeksDialog: {fileID: 1012194284}
     kalimat: 'Tiba tiba banget, lagian ekonomi lagi gini kok balik kampung sih? '
   kecepatanKetik: 0.04
@@ -10703,7 +10787,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1295117455
 RectTransform:
   m_ObjectHideFlags: 0
@@ -10711,18 +10795,18 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1295117454}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 403254048}
-  m_Father: {fileID: 2036112911}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 960, y: 540}
+  m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1295117456
 MonoBehaviour:
@@ -13065,7 +13149,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 28573567}
+  m_Father: {fileID: 719950350}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
@@ -15906,18 +15990,28 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   percakapan:
   - gelembungAktif: {fileID: 957306787}
+    tempatTeksNama: {fileID: 0}
+    namaKarakter: 
     tempatTeksDialog: {fileID: 1456884887}
     kalimat: nggak nongki nathan?
   - gelembungAktif: {fileID: 258837137}
+    tempatTeksNama: {fileID: 0}
+    namaKarakter: 
     tempatTeksDialog: {fileID: 1868642805}
     kalimat: nggak dulu ka, aku mau pulang kampung
   - gelembungAktif: {fileID: 957306787}
+    tempatTeksNama: {fileID: 0}
+    namaKarakter: 
     tempatTeksDialog: {fileID: 1456884887}
     kalimat: ohh pulkam kamu..
   - gelembungAktif: {fileID: 957306787}
+    tempatTeksNama: {fileID: 0}
+    namaKarakter: 
     tempatTeksDialog: {fileID: 1456884887}
     kalimat: padahal kemarin banyak kerjaan loh
   - gelembungAktif: {fileID: 957306787}
+    tempatTeksNama: {fileID: 0}
+    namaKarakter: 
     tempatTeksDialog: {fileID: 1456884887}
     kalimat: yg harus diselesaikan
   kecepatanKetik: 0.04
@@ -16081,7 +16175,6 @@ RectTransform:
   - {fileID: 2106945040}
   - {fileID: 2081369449}
   - {fileID: 1435262044}
-  - {fileID: 1295117455}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -16146,7 +16239,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2054701289
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -19662,5 +19755,6 @@ SceneRoots:
   - {fileID: 2054701292}
   - {fileID: 719950350}
   - {fileID: 2036112911}
+  - {fileID: 1295117455}
   - {fileID: 1022717411}
   - {fileID: 1987896848}

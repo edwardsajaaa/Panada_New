@@ -8082,6 +8082,7 @@ MonoBehaviour:
   transisiKeluarMenuDulu: 1
   durasiKeluarMenu: 0.35
   minimalWaktuLoading: 1.2
+  jedaSebelumKeluar: 0.5
   materialTransisiPixel: {fileID: 2100000, guid: 6ae42d144753325489fe573aad85d735, type: 2}
   durasiTransisiPixel: 0.5
 --- !u!1 &930057697
@@ -12087,7 +12088,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1486730452
 RectTransform:
   m_ObjectHideFlags: 0
