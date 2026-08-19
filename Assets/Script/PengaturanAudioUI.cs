@@ -81,7 +81,17 @@ public class PengaturanAudioUI : MonoBehaviour
             kategori.sumberSuaraLangsung.volume = persentase;
         }
 
-        // 2. Jika pakai Audio Mixer (Lebih profesional)
+        // 2. Hubungkan otomatis ke BGMManager (Jika terdeteksi ini adalah BGM)
+        if (kategori.namaPreferensi == "VolumeBGM" || kategori.namaPreferensi == "Vol_BGM")
+        {
+            BGMManager bgmMgr = FindObjectOfType<BGMManager>(); // Cari referensinya walau beda scene
+            if (bgmMgr != null)
+            {
+                bgmMgr.SetGlobalVolume(persentase);
+            }
+        }
+
+        // 3. Jika pakai Audio Mixer (Lebih profesional)
         if (masterMixer != null && !string.IsNullOrEmpty(kategori.namaParameterMixer))
         {
             float volumeDecibel = -80f;

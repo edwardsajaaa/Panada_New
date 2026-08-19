@@ -85,6 +85,14 @@ public class BGMManager : MonoBehaviour
         transisiBerjalan = StartCoroutine(ProsesFadeOut(sourceAktif, durasiFade));
     }
 
+    // Mengubah volume secara instan (Dipanggil dari menu Pengaturan Audio)
+    public void SetGlobalVolume(float vol)
+    {
+        maxVolume = Mathf.Clamp01(vol);
+        if (audioSource1 != null && audioSource1.isPlaying && transisiBerjalan == null) audioSource1.volume = maxVolume;
+        if (audioSource2 != null && audioSource2.isPlaying && transisiBerjalan == null) audioSource2.volume = maxVolume;
+    }
+
     private IEnumerator ProsesCrossfade(AudioSource sourceLama, AudioSource sourceBaru, float durasi, float targetVol)
     {
         float timer = 0f;
