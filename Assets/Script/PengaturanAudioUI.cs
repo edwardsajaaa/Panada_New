@@ -10,8 +10,10 @@ public class PengaturanAudioUI : MonoBehaviour
         [Header("Pengaturan Audio")]
         [Tooltip("Nama untuk menyimpan data, contoh: Vol_Main, Vol_BGM")]
         public string namaPreferensi;
-        [Tooltip("Nama parameter yang di-expose di AudioMixer, contoh: MasterVol")]
+        [Tooltip("Nama parameter yang di-expose di AudioMixer (Jika pakai Mixer)")]
         public string namaParameterMixer; 
+        [Tooltip("Atau masukkan objek yang memutar suaranya (AudioSource) ke sini jika tidak pakai Mixer")]
+        public AudioSource sumberSuaraLangsung;
         
         [Header("Pengaturan UI (Dari bawah ke atas)")]
         [Tooltip("Masukkan ke-5 image kotak dari bawah ke atas")]
@@ -71,17 +73,24 @@ public class PengaturanAudioUI : MonoBehaviour
 
     private void TerapkanVolumeKeMixer(KategoriAudio kategori)
     {
-        if (masterMixer == null || string.IsNullOrEmpty(kategori.namaParameterMixer)) return;
+        float persentase = (float)kategori.levelSaatIni / 5f;
 
-        float volumeDecibel = -80f;
-        
-        if (kategori.levelSaatIni > 0)
+        // 1. Jika pakai AudioSource langsung (Lebih mudah untuk pemula)
+        if (kategori.sumberSuaraLangsung != null)
         {
-            float persentase = (float)kategori.levelSaatIni / 5f;
-            volumeDecibel = Mathf.Log10(persentase) * 20f;
+            kategori.sumberSuaraLangsung.volume = persentase;
         }
 
-        masterMixer.SetFloat(kategori.namaParameterMixer, volumeDecibel);
+        // 2. Jika pakai Audio Mixer (Lebih profesional)
+        if (masterMixer != null && !string.IsNullOrEmpty(kategori.namaParameterMixer))
+        {
+            float volumeDecibel = -80f;
+            if (kategori.levelSaatIni > 0)
+            {
+                volumeDecibel = Mathf.Log10(persentase) * 20f;
+            }
+            masterMixer.SetFloat(kategori.namaParameterMixer, volumeDecibel);
+        }
     }
 
     private void UbahVolume(KategoriAudio kategori, int perubahan)

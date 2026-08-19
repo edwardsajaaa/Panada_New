@@ -7214,7 +7214,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f63c054d92f3874286b459b3cf4f746, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  laguBGM: {fileID: 0}
+  laguBGM: {fileID: 8300000, guid: d8fb4cad6e1b3374eb51def7b5d10929, type: 3}
   durasiFade: 2
   volumeKhusus: 1
   putarOtomatisSaatMulai: 1
