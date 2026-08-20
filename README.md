@@ -26,6 +26,12 @@ Pemain akan dibawa ke dalam kisah karakter-karakter (salah satunya bernama Natha
 - **Animasi Slideshow Otomatis (AnimasiSlideshow.cs)**: Komponen yang secara otomatis mendeteksi objek *Image* anak dan memutarnya bergantian seperti *slideshow*. Dilengkapi deteksi cerdas yang akan mengabaikan objek *Text* agar tulisan tidak ikut berkedip.
 - **Sistem Anti-Spam Klik (BukaPanelPesan.cs)**: Implementasi *flagging* keamanan (`sedangDiproses`) pada tombol-tombol interaktif guna mencegah eksekusi beruntun ganda (*spam click*) yang dapat memicu error *coroutine* atau tumpang tindih animasi.
 - **Pembersihan Kode Massal (Clean Code Refactoring)**: Seluruh 38 script C# pada proyek telah dibersihkan secara massal menggunakan metode heuristik; menghilangkan ratusan baris komentar receh/XML usang/emoticon untuk mempertahankan standar kualitas kode yang profesional, ringan, dan rapi.
+
+## Update Patch Terbaru (Cutscene & Audio)
+- **Cutscene Otomatis Tanpa Klik (DialogCutscene.cs)**: Menambahkan fitur *Auto-Advance* (Jeda Auto Lanjut). Percakapan kini dapat berjalan sendiri sebagai adegan sinematik sepenuhnya tanpa perlu interaksi (klik) dari pemain, lengkap dengan integrasi pemanggilan *Scene* baru di akhir dialog.
+- **Integrasi Volume Global Lintas Scene (BGMManager.cs & PengaturanAudioUI.cs)**: Memperbarui UI Pengaturan Audio agar secara otomatis mendeteksi dan mengontrol volume musik yang dimainkan oleh `BGMManager` lintas *scene*. Dilengkapi dengan perbaikan *bug* krusial pada sistem *Crossfade* (me-reset status `transisiBerjalan`) sehingga *slider* volume merespons secara *real-time*.
+- **Otomatisasi Efek UI Anti-Error (EfekSlideUI.cs & EfekFadeUI.cs)**: Melengkapi sistem animasi UI dengan proteksi pintar. Jika script dipanggil saat objek sedang mati (inactive), script akan menghidupkannya secara otomatis sebelum memulai *Coroutine*, mencegah munculnya error *null reference* atau *coroutine error* di Unity.
+- **Sistem Navigasi Antar-Panel Dinamis**: Integrasi mulus perpindahan antar UI (misal dari *Handphone* -> *Teks Judul* -> *Opsi Pilihan*) hanya dengan mengandalkan sistem Event bawaan Unity tanpa perlu menulis baris kode tambahan.
 ## Setup Project
 Game ini dikembangkan menggunakan **Unity Engine**.
 1. *Clone/Download* repositori ini.
