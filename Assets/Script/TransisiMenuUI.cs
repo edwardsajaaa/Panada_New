@@ -142,6 +142,12 @@ public class TransisiMenuUI : MonoBehaviour
         }
     }
 
+    public void KeluarGame()
+    {
+        Debug.Log("Fungsi Keluar Game Terpanggil! (Catatan: Ini hanya akan menutup aplikasi saat game sudah di-build, tidak akan menutup Unity Editor)");
+        Application.Quit();
+    }
+
     IEnumerator ProsesBukaPanel(GameObject targetPanel)
     {
         if (targetPanel == null) yield break;
