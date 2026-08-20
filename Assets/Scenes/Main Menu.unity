@@ -6456,6 +6456,7 @@ MonoBehaviour:
   audioBGM:
     namaPreferensi: Vol_BGM
     namaParameterMixer: 
+    sumberSuaraLangsung: {fileID: 0}
     blokVolume:
     - {fileID: 0}
     - {fileID: 0}
@@ -6466,6 +6467,7 @@ MonoBehaviour:
   audioMain:
     namaPreferensi: Vol_MAIN
     namaParameterMixer: 
+    sumberSuaraLangsung: {fileID: 0}
     blokVolume:
     - {fileID: 0}
     - {fileID: 0}
@@ -6476,6 +6478,7 @@ MonoBehaviour:
   audioVoice:
     namaPreferensi: Vol_VOICE
     namaParameterMixer: 
+    sumberSuaraLangsung: {fileID: 0}
     blokVolume:
     - {fileID: 0}
     - {fileID: 0}
@@ -6486,6 +6489,7 @@ MonoBehaviour:
   audioSFX:
     namaPreferensi: Vol_SFX
     namaParameterMixer: 
+    sumberSuaraLangsung: {fileID: 0}
     blokVolume:
     - {fileID: 0}
     - {fileID: 0}
@@ -12906,8 +12910,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   masterMixer: {fileID: 0}
   audioBGM:
-    namaPreferensi: Vol_BGM
+    namaPreferensi: VolumeBGM
     namaParameterMixer: 
+    sumberSuaraLangsung: {fileID: 0}
     blokVolume:
     - {fileID: 1362196947}
     - {fileID: 444268540}
@@ -12918,6 +12923,7 @@ MonoBehaviour:
   audioMain:
     namaPreferensi: Vol_MAIN
     namaParameterMixer: 
+    sumberSuaraLangsung: {fileID: 0}
     blokVolume:
     - {fileID: 240706499}
     - {fileID: 1115305049}
@@ -12928,6 +12934,7 @@ MonoBehaviour:
   audioVoice:
     namaPreferensi: Vol_VOICE
     namaParameterMixer: 
+    sumberSuaraLangsung: {fileID: 0}
     blokVolume:
     - {fileID: 2094253536}
     - {fileID: 264975763}
@@ -12938,6 +12945,7 @@ MonoBehaviour:
   audioSFX:
     namaPreferensi: Vol_SFX
     namaParameterMixer: 
+    sumberSuaraLangsung: {fileID: 0}
     blokVolume:
     - {fileID: 2049117536}
     - {fileID: 1403687631}

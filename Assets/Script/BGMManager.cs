@@ -89,8 +89,10 @@ public class BGMManager : MonoBehaviour
     public void SetGlobalVolume(float vol)
     {
         maxVolume = Mathf.Clamp01(vol);
-        if (audioSource1 != null && audioSource1.isPlaying && transisiBerjalan == null) audioSource1.volume = maxVolume;
-        if (audioSource2 != null && audioSource2.isPlaying && transisiBerjalan == null) audioSource2.volume = maxVolume;
+        
+        // Tetap paksa ubah volume meskipun sedang ada transisi, supaya slider UI terasa responsif
+        if (audioSource1 != null && audioSource1.isPlaying) audioSource1.volume = maxVolume;
+        if (audioSource2 != null && audioSource2.isPlaying) audioSource2.volume = maxVolume;
     }
 
     private IEnumerator ProsesCrossfade(AudioSource sourceLama, AudioSource sourceBaru, float durasi, float targetVol)
@@ -114,6 +116,8 @@ public class BGMManager : MonoBehaviour
         sourceLama.volume = 0f;
         sourceBaru.volume = volumeAkhir;
         sourceLama.Stop();
+        
+        transisiBerjalan = null;
     }
 
     private IEnumerator ProsesFadeOut(AudioSource source, float durasi)
@@ -130,5 +134,7 @@ public class BGMManager : MonoBehaviour
 
         source.volume = 0f;
         source.Stop();
+        
+        transisiBerjalan = null;
     }
 }
