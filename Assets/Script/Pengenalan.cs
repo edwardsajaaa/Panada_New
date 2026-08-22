@@ -661,20 +661,15 @@ public class Pengenalan : MonoBehaviour
             // Dan blackscreen (kelopak mata) tetap paling depan saat mau dibuka
             blackScreenPanel.transform.SetAsLastSibling();
             
-            UpdateTeksUI();
-            
             yield return StartCoroutine(FadeBlackScreen(1f, 0f, 0.4f));
             blackScreenPanel.SetActive(false);
         }
         else
         {
             if (beritaKonteksFullscreen != null) beritaKonteksFullscreen.SetActive(true);
-            UpdateTeksUI();
         }
 
-        yield return StartCoroutine(FadeTeks(0f, 1f, durasiTransisiTeks));
-
-        sedangTransisiTeks = false;
+        yield return StartCoroutine(FadeInDanMulaiNgetik());
     }
 
     IEnumerator FadeBlackScreen(float nilaiAwal, float nilaiAkhir, float durasi)
@@ -848,7 +843,6 @@ public class Pengenalan : MonoBehaviour
         }
 
         // Ubah ke teks dialog indeks ke-5 (baris ke-6)
-        UpdateTeksUI();
         SetTeksAlpha(0f);
         
         // Memunculkan kembali bubble name dengan animasi popup seperti saat dialog awal
@@ -862,9 +856,7 @@ public class Pengenalan : MonoBehaviour
             if (cg != null) cg.alpha = 1f;
         }
 
-        yield return StartCoroutine(FadeTeks(0f, 1f, durasiTransisiTeks));
-
-        sedangTransisiTeks = false;
+        yield return StartCoroutine(FadeInDanMulaiNgetik());
     }
 
     // Coroutine untuk menyembunyikan teks dan mengizinkan pemain mencari barang
@@ -895,7 +887,6 @@ public class Pengenalan : MonoBehaviour
             sedangMencariBarang = false;
             DraggableUI.canDrag = false;
             
-            UpdateTeksUI();
             SetTeksAlpha(0f);
             
             if (panelNamaKarakter != null)
@@ -908,7 +899,7 @@ public class Pengenalan : MonoBehaviour
                 if (cg != null) cg.alpha = 1f;
             }
             
-            StartCoroutine(FadeTeks(0f, 1f, durasiTransisiTeks));
+            StartCoroutine(FadeInDanMulaiNgetik());
         }
     }
 
@@ -942,9 +933,7 @@ public class Pengenalan : MonoBehaviour
         
         if (indeksDialogSaatIni < arrayDialogAktif.Length)
         {
-            UpdateTeksUI();
-            yield return StartCoroutine(FadeTeks(0f, 1f, durasiTransisiTeks));
-            sedangTransisiTeks = false;
+            yield return StartCoroutine(FadeInDanMulaiNgetik());
         }
         else
         {
@@ -959,6 +948,11 @@ public class Pengenalan : MonoBehaviour
         
         yield return StartCoroutine(FadeTeks(1f, 0f, durasiTransisiTeks));
 
+        yield return StartCoroutine(FadeInDanMulaiNgetik());
+    }
+
+    IEnumerator FadeInDanMulaiNgetik()
+    {
         if (textNamaKarakter != null) textNamaKarakter.text = arrayDialogAktif[indeksDialogSaatIni].namaKarakter;
         
         if (gunakanEfekMengetik)
