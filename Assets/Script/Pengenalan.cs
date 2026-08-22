@@ -109,6 +109,8 @@ public class Pengenalan : MonoBehaviour
     [Header("Pengaturan Suara Tambahan")]
     [Tooltip("File suara kertas saat koran-koran muncul di layar")]
     public AudioClip suaraKoranMuncul;
+    [Tooltip("File suara kertas saat koran ditekan untuk melihat detailnya")]
+    public AudioClip suaraKoranDitekan;
 
     private bool sedangMengetik = false;
 
@@ -1324,6 +1326,11 @@ public class Pengenalan : MonoBehaviour
         if (data.panelDetailObjek == null || data.posterDetail == null) yield break;
 
         sedangMelihatDetail = true;
+        
+        if (suaraKoranDitekan != null && sumberSuaraKetik != null)
+        {
+            sumberSuaraKetik.PlayOneShot(suaraKoranDitekan);
+        }
 
         if (tombolNext != null) tombolNext.SetActive(false);
 
