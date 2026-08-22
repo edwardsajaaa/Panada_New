@@ -106,6 +106,10 @@ public class Pengenalan : MonoBehaviour
     [Tooltip("Frekuensi bunyi (1 = tiap huruf, 2 = per 2 huruf). Hanya jika tidak di-loop.")]
     public int jarakBunyi = 2;
 
+    [Header("Pengaturan Suara Tambahan")]
+    [Tooltip("File suara kertas saat koran-koran muncul di layar")]
+    public AudioClip suaraKoranMuncul;
+
     private bool sedangMengetik = false;
 
     private int indeksDialogSaatIni = 0;
@@ -548,6 +552,11 @@ public class Pengenalan : MonoBehaviour
                 }
 
                 // Munculkan gambar koran ke-i dengan efek slide dari bawah
+                if (suaraKoranMuncul != null && sumberSuaraKetik != null)
+                {
+                    sumberSuaraKetik.PlayOneShot(suaraKoranMuncul);
+                }
+                
                 daftarGambarKoran[i].SetActive(true);
                 yield return StartCoroutine(SlideDariBawahObjek(daftarGambarKoran[i].transform, 0.4f));
             }
