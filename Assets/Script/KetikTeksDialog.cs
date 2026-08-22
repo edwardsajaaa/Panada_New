@@ -45,6 +45,16 @@ public class KetikTeksDialog : MonoBehaviour
     [Tooltip("Jika dicentang, maka saat dialog ini muncul untuk kedua kalinya (setelah ditutup), ia akan melompati baris ke-1 dan langsung mulai dari baris ke-2.")]
     public bool lewatiBarisPertamaSetelahDiulang = false;
 
+    [Header("Pengaturan Suara (Opsional)")]
+    [Tooltip("File suara ketikan (efek ngomong/blip) yang diputar saat teks muncul")]
+    public AudioClip suaraKetik;
+    [Tooltip("Komponen pemutar suara (Jika kosong, script akan mencarinya secara otomatis)")]
+    public AudioSource sumberSuara;
+    [Tooltip("Centang jika file suara panjang dan mau di-loop selama ngetik. Hilangkan centang jika file suara pendek dan mau diputar per huruf.")]
+    public bool suaraDiloopTerus = false;
+    [Tooltip("Frekuensi bunyi per huruf (Jika tidak di-loop). 1 = Bunyi tiap huruf, 2 = Bunyi per 2 huruf (biar tidak bising).")]
+    public int jarakBunyi = 2;
+
     private int indeksKalimat = 0;
     private bool sedangNgetik = false;
     private bool sudahMulai = false;
@@ -54,6 +64,7 @@ public class KetikTeksDialog : MonoBehaviour
     void Awake()
     {
         grupGelembung = GetComponent<CanvasGroup>();
+        if (sumberSuara == null) sumberSuara = GetComponent<AudioSource>();
     }
 
     void OnEnable()
@@ -112,7 +123,6 @@ public class KetikTeksDialog : MonoBehaviour
         // Hanya bisa lanjut atau skip jika animasi gelembung sudah selesai dan dialog mulai
         if (!sudahMulai) return;
 
-        // Jika pemain mengeklik kiri (mouse) atau menekan Spasi
         if (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space))
         {
             if (sedangNgetik)
@@ -121,6 +131,12 @@ public class KetikTeksDialog : MonoBehaviour
                 StopAllCoroutines();
                 teksDialog.text = percakapan[indeksKalimat].kalimat;
                 sedangNgetik = false;
+                
+                // Matikan suara kalau teks di-skip
+                if (sumberSuara != null && suaraDiloopTerus)
+                {
+                    sumberSuara.Stop();
+                }
             }
             else
             {
@@ -185,12 +201,43 @@ public class KetikTeksDialog : MonoBehaviour
             teksNama.text = dataSaatIni.namaKarakter;
         }
         
+        // Memulai suara looping (jika dipilih)
+        if (suaraKetik != null && sumberSuara != null && suaraDiloopTerus)
+        {
+            sumberSuara.clip = suaraKetik;
+            sumberSuara.loop = true;
+            sumberSuara.Play();
+        }
+
+        int hitunganHuruf = 0;
+
         foreach (char huruf in dataSaatIni.kalimat.ToCharArray())
         {
             teksDialog.text += huruf;
+            
+            // Memutar suara per huruf (jika TIDAK looping)
+            if (suaraKetik != null && sumberSuara != null && !suaraDiloopTerus)
+            {
+                // Jangan bunyikan suara saat spasi
+                if (huruf != ' ')
+                {
+                    hitunganHuruf++;
+                    if (hitunganHuruf % jarakBunyi == 0 || jarakBunyi <= 1)
+                    {
+                        sumberSuara.PlayOneShot(suaraKetik);
+                    }
+                }
+            }
+
             yield return new WaitForSeconds(kecepatanKetik);
         }
         
+        // Mematikan suara looping saat teks sudah selesai diketik
+        if (suaraKetik != null && sumberSuara != null && suaraDiloopTerus)
+        {
+            sumberSuara.Stop();
+        }
+
         sedangNgetik = false;
     }
 }
