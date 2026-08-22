@@ -4,6 +4,17 @@ using UnityEngine.Audio;
 
 public class PengaturanAudioUI : MonoBehaviour
 {
+    // Akses global untuk mendapatkan nilai volume SFX (0.0 sampai 1.0)
+    public static float GlobalSFXVolume
+    {
+        get
+        {
+            // Coba ambil dari Vol_SFX, jika tidak ada coba VolumeSFX, default 5
+            int level = PlayerPrefs.GetInt("Vol_SFX", PlayerPrefs.GetInt("VolumeSFX", 5));
+            return (float)level / 5f;
+        }
+    }
+
     [System.Serializable]
     public class KategoriAudio
     {

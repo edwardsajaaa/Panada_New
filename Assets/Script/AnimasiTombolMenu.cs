@@ -61,6 +61,14 @@ public class AnimasiTombolMenu : MonoBehaviour, IPointerEnterHandler, IPointerEx
     public bool bawaKeDepanSaatHover = true;
     public float jedaSebelumHover = 0.5f;
 
+    [Header("Pengaturan Efek Suara (Opsional)")]
+    [Tooltip("Suara yang diputar saat mouse diarahkan ke tombol")]
+    public AudioClip suaraHover;
+    [Tooltip("Suara yang diputar saat tombol diklik")]
+    public AudioClip suaraClick;
+    [Tooltip("Komponen pemutar suara (Jika kosong, akan otomatis dibuat)")]
+    public AudioSource sumberSuara;
+
     private Vector3 skalaAwal;
     private Vector2 posisiAwal;
     private Quaternion rotasiAwal;
@@ -107,6 +115,12 @@ public class AnimasiTombolMenu : MonoBehaviour, IPointerEnterHandler, IPointerEx
         indeksSiblingAwal = transform.GetSiblingIndex();
         sudutPutaran = 0f;
         sudahInisialisasi = true;
+
+        if (sumberSuara == null && (suaraHover != null || suaraClick != null))
+        {
+            sumberSuara = gameObject.AddComponent<AudioSource>();
+            sumberSuara.playOnAwake = false;
+        }
     }
 
     public void PerbaruiPosisiAwal(Vector2 posisiBaru)
@@ -398,6 +412,12 @@ public class AnimasiTombolMenu : MonoBehaviour, IPointerEnterHandler, IPointerEx
             transform.SetAsLastSibling();
         }
 
+        if (suaraHover != null && sumberSuara != null)
+        {
+            sumberSuara.volume = PengaturanAudioUI.GlobalSFXVolume;
+            sumberSuara.PlayOneShot(suaraHover);
+        }
+
         StopAllCoroutines();
         StartCoroutine(TransisiKeTarget(skalaAwal * targetSkalaHover, posisiAwal + new Vector2(0f, 8f), rotasiAwal * Quaternion.Euler(0f, 0f, 2.5f)));
     }
@@ -422,6 +442,13 @@ public class AnimasiTombolMenu : MonoBehaviour, IPointerEnterHandler, IPointerEx
         if (!siapMenerimaHover || !gunakanHoverDanClick || DraggableUI.isInteractingWithUI) return;
 
         sedangDitekan = true;
+
+        if (suaraClick != null && sumberSuara != null)
+        {
+            sumberSuara.volume = PengaturanAudioUI.GlobalSFXVolume;
+            sumberSuara.PlayOneShot(suaraClick);
+        }
+
         StopAllCoroutines();
         StartCoroutine(TransisiKeTarget(skalaAwal * targetSkalaClick, posisiAwal - new Vector2(0f, 3f), rotasiAwal));
     }

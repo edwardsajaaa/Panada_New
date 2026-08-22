@@ -204,6 +204,7 @@ public class KetikTeksDialog : MonoBehaviour
         // Memulai suara looping (jika dipilih)
         if (suaraKetik != null && sumberSuara != null && suaraDiloopTerus)
         {
+            sumberSuara.volume = PengaturanAudioUI.GlobalSFXVolume;
             sumberSuara.clip = suaraKetik;
             sumberSuara.loop = true;
             sumberSuara.Play();
@@ -224,6 +225,7 @@ public class KetikTeksDialog : MonoBehaviour
                     hitunganHuruf++;
                     if (hitunganHuruf % jarakBunyi == 0 || jarakBunyi <= 1)
                     {
+                        sumberSuara.volume = PengaturanAudioUI.GlobalSFXVolume;
                         sumberSuara.PlayOneShot(suaraKetik);
                     }
                 }

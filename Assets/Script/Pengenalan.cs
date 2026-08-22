@@ -556,6 +556,7 @@ public class Pengenalan : MonoBehaviour
                 // Munculkan gambar koran ke-i dengan efek slide dari bawah
                 if (suaraKoranMuncul != null && sumberSuaraKetik != null)
                 {
+                    sumberSuaraKetik.volume = PengaturanAudioUI.GlobalSFXVolume;
                     sumberSuaraKetik.PlayOneShot(suaraKoranMuncul);
                 }
                 
@@ -1034,6 +1035,7 @@ public class Pengenalan : MonoBehaviour
         // Memulai suara looping
         if (suaraKetik != null && sumberSuaraKetik != null && suaraDiloopTerus)
         {
+            sumberSuaraKetik.volume = PengaturanAudioUI.GlobalSFXVolume;
             sumberSuaraKetik.clip = suaraKetik;
             sumberSuaraKetik.loop = true;
             sumberSuaraKetik.Play();
@@ -1060,6 +1062,7 @@ public class Pengenalan : MonoBehaviour
                     hitunganHuruf++;
                     if (hitunganHuruf % jarakBunyi == 0 || jarakBunyi <= 1)
                     {
+                        sumberSuaraKetik.volume = PengaturanAudioUI.GlobalSFXVolume;
                         sumberSuaraKetik.PlayOneShot(suaraKetik);
                     }
                 }
@@ -1329,6 +1332,7 @@ public class Pengenalan : MonoBehaviour
         
         if (suaraKoranDitekan != null && sumberSuaraKetik != null)
         {
+            sumberSuaraKetik.volume = PengaturanAudioUI.GlobalSFXVolume;
             sumberSuaraKetik.PlayOneShot(suaraKoranDitekan);
         }
 
