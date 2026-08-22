@@ -92,6 +92,22 @@ public class Pengenalan : MonoBehaviour
     public float jedaBacaBerita = 3f;
     public float durasiTransisiTeks = 0.3f;
 
+    [Header("Pengaturan Efek Teks & Suara")]
+    [Tooltip("Centang untuk membuat teks muncul huruf per huruf (seperti mesin tik).")]
+    public bool gunakanEfekMengetik = true;
+    [Tooltip("Kecepatan ketikan per huruf (semakin kecil semakin cepat)")]
+    public float kecepatanKetik = 0.04f;
+    [Tooltip("File suara ketikan (efek ngomong/blip)")]
+    public AudioClip suaraKetik;
+    [Tooltip("Komponen pemutar suara (Jika kosong, script otomatis mencarinya)")]
+    public AudioSource sumberSuaraKetik;
+    [Tooltip("Centang jika file suara panjang dan mau di-loop selama teks muncul.")]
+    public bool suaraDiloopTerus = false;
+    [Tooltip("Frekuensi bunyi (1 = tiap huruf, 2 = per 2 huruf). Hanya jika tidak di-loop.")]
+    public int jarakBunyi = 2;
+
+    private bool sedangMengetik = false;
+
     private int indeksDialogSaatIni = 0;
     private int batasAkhirDialogSaatIni = 0;
     private DataDialog[] arrayDialogAktif;
@@ -106,6 +122,8 @@ public class Pengenalan : MonoBehaviour
     void Start()
     {
         instansiTombolNext = tombolNext;
+        if (sumberSuaraKetik == null) sumberSuaraKetik = GetComponent<AudioSource>();
+
         // 1. Kondisi awal: Semua panel di-reset, yang muncul pertama adalah blank monitor dan layar hitam
         if (blackScreenPanel != null) 
         {
@@ -188,13 +206,19 @@ public class Pengenalan : MonoBehaviour
         }
 
         // Lanjut ke dialog berikutnya saat pemain klik kiri mouse atau tekan Spasi
-        // Dicegah jika sedang transisi teks agar teks tidak bertumpuk/error
-        // Dicegah juga jika sedang menyeret objek UI (DraggableUI)
-        // Dicegah jika sedang di fase wajib mencari barang
+        // Dicegah jika sedang transisi fade teks, sedang menyeret UI, atau mencari barang
         if (sedangDialog && !sedangTransisiTeks && !sedangMencariBarang && !DraggableUI.isInteractingWithUI && 
             (Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.Return)))
         {
-            LanjutDialog();
+            if (sedangMengetik)
+            {
+                // Skip ketikan langsung muncul semua
+                sedangMengetik = false;
+            }
+            else
+            {
+                LanjutDialog();
+            }
         }
 
         // Mekanisme tombol ESC atau Klik Kanan untuk menutup detail koran
@@ -714,9 +738,18 @@ public class Pengenalan : MonoBehaviour
             
             sedangTransisiTeks = true;
             
-            // PENTING: Update teks dulu dengan data index 0 sebelum di-fade in
-            // Supaya saat muncul otomatis, teks pertama sudah ada
-            UpdateTeksUI();
+            // PENTING: Update nama karakter & siapkan fade in
+            if (textNamaKarakter != null) textNamaKarakter.text = arrayDialogAktif[indeksDialogSaatIni].namaKarakter;
+            
+            if (gunakanEfekMengetik)
+            {
+                if (textIsiDialog != null) textIsiDialog.text = ""; // Kosongkan dulu
+            }
+            else
+            {
+                if (textIsiDialog != null) textIsiDialog.text = arrayDialogAktif[indeksDialogSaatIni].teksDialog;
+            }
+
             SetTeksAlpha(0f);
             
             // Kembalikan alpha parent ke 1, agar tidak double-fade dengan komponen di dalamnya
@@ -729,6 +762,11 @@ public class Pengenalan : MonoBehaviour
             yield return StartCoroutine(FadeTeks(0f, 1f, durasiTransisiTeks));
             
             sedangTransisiTeks = false;
+
+            if (gunakanEfekMengetik)
+            {
+                yield return StartCoroutine(KetikTeks(arrayDialogAktif[indeksDialogSaatIni].teksDialog));
+            }
 
             // Coroutine akan menunggu (pause) di sini selama sedangDialog bernilai true
             while (sedangDialog)
@@ -918,14 +956,28 @@ public class Pengenalan : MonoBehaviour
     IEnumerator TransisiTeksBerikutnya()
     {
         sedangTransisiTeks = true;
-
+        
         yield return StartCoroutine(FadeTeks(1f, 0f, durasiTransisiTeks));
 
-        UpdateTeksUI();
+        if (textNamaKarakter != null) textNamaKarakter.text = arrayDialogAktif[indeksDialogSaatIni].namaKarakter;
+        
+        if (gunakanEfekMengetik)
+        {
+            if (textIsiDialog != null) textIsiDialog.text = "";
+        }
+        else
+        {
+            if (textIsiDialog != null) textIsiDialog.text = arrayDialogAktif[indeksDialogSaatIni].teksDialog;
+        }
 
         yield return StartCoroutine(FadeTeks(0f, 1f, durasiTransisiTeks));
 
         sedangTransisiTeks = false;
+
+        if (gunakanEfekMengetik)
+        {
+            yield return StartCoroutine(KetikTeks(arrayDialogAktif[indeksDialogSaatIni].teksDialog));
+        }
     }
 
     IEnumerator SelesaikanDialog()
@@ -967,6 +1019,58 @@ public class Pengenalan : MonoBehaviour
     {
         if (textNamaKarakter != null) textNamaKarakter.text = arrayDialogAktif[indeksDialogSaatIni].namaKarakter;
         if (textIsiDialog != null) textIsiDialog.text = arrayDialogAktif[indeksDialogSaatIni].teksDialog;
+    }
+
+    IEnumerator KetikTeks(string kalimatLengkap)
+    {
+        sedangMengetik = true;
+        if (textIsiDialog != null) textIsiDialog.text = "";
+        
+        // Memulai suara looping
+        if (suaraKetik != null && sumberSuaraKetik != null && suaraDiloopTerus)
+        {
+            sumberSuaraKetik.clip = suaraKetik;
+            sumberSuaraKetik.loop = true;
+            sumberSuaraKetik.Play();
+        }
+
+        int hitunganHuruf = 0;
+
+        foreach (char huruf in kalimatLengkap.ToCharArray())
+        {
+            if (!sedangMengetik) 
+            {
+                // Jika di-skip oleh pemain
+                if (textIsiDialog != null) textIsiDialog.text = kalimatLengkap;
+                break;
+            }
+
+            if (textIsiDialog != null) textIsiDialog.text += huruf;
+            
+            // Suara per huruf
+            if (suaraKetik != null && sumberSuaraKetik != null && !suaraDiloopTerus)
+            {
+                if (huruf != ' ')
+                {
+                    hitunganHuruf++;
+                    if (hitunganHuruf % jarakBunyi == 0 || jarakBunyi <= 1)
+                    {
+                        sumberSuaraKetik.PlayOneShot(suaraKetik);
+                    }
+                }
+            }
+
+            yield return new WaitForSeconds(kecepatanKetik);
+        }
+        
+        // Mematikan suara looping
+        if (suaraKetik != null && sumberSuaraKetik != null && suaraDiloopTerus)
+        {
+            sumberSuaraKetik.Stop();
+        }
+
+        sedangMengetik = false;
+        if (textIsiDialog != null) textIsiDialog.text = kalimatLengkap;
     }
 
     void SetTeksAlpha(float alphaAkhir)
