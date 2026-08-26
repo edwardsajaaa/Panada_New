@@ -196,7 +196,7 @@ public class DialogVisualNovel : MonoBehaviour
                 tempatTeksDialog.text = percakapan[indeks].teksDialog;
                 sedangNgetik = false;
                 
-                if (suaraKetik != null && sumberSuara != null && suaraDiloopTerus)
+                if (suaraKetik != null && sumberSuara != null)
                 {
                     sumberSuara.Stop();
                 }
@@ -297,9 +297,12 @@ public class DialogVisualNovel : MonoBehaviour
             yield return new WaitForSeconds(kecepatanKetik);
         }
 
-        if (suaraKetik != null && sumberSuara != null && suaraDiloopTerus && !putarSekaliPerBaris)
+        if (suaraKetik != null && sumberSuara != null)
         {
-            sumberSuara.Stop();
+            if (putarSekaliPerBaris || suaraDiloopTerus)
+            {
+                sumberSuara.Stop();
+            }
         }
 
         sedangNgetik = false;

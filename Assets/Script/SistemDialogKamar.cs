@@ -204,7 +204,7 @@ public class SistemDialogKamar : MonoBehaviour
                     teksIsiDialog.maxVisibleCharacters = teksIsiDialog.text.Length;
                 }
                 
-                if (suaraKetik != null && sumberSuara != null && suaraDiloopTerus)
+                if (suaraKetik != null && sumberSuara != null)
                 {
                     sumberSuara.Stop();
                 }
@@ -289,9 +289,12 @@ public class SistemDialogKamar : MonoBehaviour
             yield return new WaitForSecondsRealtime(kecepatanKetik);
         }
 
-        if (suaraKetik != null && sumberSuara != null && suaraDiloopTerus && !putarSekaliPerBaris)
+        if (suaraKetik != null && sumberSuara != null)
         {
-            sumberSuara.Stop();
+            if (putarSekaliPerBaris || suaraDiloopTerus)
+            {
+                sumberSuara.Stop();
+            }
         }
 
         sedangTransisi = false;
