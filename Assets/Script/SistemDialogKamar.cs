@@ -135,7 +135,15 @@ public class SistemDialogKamar : MonoBehaviour
 
     void Awake()
     {
-        if (sumberSuara == null) sumberSuara = GetComponent<AudioSource>();
+        if (sumberSuara == null)
+        {
+            sumberSuara = GetComponent<AudioSource>();
+            if (sumberSuara == null)
+            {
+                sumberSuara = gameObject.AddComponent<AudioSource>();
+                sumberSuara.playOnAwake = false;
+            }
+        }
     }
 
     void OnEnable()
