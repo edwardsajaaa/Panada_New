@@ -62,9 +62,11 @@ public class DialogVisualNovel : MonoBehaviour
     public AudioClip suaraKetik;
     [Tooltip("Komponen pemutar suara (Jika kosong, script akan mencarinya secara otomatis)")]
     public AudioSource sumberSuara;
-    [Tooltip("Centang jika file suara panjang dan mau di-loop selama ngetik. Hilangkan centang jika file suara pendek dan mau diputar per huruf.")]
+    [Tooltip("Centang jika ini adalah suara panjang (dubbing / efek ketikan berdurasi) yang hanya diputar 1 KALI di setiap awal baris dialog.")]
+    public bool putarSekaliPerBaris = false;
+    [Tooltip("Centang jika file suara mau di-loop secara aktif (berhenti saat teks selesai). HILANGKAN centang ini jika putarSekaliPerBaris dicentang.")]
     public bool suaraDiloopTerus = false;
-    [Tooltip("Frekuensi bunyi per huruf (Jika tidak di-loop). 1 = Bunyi tiap huruf, 2 = Bunyi per 2 huruf (biar tidak bising).")]
+    [Tooltip("Frekuensi bunyi per huruf (Jika tidak di-loop dan tidak putarSekaliPerBaris).")]
     public int jarakBunyi = 2;
 
     [Header("Event Selesai")]
@@ -255,12 +257,22 @@ public class DialogVisualNovel : MonoBehaviour
     {
         sedangNgetik = true;
 
-        if (suaraKetik != null && sumberSuara != null && suaraDiloopTerus)
+        if (suaraKetik != null && sumberSuara != null)
         {
-            sumberSuara.volume = PengaturanAudioUI.GlobalSFXVolume;
-            sumberSuara.clip = suaraKetik;
-            sumberSuara.loop = true;
-            sumberSuara.Play();
+            if (putarSekaliPerBaris)
+            {
+                sumberSuara.volume = PengaturanAudioUI.GlobalSFXVolume;
+                sumberSuara.clip = suaraKetik;
+                sumberSuara.loop = false;
+                sumberSuara.Play();
+            }
+            else if (suaraDiloopTerus)
+            {
+                sumberSuara.volume = PengaturanAudioUI.GlobalSFXVolume;
+                sumberSuara.clip = suaraKetik;
+                sumberSuara.loop = true;
+                sumberSuara.Play();
+            }
         }
 
         int hitunganHuruf = 0;
@@ -269,7 +281,7 @@ public class DialogVisualNovel : MonoBehaviour
         {
             if (tempatTeksDialog != null) tempatTeksDialog.text += c;
             
-            if (suaraKetik != null && sumberSuara != null && !suaraDiloopTerus)
+            if (suaraKetik != null && sumberSuara != null && !suaraDiloopTerus && !putarSekaliPerBaris)
             {
                 if (c != ' ')
                 {
@@ -285,7 +297,7 @@ public class DialogVisualNovel : MonoBehaviour
             yield return new WaitForSeconds(kecepatanKetik);
         }
 
-        if (suaraKetik != null && sumberSuara != null && suaraDiloopTerus)
+        if (suaraKetik != null && sumberSuara != null && suaraDiloopTerus && !putarSekaliPerBaris)
         {
             sumberSuara.Stop();
         }
