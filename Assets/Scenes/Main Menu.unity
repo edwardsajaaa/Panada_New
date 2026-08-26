@@ -311,6 +311,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 0}
+  suaraClick: {fileID: 0}
+  sumberSuara: {fileID: 0}
 --- !u!1 &41654635
 GameObject:
   m_ObjectHideFlags: 0
@@ -778,6 +781,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 0}
+  suaraClick: {fileID: 0}
+  sumberSuara: {fileID: 0}
 --- !u!1 &79620796
 GameObject:
   m_ObjectHideFlags: 0
@@ -1174,6 +1180,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 0}
+  suaraClick: {fileID: 0}
+  sumberSuara: {fileID: 0}
 --- !u!1 &114303056
 GameObject:
   m_ObjectHideFlags: 0
@@ -2011,13 +2020,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: 
+      - m_Target: {fileID: 1486730455}
+        m_TargetAssemblyTypeName: TransisiMenuUI, Assembly-CSharp
+        m_MethodName: KeluarGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -2097,6 +2106,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 8300000, guid: 2377a64681313cc40a7d1b43c88cb294, type: 3}
+  suaraClick: {fileID: 8300000, guid: 01683c7e941cf8646a0b81230946b9e9, type: 3}
+  sumberSuara: {fileID: 0}
 --- !u!1 &233975717
 GameObject:
   m_ObjectHideFlags: 0
@@ -2172,6 +2184,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 8300000, guid: 2377a64681313cc40a7d1b43c88cb294, type: 3}
+  suaraClick: {fileID: 8300000, guid: 01683c7e941cf8646a0b81230946b9e9, type: 3}
+  sumberSuara: {fileID: 0}
 --- !u!114 &233975720
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2529,6 +2544,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 0}
+  suaraClick: {fileID: 0}
+  sumberSuara: {fileID: 0}
 --- !u!1 &255232189
 GameObject:
   m_ObjectHideFlags: 0
@@ -2604,6 +2622,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 8300000, guid: 2377a64681313cc40a7d1b43c88cb294, type: 3}
+  suaraClick: {fileID: 8300000, guid: 01683c7e941cf8646a0b81230946b9e9, type: 3}
+  sumberSuara: {fileID: 0}
 --- !u!114 &255232192
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3049,6 +3070,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 0}
+  suaraClick: {fileID: 0}
+  sumberSuara: {fileID: 0}
 --- !u!1 &280673665
 GameObject:
   m_ObjectHideFlags: 0
@@ -3518,6 +3542,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 0}
+  suaraClick: {fileID: 0}
+  sumberSuara: {fileID: 0}
 --- !u!1 &357573544
 GameObject:
   m_ObjectHideFlags: 0
@@ -4262,6 +4289,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 8300000, guid: 2377a64681313cc40a7d1b43c88cb294, type: 3}
+  suaraClick: {fileID: 8300000, guid: 01683c7e941cf8646a0b81230946b9e9, type: 3}
+  sumberSuara: {fileID: 0}
 --- !u!1 &469754643
 GameObject:
   m_ObjectHideFlags: 0
@@ -4877,6 +4907,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 8300000, guid: 2377a64681313cc40a7d1b43c88cb294, type: 3}
+  suaraClick: {fileID: 8300000, guid: 01683c7e941cf8646a0b81230946b9e9, type: 3}
+  sumberSuara: {fileID: 0}
 --- !u!1 &601382654
 GameObject:
   m_ObjectHideFlags: 0
@@ -5285,6 +5318,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 0}
+  suaraClick: {fileID: 0}
+  sumberSuara: {fileID: 0}
 --- !u!1 &619394800
 GameObject:
   m_ObjectHideFlags: 0
@@ -5611,6 +5647,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 0}
+  suaraClick: {fileID: 0}
+  sumberSuara: {fileID: 0}
 --- !u!1 &622721721
 GameObject:
   m_ObjectHideFlags: 0
@@ -5793,6 +5832,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 0
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 0}
+  suaraClick: {fileID: 0}
+  sumberSuara: {fileID: 0}
 --- !u!1 &625937507
 GameObject:
   m_ObjectHideFlags: 0
@@ -5908,6 +5950,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 0
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 0}
+  suaraClick: {fileID: 0}
+  sumberSuara: {fileID: 0}
 --- !u!1 &643551911
 GameObject:
   m_ObjectHideFlags: 0
@@ -6430,7 +6475,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &705343168
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6809,6 +6854,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 0}
+  suaraClick: {fileID: 0}
+  sumberSuara: {fileID: 0}
 --- !u!1 &753061261
 GameObject:
   m_ObjectHideFlags: 0
@@ -7001,6 +7049,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 0}
+  suaraClick: {fileID: 0}
+  sumberSuara: {fileID: 0}
 --- !u!1 &757571500
 GameObject:
   m_ObjectHideFlags: 0
@@ -7294,6 +7345,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 0}
+  suaraClick: {fileID: 0}
+  sumberSuara: {fileID: 0}
 --- !u!1 &822543060
 GameObject:
   m_ObjectHideFlags: 0
@@ -7379,6 +7433,7 @@ GameObject:
   m_Component:
   - component: {fileID: 839684671}
   - component: {fileID: 839684672}
+  - component: {fileID: 839684673}
   m_Layer: 0
   m_Name: PanelManager
   m_TagString: Untagged
@@ -7532,7 +7587,111 @@ MonoBehaviour:
   durasiFadeOut: 1
   jedaBacaBerita: 3
   durasiTransisiTeks: 0.3
+  gunakanEfekMengetik: 1
+  kecepatanKetik: 0.04
+  suaraKetik: {fileID: 8300000, guid: 4da8929d1de092845a5713ac06ac5199, type: 3}
+  sumberSuaraKetik: {fileID: 839684673}
+  suaraDiloopTerus: 1
+  jarakBunyi: 2
+  suaraKoranMuncul: {fileID: 8300000, guid: 889890de3ad80fb4e82ff894c5e031aa, type: 3}
+  suaraKoranDitekan: {fileID: 8300000, guid: 2ca7154adb5691a419ffd83dd5cc84a3, type: 3}
   sedangMencariBarang: 0
+--- !u!82 &839684673
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 839684669}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: 4da8929d1de092845a5713ac06ac5199, type: 3}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!1 &867386631
 GameObject:
   m_ObjectHideFlags: 0
@@ -7626,7 +7785,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &871709098
 RectTransform:
   m_ObjectHideFlags: 0
@@ -7720,6 +7879,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 0}
+  suaraClick: {fileID: 0}
+  sumberSuara: {fileID: 0}
 --- !u!1 &879988974
 GameObject:
   m_ObjectHideFlags: 0
@@ -8345,6 +8507,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 8300000, guid: 2377a64681313cc40a7d1b43c88cb294, type: 3}
+  suaraClick: {fileID: 8300000, guid: 01683c7e941cf8646a0b81230946b9e9, type: 3}
+  sumberSuara: {fileID: 0}
 --- !u!1 &940157099
 GameObject:
   m_ObjectHideFlags: 0
@@ -8996,7 +9161,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1062668274
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9091,6 +9256,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 0
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 0}
+  suaraClick: {fileID: 0}
+  sumberSuara: {fileID: 0}
 --- !u!1 &1076102597
 GameObject:
   m_ObjectHideFlags: 0
@@ -10345,6 +10513,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 0}
+  suaraClick: {fileID: 0}
+  sumberSuara: {fileID: 0}
 --- !u!1 &1261113553
 GameObject:
   m_ObjectHideFlags: 0
@@ -10514,6 +10685,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 0}
+  suaraClick: {fileID: 0}
+  sumberSuara: {fileID: 0}
 --- !u!1 &1270202358
 GameObject:
   m_ObjectHideFlags: 0
@@ -10668,6 +10842,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 0}
+  suaraClick: {fileID: 0}
+  sumberSuara: {fileID: 0}
 --- !u!225 &1271499532
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -11071,6 +11248,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 0}
+  suaraClick: {fileID: 0}
+  sumberSuara: {fileID: 0}
 --- !u!1 &1332520168
 GameObject:
   m_ObjectHideFlags: 0
@@ -11970,6 +12150,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 0
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 0}
+  suaraClick: {fileID: 0}
+  sumberSuara: {fileID: 0}
 --- !u!1 &1444701076
 GameObject:
   m_ObjectHideFlags: 0
@@ -12357,6 +12540,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 0
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 0}
+  suaraClick: {fileID: 0}
+  sumberSuara: {fileID: 0}
 --- !u!1 &1514784914
 GameObject:
   m_ObjectHideFlags: 0
@@ -12601,6 +12787,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 0}
+  suaraClick: {fileID: 0}
+  sumberSuara: {fileID: 0}
 --- !u!1 &1530306180
 GameObject:
   m_ObjectHideFlags: 0
@@ -12790,6 +12979,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 0}
+  suaraClick: {fileID: 0}
+  sumberSuara: {fileID: 0}
 --- !u!1 &1568855843
 GameObject:
   m_ObjectHideFlags: 0
@@ -13199,6 +13391,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 0}
+  suaraClick: {fileID: 0}
+  sumberSuara: {fileID: 0}
 --- !u!1 &1631078739
 GameObject:
   m_ObjectHideFlags: 0
@@ -13428,7 +13623,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1650223156
 RectTransform:
   m_ObjectHideFlags: 0
@@ -13857,6 +14052,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 0}
+  suaraClick: {fileID: 0}
+  sumberSuara: {fileID: 0}
 --- !u!1 &1762706065
 GameObject:
   m_ObjectHideFlags: 0
@@ -14101,6 +14299,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 0}
+  suaraClick: {fileID: 0}
+  sumberSuara: {fileID: 0}
 --- !u!1 &1781380115
 GameObject:
   m_ObjectHideFlags: 0
@@ -14373,6 +14574,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 0}
+  suaraClick: {fileID: 0}
+  sumberSuara: {fileID: 0}
 --- !u!1 &1905329376
 GameObject:
   m_ObjectHideFlags: 0
@@ -14810,6 +15014,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 0}
+  suaraClick: {fileID: 0}
+  sumberSuara: {fileID: 0}
 --- !u!1 &1967303111
 GameObject:
   m_ObjectHideFlags: 0
@@ -15435,6 +15642,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 0}
+  suaraClick: {fileID: 0}
+  sumberSuara: {fileID: 0}
 --- !u!1 &2037769614
 GameObject:
   m_ObjectHideFlags: 0

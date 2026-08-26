@@ -13,6 +13,14 @@ public class EfekKedipBergantian : MonoBehaviour
     [Tooltip("Seberapa cepat animasi kedip bergantian (dalam detik)")]
     public float kecepatanKedip = 0.15f;
 
+    [Header("Pengaturan Audio (Opsional)")]
+    [Tooltip("Efek suara nada dering atau notifikasi yang dimainkan saat kedip")]
+    public AudioClip suaraDering;
+    [Tooltip("Komponen pemutar suara (jika kosong, akan dibuat otomatis)")]
+    public AudioSource sumberSuara;
+    [Tooltip("Centang jika suara harus di-loop terus menerus selama kedip berlangsung")]
+    public bool loopSuara = true;
+
     private float timer;
     private bool statusGrupA = true;
     private bool sedangKedip = false;
@@ -34,12 +42,30 @@ public class EfekKedipBergantian : MonoBehaviour
         timer = kecepatanKedip;
         statusGrupA = true;
         UpdateVisual();
+
+        if (suaraDering != null)
+        {
+            if (sumberSuara == null)
+            {
+                sumberSuara = gameObject.AddComponent<AudioSource>();
+                sumberSuara.playOnAwake = false;
+            }
+            sumberSuara.clip = suaraDering;
+            sumberSuara.loop = loopSuara;
+            sumberSuara.volume = PengaturanAudioUI.GlobalSFXVolume;
+            sumberSuara.Play();
+        }
     }
 
     public void HentikanKedip()
     {
         Debug.Log("[EfekKedipBergantian] HentikanKedip dipanggil di objek: " + gameObject.name);
         sedangKedip = false;
+
+        if (sumberSuara != null && sumberSuara.isPlaying)
+        {
+            sumberSuara.Stop();
+        }
         
         if (grupA != null)
         {
