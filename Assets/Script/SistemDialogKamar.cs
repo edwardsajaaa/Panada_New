@@ -35,6 +35,16 @@ public class SistemDialogKamar : MonoBehaviour
     [Tooltip("Waktu jeda (detik) per karakter saat mengetik")]
     public float kecepatanKetik = 0.03f; 
 
+    [Header("Pengaturan Suara (Opsional)")]
+    [Tooltip("File suara ketikan (efek ngomong/blip) yang diputar saat teks muncul")]
+    public AudioClip suaraKetik;
+    [Tooltip("Komponen pemutar suara (Jika kosong, script akan mencarinya secara otomatis)")]
+    public AudioSource sumberSuara;
+    [Tooltip("Centang jika file suara panjang dan mau di-loop selama ngetik. Hilangkan centang jika file suara pendek dan mau diputar per huruf.")]
+    public bool suaraDiloopTerus = false;
+    [Tooltip("Frekuensi bunyi per huruf (Jika tidak di-loop). 1 = Bunyi tiap huruf, 2 = Bunyi per 2 huruf (biar tidak bising).")]
+    public int jarakBunyi = 2;
+
     public enum TransisiKeluar { Fade, PopOut, HilangLangsung, Blink, LoadingScreenKhusus, BlinkLaluBukaPanel }
     
     [Header("Pengaturan Transisi Keluar")]
@@ -123,6 +133,11 @@ public class SistemDialogKamar : MonoBehaviour
     private Vector2 savedZoomInMin;
     private Vector2 savedZoomInMax;
 
+    void Awake()
+    {
+        if (sumberSuara == null) sumberSuara = GetComponent<AudioSource>();
+    }
+
     void OnEnable()
     {
         indeksDialog = 0;
@@ -178,6 +193,12 @@ public class SistemDialogKamar : MonoBehaviour
                 {
                     teksIsiDialog.maxVisibleCharacters = teksIsiDialog.text.Length;
                 }
+                
+                if (suaraKetik != null && sumberSuara != null && suaraDiloopTerus)
+                {
+                    sumberSuara.Stop();
+                }
+
                 sedangTransisi = false;
             }
             else
@@ -206,6 +227,14 @@ public class SistemDialogKamar : MonoBehaviour
         
         teksIsiDialog.text = teks;
 
+        if (suaraKetik != null && sumberSuara != null && suaraDiloopTerus)
+        {
+            sumberSuara.volume = PengaturanAudioUI.GlobalSFXVolume;
+            sumberSuara.clip = suaraKetik;
+            sumberSuara.loop = true;
+            sumberSuara.Play();
+        }
+
         // Tunggu sampai objek benar-benar aktif di layar (mencegah error merah NullReferenceException)
         while (teksIsiDialog != null && !teksIsiDialog.gameObject.activeInHierarchy)
         {
@@ -217,11 +246,28 @@ public class SistemDialogKamar : MonoBehaviour
         int totalKarakter = teksIsiDialog.textInfo.characterCount;
         
         teksIsiDialog.maxVisibleCharacters = 0;
+        int hitunganHuruf = 0;
 
         for (int i = 0; i <= totalKarakter; i++)
         {
             teksIsiDialog.maxVisibleCharacters = i;
+            
+            if (suaraKetik != null && sumberSuara != null && !suaraDiloopTerus && i > 0)
+            {
+                hitunganHuruf++;
+                if (hitunganHuruf % jarakBunyi == 0 || jarakBunyi <= 1)
+                {
+                    sumberSuara.volume = PengaturanAudioUI.GlobalSFXVolume;
+                    sumberSuara.PlayOneShot(suaraKetik);
+                }
+            }
+
             yield return new WaitForSecondsRealtime(kecepatanKetik);
+        }
+
+        if (suaraKetik != null && sumberSuara != null && suaraDiloopTerus)
+        {
+            sumberSuara.Stop();
         }
 
         sedangTransisi = false;
