@@ -57,6 +57,16 @@ public class DialogVisualNovel : MonoBehaviour
     [Tooltip("Nomor Element (Indeks) yang mau ditampilkan saat ngobrol kedua kali (misal: isi 14 untuk Element 14)")]
     public int indeksLompatan = 14;
 
+    [Header("Pengaturan Suara (Opsional)")]
+    [Tooltip("File suara ketikan (efek ngomong/blip) yang diputar saat teks muncul")]
+    public AudioClip suaraKetik;
+    [Tooltip("Komponen pemutar suara (Jika kosong, script akan mencarinya secara otomatis)")]
+    public AudioSource sumberSuara;
+    [Tooltip("Centang jika file suara panjang dan mau di-loop selama ngetik. Hilangkan centang jika file suara pendek dan mau diputar per huruf.")]
+    public bool suaraDiloopTerus = false;
+    [Tooltip("Frekuensi bunyi per huruf (Jika tidak di-loop). 1 = Bunyi tiap huruf, 2 = Bunyi per 2 huruf (biar tidak bising).")]
+    public int jarakBunyi = 2;
+
     [Header("Event Selesai")]
     public UnityEvent saatDialogSelesai;
 
@@ -79,6 +89,16 @@ public class DialogVisualNovel : MonoBehaviour
 
     void Awake()
     {
+        if (sumberSuara == null)
+        {
+            sumberSuara = GetComponent<AudioSource>();
+            if (sumberSuara == null)
+            {
+                sumberSuara = gameObject.AddComponent<AudioSource>();
+                sumberSuara.playOnAwake = false;
+            }
+        }
+
         if (playerTransform == null)
         {
             PlayerMovementUI playerUI = FindAnyObjectByType<PlayerMovementUI>();
@@ -174,6 +194,11 @@ public class DialogVisualNovel : MonoBehaviour
                 tempatTeksDialog.text = percakapan[indeks].teksDialog;
                 sedangNgetik = false;
                 
+                if (suaraKetik != null && sumberSuara != null && suaraDiloopTerus)
+                {
+                    sumberSuara.Stop();
+                }
+                
                 // Beri sedikit jeda agar pemain bisa baca teks yang baru saja dimunculkan penuh
                 cooldownKlik = waktuAntiSpam;
             }
@@ -229,11 +254,42 @@ public class DialogVisualNovel : MonoBehaviour
     IEnumerator Ketik(BarisDialogVN data)
     {
         sedangNgetik = true;
+
+        if (suaraKetik != null && sumberSuara != null && suaraDiloopTerus)
+        {
+            sumberSuara.volume = PengaturanAudioUI.GlobalSFXVolume;
+            sumberSuara.clip = suaraKetik;
+            sumberSuara.loop = true;
+            sumberSuara.Play();
+        }
+
+        int hitunganHuruf = 0;
+
         foreach (char c in data.teksDialog.ToCharArray())
         {
             if (tempatTeksDialog != null) tempatTeksDialog.text += c;
+            
+            if (suaraKetik != null && sumberSuara != null && !suaraDiloopTerus)
+            {
+                if (c != ' ')
+                {
+                    hitunganHuruf++;
+                    if (hitunganHuruf % jarakBunyi == 0 || jarakBunyi <= 1)
+                    {
+                        sumberSuara.volume = PengaturanAudioUI.GlobalSFXVolume;
+                        sumberSuara.PlayOneShot(suaraKetik);
+                    }
+                }
+            }
+            
             yield return new WaitForSeconds(kecepatanKetik);
         }
+
+        if (suaraKetik != null && sumberSuara != null && suaraDiloopTerus)
+        {
+            sumberSuara.Stop();
+        }
+
         sedangNgetik = false;
     }
 

@@ -262,11 +262,15 @@ public class SistemDialogKamar : MonoBehaviour
             
             if (suaraKetik != null && sumberSuara != null && !suaraDiloopTerus && i > 0)
             {
-                hitunganHuruf++;
-                if (hitunganHuruf % jarakBunyi == 0 || jarakBunyi <= 1)
+                char karakterSaatIni = teksIsiDialog.textInfo.characterInfo[i - 1].character;
+                if (karakterSaatIni != ' ')
                 {
-                    sumberSuara.volume = PengaturanAudioUI.GlobalSFXVolume;
-                    sumberSuara.PlayOneShot(suaraKetik);
+                    hitunganHuruf++;
+                    if (hitunganHuruf % jarakBunyi == 0 || jarakBunyi <= 1)
+                    {
+                        sumberSuara.volume = PengaturanAudioUI.GlobalSFXVolume;
+                        sumberSuara.PlayOneShot(suaraKetik);
+                    }
                 }
             }
 
