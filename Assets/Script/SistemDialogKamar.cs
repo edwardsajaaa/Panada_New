@@ -237,6 +237,12 @@ public class SistemDialogKamar : MonoBehaviour
         
         teksIsiDialog.text = teks;
 
+        // Hentikan suara lama agar tidak bertumpuk
+        if (sumberSuara != null && sumberSuara.isPlaying)
+        {
+            sumberSuara.Stop();
+        }
+
         if (suaraKetik != null && sumberSuara != null)
         {
             if (putarSekaliPerBaris)

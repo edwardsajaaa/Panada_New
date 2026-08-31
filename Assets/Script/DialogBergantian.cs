@@ -253,6 +253,12 @@ public class DialogBergantian : MonoBehaviour
     {
         sedangNgetik = true;
 
+        // Hentikan suara lama agar tidak bertumpuk
+        if (sumberSuara != null && sumberSuara.isPlaying)
+        {
+            sumberSuara.Stop();
+        }
+
         if (suaraKetik != null && sumberSuara != null)
         {
             if (putarSekaliPerBaris)

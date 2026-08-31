@@ -203,6 +203,12 @@ public class KetikTeksDialog : MonoBehaviour
     {
         sedangNgetik = true;
         teksDialog.text = "";
+
+        // Hentikan suara lama agar tidak bertumpuk dengan baris dialog berikutnya
+        if (sumberSuara != null && sumberSuara.isPlaying)
+        {
+            sumberSuara.Stop();
+        }
         
         BarisCeritaDialog dataSaatIni = percakapan[indeksKalimat];
         
