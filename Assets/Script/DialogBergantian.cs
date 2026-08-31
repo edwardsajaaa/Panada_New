@@ -263,17 +263,26 @@ public class DialogBergantian : MonoBehaviour
         {
             if (putarSekaliPerBaris)
             {
-                sumberSuara.volume = PengaturanAudioUI.GlobalSFXVolume;
-                sumberSuara.clip = suaraKetik;
-                sumberSuara.loop = false;
-                sumberSuara.Play();
-            }
-            else if (suaraDiloopTerus)
-            {
+                // Loop suara selama teks mengetik, berhenti saat selesai
+                // Ini memastikan suara selalu selaras dengan durasi ketikan
+                sumberSuara.pitch = 1f;
                 sumberSuara.volume = PengaturanAudioUI.GlobalSFXVolume;
                 sumberSuara.clip = suaraKetik;
                 sumberSuara.loop = true;
                 sumberSuara.Play();
+            }
+            else if (suaraDiloopTerus)
+            {
+                sumberSuara.pitch = 1f;
+                sumberSuara.volume = PengaturanAudioUI.GlobalSFXVolume;
+                sumberSuara.clip = suaraKetik;
+                sumberSuara.loop = true;
+                sumberSuara.Play();
+            }
+            else
+            {
+                // Mode per-huruf: reset pitch ke normal
+                sumberSuara.pitch = 1f;
             }
         }
 
