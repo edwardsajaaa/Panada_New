@@ -235,6 +235,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 0}
+  suaraClick: {fileID: 8300000, guid: cdb76033d1b72ee408b03bd9ff3a3efe, type: 3}
+  sumberSuara: {fileID: 0}
 --- !u!1 &16605765
 GameObject:
   m_ObjectHideFlags: 0
@@ -1343,6 +1346,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 0}
+  suaraClick: {fileID: 0}
+  sumberSuara: {fileID: 0}
 --- !u!64 &81047244
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -4189,6 +4195,10 @@ MonoBehaviour:
   - namaKarakter: Nathan
     kalimat: sudah lah kita lanjut saja...
   lewatiBarisPertamaSetelahDiulang: 0
+  suaraKetik: {fileID: 8300000, guid: 4da8929d1de092845a5713ac06ac5199, type: 3}
+  sumberSuara: {fileID: 0}
+  suaraDiloopTerus: 0
+  jarakBunyi: 2
 --- !u!225 &362847104
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -4778,7 +4788,12 @@ MonoBehaviour:
   - namaKarakter: Nathan
     teksDialog: harus aku ya?
   gunakanLanjutan: 0
-  kecepatanKetik: 0.09
+  kecepatanKetik: 0.01
+  suaraKetik: {fileID: 8300000, guid: 4da8929d1de092845a5713ac06ac5199, type: 3}
+  sumberSuara: {fileID: 0}
+  putarSekaliPerBaris: 1
+  suaraDiloopTerus: 0
+  jarakBunyi: 2
   transisiBuble: 3
   durasiTutupBuble: 0.3
   panelLayarHitam: {fileID: 915947126}
@@ -5139,6 +5154,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 8300000, guid: 2377a64681313cc40a7d1b43c88cb294, type: 3}
+  suaraClick: {fileID: 8300000, guid: 01683c7e941cf8646a0b81230946b9e9, type: 3}
+  sumberSuara: {fileID: 0}
 --- !u!1 &492129029
 GameObject:
   m_ObjectHideFlags: 0
@@ -5776,6 +5794,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 0}
+  suaraClick: {fileID: 0}
+  sumberSuara: {fileID: 0}
 --- !u!1 &578531033
 GameObject:
   m_ObjectHideFlags: 0
@@ -5965,6 +5986,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 0}
+  suaraClick: {fileID: 8300000, guid: 01683c7e941cf8646a0b81230946b9e9, type: 3}
+  sumberSuara: {fileID: 0}
 --- !u!1 &581878243
 GameObject:
   m_ObjectHideFlags: 0
@@ -7332,6 +7356,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 0}
+  suaraClick: {fileID: 8300000, guid: cdb76033d1b72ee408b03bd9ff3a3efe, type: 3}
+  sumberSuara: {fileID: 0}
 --- !u!1 &732602328
 GameObject:
   m_ObjectHideFlags: 0
@@ -8788,6 +8815,10 @@ MonoBehaviour:
   - namaKarakter: Nathan
     kalimat: 'Wah, makin parah aja masalahnya '
   lewatiBarisPertamaSetelahDiulang: 0
+  suaraKetik: {fileID: 8300000, guid: 4da8929d1de092845a5713ac06ac5199, type: 3}
+  sumberSuara: {fileID: 0}
+  suaraDiloopTerus: 0
+  jarakBunyi: 2
 --- !u!1 &929400878
 GameObject:
   m_ObjectHideFlags: 0
@@ -10407,6 +10438,10 @@ MonoBehaviour:
   - namaKarakter: Nathan
     kalimat: 'aku harus berberes terlebih dahulu '
   lewatiBarisPertamaSetelahDiulang: 1
+  suaraKetik: {fileID: 8300000, guid: 4da8929d1de092845a5713ac06ac5199, type: 3}
+  sumberSuara: {fileID: 0}
+  suaraDiloopTerus: 0
+  jarakBunyi: 2
 --- !u!225 &1232261456
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -11112,6 +11147,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 0}
+  suaraClick: {fileID: 8300000, guid: cdb76033d1b72ee408b03bd9ff3a3efe, type: 3}
+  sumberSuara: {fileID: 0}
 --- !u!1 &1319544368
 GameObject:
   m_ObjectHideFlags: 0
@@ -11918,6 +11956,9 @@ MonoBehaviour:
   - {fileID: 344469570}
   - {fileID: 2102995357}
   kecepatanKedip: 0.5
+  suaraDering: {fileID: 8300000, guid: 47f6e1025d6a7424199bc4ea0ddfa8b2, type: 3}
+  sumberSuara: {fileID: 0}
+  loopSuara: 1
 --- !u!1 &1413312997
 GameObject:
   m_ObjectHideFlags: 0
@@ -12845,6 +12886,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 8300000, guid: 2377a64681313cc40a7d1b43c88cb294, type: 3}
+  suaraClick: {fileID: 8300000, guid: 01683c7e941cf8646a0b81230946b9e9, type: 3}
+  sumberSuara: {fileID: 0}
 --- !u!64 &1471079620
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -15751,6 +15795,9 @@ MonoBehaviour:
   kecepatanHover: 16
   bawaKeDepanSaatHover: 1
   jedaSebelumHover: 0.5
+  suaraHover: {fileID: 0}
+  suaraClick: {fileID: 8300000, guid: 01683c7e941cf8646a0b81230946b9e9, type: 3}
+  sumberSuara: {fileID: 0}
 --- !u!114 &1979985899
 MonoBehaviour:
   m_ObjectHideFlags: 0

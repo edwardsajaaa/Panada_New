@@ -27,6 +27,18 @@ public class DialogBergantian : MonoBehaviour
     public float kecepatanKetik = 0.04f;
     public KeyCode tombolLanjut = KeyCode.F;
 
+    [Header("Pengaturan Suara (Opsional)")]
+    [Tooltip("File suara ketikan (efek ngomong/blip) yang diputar saat teks muncul")]
+    public AudioClip suaraKetik;
+    [Tooltip("Komponen pemutar suara (Jika kosong, script akan mencarinya secara otomatis)")]
+    public AudioSource sumberSuara;
+    [Tooltip("Centang jika ini adalah suara panjang (dubbing / efek ketikan berdurasi) yang hanya diputar 1 KALI di setiap awal baris dialog.")]
+    public bool putarSekaliPerBaris = false;
+    [Tooltip("Centang jika file suara mau di-loop secara aktif (berhenti saat teks selesai). HILANGKAN centang ini jika putarSekaliPerBaris dicentang.")]
+    public bool suaraDiloopTerus = false;
+    [Tooltip("Frekuensi bunyi per huruf (Jika tidak di-loop dan tidak putarSekaliPerBaris).")]
+    public int jarakBunyi = 2;
+
     [Header("Interact (Opsional)")]
     [Tooltip("Tarik objek NPC 1 (yang punya script PopupInteraksi) ke sini agar balon ? otomatis disembunyikan saat dialog")]
     public PopupInteraksi popupInteraksiNPC;
@@ -54,6 +66,16 @@ public class DialogBergantian : MonoBehaviour
 
     void Awake()
     {
+        if (sumberSuara == null)
+        {
+            sumberSuara = GetComponent<AudioSource>();
+            if (sumberSuara == null)
+            {
+                sumberSuara = gameObject.AddComponent<AudioSource>();
+                sumberSuara.playOnAwake = false;
+            }
+        }
+
         if (playerTransform == null)
         {
             GameObject p = GameObject.FindGameObjectWithTag("Player");
@@ -173,6 +195,11 @@ public class DialogBergantian : MonoBehaviour
                 if (proses != null) StopCoroutine(proses);
                 percakapan[indeks].tempatTeksDialog.text = percakapan[indeks].kalimat;
                 sedangNgetik = false;
+                
+                if (suaraKetik != null && sumberSuara != null)
+                {
+                    sumberSuara.Stop();
+                }
             }
             else
             {
@@ -225,11 +252,55 @@ public class DialogBergantian : MonoBehaviour
     IEnumerator Ketik(BarisDialogBergantian data)
     {
         sedangNgetik = true;
+
+        if (suaraKetik != null && sumberSuara != null)
+        {
+            if (putarSekaliPerBaris)
+            {
+                sumberSuara.volume = PengaturanAudioUI.GlobalSFXVolume;
+                sumberSuara.clip = suaraKetik;
+                sumberSuara.loop = false;
+                sumberSuara.Play();
+            }
+            else if (suaraDiloopTerus)
+            {
+                sumberSuara.volume = PengaturanAudioUI.GlobalSFXVolume;
+                sumberSuara.clip = suaraKetik;
+                sumberSuara.loop = true;
+                sumberSuara.Play();
+            }
+        }
+
+        int hitunganHuruf = 0;
+
         foreach (char c in data.kalimat.ToCharArray())
         {
             if (data.tempatTeksDialog != null) data.tempatTeksDialog.text += c;
+            
+            if (suaraKetik != null && sumberSuara != null && !suaraDiloopTerus && !putarSekaliPerBaris)
+            {
+                if (c != ' ')
+                {
+                    hitunganHuruf++;
+                    if (hitunganHuruf % jarakBunyi == 0 || jarakBunyi <= 1)
+                    {
+                        sumberSuara.volume = PengaturanAudioUI.GlobalSFXVolume;
+                        sumberSuara.PlayOneShot(suaraKetik);
+                    }
+                }
+            }
+
             yield return new WaitForSeconds(kecepatanKetik);
         }
+
+        if (suaraKetik != null && sumberSuara != null)
+        {
+            if (putarSekaliPerBaris || suaraDiloopTerus)
+            {
+                sumberSuara.Stop();
+            }
+        }
+
         sedangNgetik = false;
     }
 
@@ -246,6 +317,12 @@ public class DialogBergantian : MonoBehaviour
     {
         if (proses != null) StopCoroutine(proses);
         StopAllCoroutines();
+        
+        if (suaraKetik != null && sumberSuara != null)
+        {
+            sumberSuara.Stop();
+        }
+
         MatikanSemuaGelembung();
         aktif = false;
         menungguMenjauh = false;
